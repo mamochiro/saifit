@@ -1,0 +1,32 @@
+{
+  "name": "gympal",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "format": "biome format --write .",
+    "check": "biome check .",
+    "setup": "pnpm install && pnpm docker:up && pnpm db:migrate && pnpm db:seed",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "docker:reset": "docker compose down -v && docker compose up -d",
+    "db:generate": "turbo run db:generate --filter=@gympal/db",
+    "db:migrate": "turbo run db:migrate --filter=@gympal/db",
+    "db:push": "turbo run db:push --filter=@gympal/db",
+    "db:studio": "turbo run db:studio --filter=@gympal/db",
+    "db:seed": "turbo run db:seed --filter=@gympal/db",
+    "db:reset": "turbo run db:reset --filter=@gympal/db"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "turbo": "^2.3.3"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@9.15.0"
+}

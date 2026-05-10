@@ -1,0 +1,88 @@
+{
+  "common": {
+    "loading": "กำลังโหลด...",
+    "error": "เกิดข้อผิดพลาด",
+    "save": "บันทึก",
+    "cancel": "ยกเลิก",
+    "delete": "ลบ",
+    "confirm": "ยืนยัน",
+    "back": "กลับ",
+    "next": "ถัดไป",
+    "done": "เสร็จสิ้น"
+  },
+  "auth": {
+    "signIn": "เข้าสู่ระบบ",
+    "signOut": "ออกจากระบบ",
+    "signUp": "สมัครสมาชิก",
+    "lineLogin": "เข้าสู่ระบบด้วย LINE",
+    "googleLogin": "เข้าสู่ระบบด้วย Google",
+    "email": "อีเมล",
+    "password": "รหัสผ่าน"
+  },
+  "home": {
+    "greeting": "สวัสดี",
+    "todayWorkout": "ออกกำลังกายวันนี้",
+    "noProgram": "ยังไม่มีโปรแกรม",
+    "browseTemplates": "เลือกโปรแกรม",
+    "startWorkout": "เริ่มออกกำลังกาย",
+    "streak": "วันติดต่อกัน"
+  },
+  "workout": {
+    "logSet": "บันทึกเซ็ต",
+    "weight": "น้ำหนัก",
+    "reps": "ครั้ง",
+    "sets": "เซ็ต",
+    "complete": "เสร็จ",
+    "rest": "พัก",
+    "nextSet": "เซ็ตถัดไป",
+    "savedLocally": "บันทึกในเครื่องแล้ว"
+  },
+  "progress": {
+    "trends": "แนวโน้ม",
+    "records": "สถิติ",
+    "streak": "วันติดต่อกัน",
+    "personalRecord": "สถิติส่วนตัว",
+    "volume": "ปริมาณ",
+    "workouts": "การออกกำลังกาย"
+  },
+  "exercises": {
+    "search": "ค้นหาท่าออกกำลังกาย",
+    "filter": "กรอง",
+    "muscleGroup": "กลุ่มกล้ามเนื้อ",
+    "equipment": "อุปกรณ์",
+    "noResults": "ไม่พบผลลัพธ์"
+  },
+  "templates": {
+    "browse": "เลือกโปรแกรม",
+    "startProgram": "เริ่มโปรแกรมนี้",
+    "daysPerWeek": "วันต่อสัปดาห์",
+    "difficulty": "ระดับ"
+  },
+  "onboarding": {
+    "goal": "เป้าหมายของคุณ",
+    "experience": "ระดับประสบการณ์",
+    "daysPerWeek": "กี่วันต่อสัปดาห์",
+    "gymType": "ประเภทยิม",
+    "buildMuscle": "เพิ่มกล้ามเนื้อ",
+    "loseFat": "ลดไขมัน",
+    "getStronger": "เพิ่มแรง",
+    "stayActive": "ออกกำลังกายสม่ำเสมอ",
+    "beginner": "มือใหม่",
+    "intermediate": "ระดับกลาง",
+    "advanced": "ขั้นสูง",
+    "commercial": "ฟิตเนสทั่วไป",
+    "homeEquipment": "ออกกำลังกายที่บ้าน (มีอุปกรณ์)",
+    "homeNoEquipment": "ออกกำลังกายที่บ้าน (ไม่มีอุปกรณ์)"
+  },
+  "settings": {
+    "title": "ตั้งค่า",
+    "profile": "โปรไฟล์",
+    "units": "หน่วย",
+    "language": "ภาษา",
+    "reminders": "การแจ้งเตือน",
+    "thai": "ไทย",
+    "english": "อังกฤษ",
+    "kg": "กิโลกรัม",
+    "lb": "ปอนด์"
+  }
+}

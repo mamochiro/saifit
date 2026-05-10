@@ -1,0 +1,88 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "done": "Done"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "signUp": "Sign up",
+    "lineLogin": "Sign in with LINE",
+    "googleLogin": "Sign in with Google",
+    "email": "Email",
+    "password": "Password"
+  },
+  "home": {
+    "greeting": "Hello",
+    "todayWorkout": "Today's workout",
+    "noProgram": "No program yet",
+    "browseTemplates": "Browse templates",
+    "startWorkout": "Start workout",
+    "streak": "day streak"
+  },
+  "workout": {
+    "logSet": "Log set",
+    "weight": "Weight",
+    "reps": "Reps",
+    "sets": "Sets",
+    "complete": "Complete",
+    "rest": "Rest",
+    "nextSet": "Next set",
+    "savedLocally": "Saved locally"
+  },
+  "progress": {
+    "trends": "Trends",
+    "records": "Records",
+    "streak": "day streak",
+    "personalRecord": "Personal record",
+    "volume": "Volume",
+    "workouts": "Workouts"
+  },
+  "exercises": {
+    "search": "Search exercises",
+    "filter": "Filter",
+    "muscleGroup": "Muscle group",
+    "equipment": "Equipment",
+    "noResults": "No results found"
+  },
+  "templates": {
+    "browse": "Browse templates",
+    "startProgram": "Start this program",
+    "daysPerWeek": "Days per week",
+    "difficulty": "Difficulty"
+  },
+  "onboarding": {
+    "goal": "Your goal",
+    "experience": "Experience level",
+    "daysPerWeek": "Days per week",
+    "gymType": "Gym type",
+    "buildMuscle": "Build muscle",
+    "loseFat": "Lose fat",
+    "getStronger": "Get stronger",
+    "stayActive": "Stay active",
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced",
+    "commercial": "Commercial gym",
+    "homeEquipment": "Home gym (with equipment)",
+    "homeNoEquipment": "Home gym (no equipment)"
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": "Profile",
+    "units": "Units",
+    "language": "Language",
+    "reminders": "Reminders",
+    "thai": "Thai",
+    "english": "English",
+    "kg": "Kilograms",
+    "lb": "Pounds"
+  }
+}
