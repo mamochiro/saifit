@@ -152,7 +152,7 @@ function VioletToggle({
         background: checked
           ? "linear-gradient(135deg, oklch(65% 0.22 280), oklch(60% 0.20 240))"
           : "rgba(255,255,255,0.08)",
-        boxShadow: checked ? "0 0 12px var(--violet-glow)" : "none",
+        boxShadow: checked ? "0 0 14px var(--violet-glow)" : "none",
       }}
     >
       <span
@@ -415,6 +415,68 @@ export default function SettingsPage() {
         </span>
       </div>
       <div className="glass" style={{ margin: "8px 24px", padding: "4px 0" }}>
+        {/* Avatar + name header */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 14,
+            padding: "16px 18px 14px",
+            borderBottom: "1px solid var(--glass-line)",
+          }}
+        >
+          <div
+            style={{
+              width: 52,
+              height: 52,
+              borderRadius: "50%",
+              background: "linear-gradient(135deg, oklch(65% 0.22 280), oklch(60% 0.20 240))",
+              border: "1px solid rgba(255,255,255,0.18)",
+              boxShadow: "0 6px 14px -4px rgba(120,90,255,0.5)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "Chakra Petch, monospace",
+                fontWeight: 700,
+                fontSize: 20,
+                color: "white",
+              }}
+            >
+              {data.displayName.charAt(0).toUpperCase()}
+            </span>
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p
+              style={{
+                fontFamily: "K2D, sans-serif",
+                fontWeight: 600,
+                fontSize: 16,
+                color: "var(--ink)",
+                lineHeight: 1.3,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {data.displayName}
+            </p>
+            <p
+              style={{
+                fontFamily: "K2D, sans-serif",
+                fontSize: 12,
+                color: "var(--ink-soft)",
+                marginTop: 2,
+              }}
+            >
+              {data.goal?.replace(/_/g, " ") ?? ""}
+            </p>
+          </div>
+        </div>
         <div style={{ padding: "12px 18px" }}>
           <label
             htmlFor="displayName"
@@ -671,7 +733,9 @@ export default function SettingsPage() {
                         width: 8,
                         height: 8,
                         borderRadius: "50%",
-                        background: "#22c55e",
+                        background: acct.provider === "line" ? "#00B900" : "var(--success)",
+                        boxShadow:
+                          acct.provider === "line" ? "0 0 8px #00B900" : "0 0 8px var(--success)",
                         flexShrink: 0,
                       }}
                     />

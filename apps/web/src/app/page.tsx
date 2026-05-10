@@ -16,15 +16,18 @@ interface SplitDay {
   }>;
 }
 
-function Avatar({ name }: { name: string }) {
+function Avatar({ name, size = 38 }: { name: string; size?: number }) {
   const initial = name.charAt(0).toUpperCase();
+  const fontSize = Math.round(size * 0.39);
   return (
     <div
       style={{
-        width: 38,
-        height: 38,
+        width: size,
+        height: size,
         borderRadius: "50%",
         background: "linear-gradient(135deg, oklch(65% 0.22 280), oklch(60% 0.20 240))",
+        border: "1px solid rgba(255,255,255,0.18)",
+        boxShadow: "0 6px 14px -4px rgba(120,90,255,0.5)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -35,7 +38,7 @@ function Avatar({ name }: { name: string }) {
         style={{
           fontFamily: "Chakra Petch, monospace",
           fontWeight: 700,
-          fontSize: 15,
+          fontSize: fontSize,
           color: "white",
         }}
       >
@@ -244,20 +247,22 @@ export default async function HomePage() {
             </div>
 
             {/* 14-day mini bars */}
-            <div style={{ display: "flex", gap: 3, alignItems: "flex-end", height: 20 }}>
-              {last14Days.map((dateStr) => (
-                <div
-                  key={dateStr}
-                  style={{
-                    flex: 1,
-                    height: activeDates.has(dateStr) ? 16 : 6,
-                    borderRadius: 3,
-                    background: activeDates.has(dateStr)
-                      ? "var(--violet)"
-                      : "rgba(255,255,255,0.08)",
-                  }}
-                />
-              ))}
+            <div style={{ display: "flex", gap: 3, alignItems: "flex-end", height: 16 }}>
+              {last14Days.map((dateStr) => {
+                const active = activeDates.has(dateStr);
+                return (
+                  <div
+                    key={dateStr}
+                    style={{
+                      flex: 1,
+                      height: 4,
+                      borderRadius: 3,
+                      background: active ? "var(--violet)" : "rgba(255,255,255,0.08)",
+                      boxShadow: active ? "0 0 6px var(--violet)" : "none",
+                    }}
+                  />
+                );
+              })}
             </div>
           </div>
         )}
@@ -310,8 +315,8 @@ export default async function HomePage() {
                         width: 36,
                         height: 36,
                         borderRadius: 10,
-                        background: "rgba(140,100,255,0.12)",
-                        border: "1px solid var(--violet-edge)",
+                        background: "rgba(255,255,255,0.04)",
+                        border: "1px solid var(--glass-line)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -327,7 +332,7 @@ export default async function HomePage() {
                         strokeWidth="1.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        style={{ color: "var(--violet-bright)" }}
+                        style={{ color: "var(--ink-mute)" }}
                         aria-hidden="true"
                       >
                         <path d="M6 5v14M18 5v14M3 8h3M18 8h3M3 16h3M18 16h3M6 8h12M6 16h12" />

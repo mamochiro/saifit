@@ -161,12 +161,25 @@ function HeatmapGrid({ cells }: { cells: Array<{ date: string; count: number }> 
                       title={cell ? `${cell.date}: ${count}` : ""}
                       className="heatmap-cell"
                       style={
-                        count > 0
-                          ? {
-                              background: count >= 2 ? "var(--violet)" : "rgba(140,100,255,0.35)",
-                              border: "1px solid var(--violet-edge)",
-                            }
-                          : undefined
+                        count === 0
+                          ? undefined
+                          : count === 1
+                            ? {
+                                background: "rgba(140,100,255,0.25)",
+                                border: "1px solid rgba(140,100,255,0.3)",
+                              }
+                            : count === 2
+                              ? {
+                                  background: "rgba(140,100,255,0.5)",
+                                  border: "1px solid var(--violet-edge)",
+                                }
+                              : count >= 3
+                                ? {
+                                    background: "var(--violet)",
+                                    border: "1px solid var(--violet-edge)",
+                                    boxShadow: "0 0 6px var(--violet-glow)",
+                                  }
+                                : undefined
                       }
                     />
                   );
