@@ -158,7 +158,21 @@
     "thai": "ไทย",
     "english": "อังกฤษ",
     "kg": "กิโลกรัม",
-    "lb": "ปอนด์"
+    "lb": "ปอนด์",
+    "displayName": "ชื่อที่แสดง",
+    "reminderEnabled": "เปิดการแจ้งเตือน",
+    "reminderTime": "เวลาแจ้งเตือน",
+    "lineConnected": "LINE",
+    "lineComingSoon": "เร็วๆ นี้",
+    "signOut": "ออกจากระบบ",
+    "saveSuccess": "บันทึกแล้ว",
+    "saveError": "ไม่สามารถบันทึกได้"
+  },
+  "pwa": {
+    "installTitle": "ติดตั้งแอป Saifit",
+    "installDescription": "ติดตั้งบนหน้าจอหลักเพื่อประสบการณ์ที่ดีที่สุด",
+    "install": "ติดตั้ง",
+    "dismiss": "ไม่ตอนนี้"
   },
   "history": {
     "title": "ประวัติ",

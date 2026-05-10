@@ -3,6 +3,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { Chakra_Petch, K2D } from "next/font/google";
 import "./globals.css";
+import { PwaInstallPrompt } from "@/components/pwa-install-prompt";
 import { Providers } from "./providers";
 
 const chakraPetch = Chakra_Petch({
@@ -21,6 +22,14 @@ export const metadata: Metadata = {
   title: "Saifit",
   description: "ติดตามการออกกำลังกาย สไตล์สายฟิต",
   manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Saifit",
+  },
+  icons: {
+    apple: "/icons/icon-192.png",
+  },
 };
 
 export const viewport: Viewport = {
@@ -36,6 +45,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="font-body">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>{children}</Providers>
+          <PwaInstallPrompt />
         </NextIntlClientProvider>
       </body>
     </html>

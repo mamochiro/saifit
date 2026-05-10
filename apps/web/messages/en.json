@@ -158,7 +158,21 @@
     "thai": "Thai",
     "english": "English",
     "kg": "Kilograms",
-    "lb": "Pounds"
+    "lb": "Pounds",
+    "displayName": "Display name",
+    "reminderEnabled": "Enable reminders",
+    "reminderTime": "Reminder time",
+    "lineConnected": "LINE",
+    "lineComingSoon": "Coming soon",
+    "signOut": "Sign out",
+    "saveSuccess": "Saved",
+    "saveError": "Could not save"
+  },
+  "pwa": {
+    "installTitle": "Install Saifit",
+    "installDescription": "Add to your home screen for the best experience",
+    "install": "Install",
+    "dismiss": "Not now"
   },
   "history": {
     "title": "History",

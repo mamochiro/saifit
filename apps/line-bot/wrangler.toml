@@ -1,10 +1,12 @@
 name = "saifit-line-bot"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
 
 [triggers]
 crons = [
-  "0 11 * * *",   # 18:00 Bangkok (UTC+7)
-  "0 14 * * *",   # 21:00 Bangkok (UTC+7)
-  "0 13 * * 0",   # Sunday 20:00 Bangkok (UTC+7)
+  "0 11 * * *",    # 18:00 Bangkok (UTC+7) — daily reminder
+  "0 14 * * *",    # 21:00 Bangkok (UTC+7) — check-in
+  "0 13 * * 0",    # Sunday 20:00 Bangkok (UTC+7) — weekly summary
+  "30 13 * * *",   # 20:30 Bangkok (UTC+7) — daily streak warning
 ]

@@ -17,6 +17,14 @@ const patchSchema = v.object({
   ),
   gymType: v.optional(v.picklist(["commercial", "home_equipment", "home_no_equipment"] as const)),
   onboardingCompleted: v.optional(v.boolean()),
+  unitsPreference: v.optional(v.picklist(["kg", "lb"] as const)),
+  locale: v.optional(v.picklist(["th", "en"] as const)),
+  reminderEnabled: v.optional(v.boolean()),
+  reminderTime: v.optional(
+    v.pipe(v.string(), v.regex(/^\d{2}:\d{2}$/, "Invalid time format HH:MM")),
+  ),
+  displayName: v.optional(v.pipe(v.string(), v.maxLength(128))),
+  avatarUrl: v.optional(v.nullable(v.string())),
 });
 
 export async function GET(request: NextRequest) {
@@ -48,11 +56,33 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   }
 
-  const { goal, experienceLevel, daysPerWeek, gymType, onboardingCompleted } = result.output;
+  const {
+    goal,
+    experienceLevel,
+    daysPerWeek,
+    gymType,
+    onboardingCompleted,
+    unitsPreference,
+    locale,
+    reminderEnabled,
+    reminderTime,
+    displayName,
+    avatarUrl,
+  } = result.output;
   const updateData = Object.fromEntries(
-    Object.entries({ goal, experienceLevel, daysPerWeek, gymType, onboardingCompleted }).filter(
-      ([, val]) => val !== undefined,
-    ),
+    Object.entries({
+      goal,
+      experienceLevel,
+      daysPerWeek,
+      gymType,
+      onboardingCompleted,
+      unitsPreference,
+      locale,
+      reminderEnabled,
+      reminderTime,
+      displayName,
+      avatarUrl,
+    }).filter(([, val]) => val !== undefined),
   );
 
   if (Object.keys(updateData).length === 0) {

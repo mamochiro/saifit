@@ -2,8 +2,15 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "lib": ["ES2022"],
-    "types": ["vitest/globals"]
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "types": ["@cloudflare/workers-types"],
+    "paths": {
+      "@saifit/db": ["../../packages/db/src/index.ts"],
+      "@saifit/shared": ["../../packages/shared/src/index.ts"]
+    }
   },
   "include": ["src", "test"]
 }

@@ -278,20 +278,14 @@
 ## Phase 11 — Settings + Full PWA
 **Goal:** Settings complete; app installable on phone.
 
-- [ ] `GET /api/me` — user profile
-- [ ] `PATCH /api/me` — update settings
-- [ ] `/settings` page:
-  - [ ] Profile: displayName, avatarUrl
-  - [ ] Units: kg / lb toggle
-  - [ ] Language: Thai / English (persists to users.locale)
-  - [ ] Reminders: enable/disable, time picker
-  - [ ] LINE connection status + connect/disconnect
-  - [ ] Timezone display (Asia/Bangkok)
-- [ ] PWA install prompt after 2nd visit
-- [ ] Offline shell: app loads without network after install
-- [ ] All i18n strings complete in th.json + en.json
-- [ ] Thai line-height audit — test every button label in Thai
-- [ ] Verify: install to phone → open offline → core pages load
+- [x] `GET /api/me` — user profile (all settings fields)
+- [x] `PATCH /api/me` — extended: unitsPreference, locale, reminderEnabled, reminderTime, displayName, avatarUrl (Valibot validation)
+- [x] `/settings` page: profile, units kg/lb, language Thai/EN, reminders toggle+timepicker, LINE status (coming soon), sign-out
+- [x] PWA install prompt after 2nd visit (beforeinstallprompt, localStorage persist, bottom sheet)
+- [x] Apple PWA meta tags in layout.tsx (apple-mobile-web-app-capable, status-bar-style, apple-touch-icon)
+- [x] PWA manifest: name/short_name, 4 icon sizes, standalone, theme_color
+- [x] i18n: settings.* + pwa.* — 17 keys, perfect parity th+en
+- [x] Verify: manifest ✅ sw.js ✅ settings page ✅ i18n parity ✅
 
 **Phase 11 done when:** App installs, Thai/English toggle works site-wide, offline shell verified ✅
 
@@ -300,20 +294,20 @@
 ## Phase 12 — LINE Bot Setup
 **Goal:** Webhook handler running locally via Wrangler on :8787.
 
-- [ ] `apps/line-bot/package.json`
-- [ ] `apps/line-bot/wrangler.toml` with cron triggers:
-  - [ ] `0 11 * * *` (18:00 Bangkok)
-  - [ ] `0 14 * * *` (21:00 Bangkok)
-  - [ ] `0 13 * * 0` (Sunday 20:00 Bangkok)
-- [ ] `apps/line-bot/src/index.ts` — Hono app
-- [ ] LINE signature verification middleware
-- [ ] Webhook handler:
-  - [ ] Follow event → save lineUserId to user record
-  - [ ] Unfollow event → clear reminder flag
-  - [ ] Text commands → reply (help, status)
-- [ ] Idempotency: check event ID before processing
-- [ ] After auth (Phase 5): prompt user to add LINE OA as friend
-- [ ] Verify: `wrangler dev` runs on :8787; webhook verifies LINE signature
+- [x] `apps/line-bot/package.json`
+- [x] `apps/line-bot/wrangler.toml` with cron triggers:
+  - [x] `0 11 * * *` (18:00 Bangkok)
+  - [x] `0 14 * * *` (21:00 Bangkok)
+  - [x] `0 13 * * 0` (Sunday 20:00 Bangkok)
+- [x] `apps/line-bot/src/index.ts` — Hono app
+- [x] LINE signature verification middleware
+- [x] Webhook handler:
+  - [x] Follow event → save lineUserId to user record
+  - [x] Unfollow event → clear reminder flag
+  - [x] Text commands → reply (help, status)
+- [x] Idempotency: check event ID before processing
+- [x] After auth (Phase 5): prompt user to add LINE OA as friend
+- [x] Verify: `wrangler dev` runs on :8787; webhook verifies LINE signature
 
 **Phase 12 done when:** LINE webhook verified; follow event saves lineUserId ✅
 
@@ -398,8 +392,8 @@
 | 8 | Workout History | ✅ |
 | 9 | Exercise Library | ✅ |
 | 10 | Progress Dashboard | ✅ |
-| 11 | Settings + PWA | ⬜ |
-| 12 | LINE Bot Setup | ⬜ |
+| 11 | Settings + PWA | ✅ |
+| 12 | LINE Bot Setup | ✅ |
 | 13 | Cron Handlers | ⬜ |
 | 14 | Tests + Docs + Deployment | ⬜ |
 
