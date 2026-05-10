@@ -47,7 +47,8 @@
     "resumePrompt": "ต้องการต่อจากที่ค้างไว้?",
     "resume": "ต่อเลย",
     "discard": "เริ่มใหม่",
-    "undoAdvance": "เลิกทำ"
+    "undoAdvance": "เลิกทำ",
+    "offlineCannotComplete": "ออฟไลน์ — ต่อเน็ตก่อนจบการออกกำลังกาย"
   },
   "restTimer": {
     "title": "พักก่อน",

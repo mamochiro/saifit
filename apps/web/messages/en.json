@@ -47,7 +47,8 @@
     "resumePrompt": "Continue where you left off?",
     "resume": "Continue",
     "discard": "Start fresh",
-    "undoAdvance": "Undo"
+    "undoAdvance": "Undo",
+    "offlineCannotComplete": "Offline — reconnect to finish"
   },
   "restTimer": {
     "title": "Rest",

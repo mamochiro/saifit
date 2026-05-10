@@ -1,6 +1,13 @@
 "use client";
 
-import { getPending, getPendingCount, markSynced } from "@/lib/workout-queue";
+import {
+  enqueue,
+  gcSynced,
+  getPending,
+  getPendingCount,
+  markFailed,
+  markSynced,
+} from "@/lib/workout-queue";
 import { useRestTimerStore } from "@/stores/rest-timer-store";
 import { useViewportStore } from "@/stores/viewport-store";
 import { normalizeDecimal } from "@saifit/shared";
@@ -68,19 +75,21 @@ function FirstSetRow({
     const repsNum = Number.parseInt(reps, 10);
     if (Number.isNaN(repsNum) || repsNum <= 0) return;
     const weightKg = weight ? normalizeDecimal(weight) : null;
+    const clientSetId = crypto.randomUUID();
+    const completedAt = new Date().toISOString();
     setSaving(true);
     try {
       const res = await fetch(`/api/workouts/${workoutId}/sets`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          clientSetId: crypto.randomUUID(),
+          clientSetId,
           exerciseId: exercise.id,
           setNumber,
           weightKg,
           reps: repsNum,
           isBodyweight: !weightKg,
-          completedAt: new Date().toISOString(),
+          completedAt,
         }),
       });
       if (res.ok) {
@@ -94,9 +103,26 @@ function FirstSetRow({
         }
         qc.invalidateQueries({ queryKey: ["workout", workoutId] });
         onCompleted();
+      } else {
+        throw new Error(`HTTP ${res.status}`);
       }
     } catch {
-      // Silently fail — user can retry
+      // Offline or server error — queue for sync
+      await enqueue(workoutId, {
+        type: "create_set",
+        payload: {
+          clientSetId,
+          workoutId,
+          exerciseId: exercise.id,
+          setNumber,
+          weightKg,
+          reps: repsNum,
+          isBodyweight: !weightKg,
+          completedAt,
+        },
+      });
+      qc.invalidateQueries({ queryKey: ["workout", workoutId] });
+      onCompleted();
     } finally {
       setSaving(false);
     }
@@ -220,6 +246,7 @@ export function WorkoutLoggerView({
   const [isOnline, setIsOnline] = useState(true);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pendingExercises, setPendingExercises] = useState<PickedExercise[]>([]);
+  const [addingSetFor, setAddingSetFor] = useState<Set<string>>(new Set());
   const [prResult, setPrResult] = useState<{
     exerciseName: string;
     value: number;
@@ -282,6 +309,11 @@ export function WorkoutLoggerView({
       if (res.ok) {
         const { data: result } = await res.json();
         if (result.accepted?.length) await markSynced(result.accepted);
+        if (result.rejected?.length) {
+          for (const { seq, reason } of result.rejected as { seq: number; reason: string }[]) {
+            await markFailed(seq, reason);
+          }
+        }
         qc.invalidateQueries({ queryKey: ["workout", workoutId] });
       }
     } catch {
@@ -292,6 +324,11 @@ export function WorkoutLoggerView({
       setPendingCount(count);
     }
   }, [workoutId, qc]);
+
+  // Clean up old synced entries once on mount (fire-and-forget)
+  useEffect(() => {
+    gcSynced().catch(() => {});
+  }, []);
 
   useEffect(() => {
     const onOnline = () => {
@@ -461,6 +498,57 @@ export function WorkoutLoggerView({
                   }}
                 />
               ))}
+              {/* Add another set */}
+              {exercise && addingSetFor.has(exercise.id) ? (
+                <FirstSetRow
+                  exercise={exercise as PickedExercise}
+                  workoutId={workoutId}
+                  setNumber={sets.length + 1}
+                  onCompleted={() =>
+                    setAddingSetFor((prev) => {
+                      const next = new Set(prev);
+                      next.delete(exercise.id);
+                      return next;
+                    })
+                  }
+                  onPR={(name, value, type) => setPrResult({ exerciseName: name, value, type })}
+                />
+              ) : (
+                exercise && (
+                  <button
+                    type="button"
+                    onClick={() => setAddingSetFor((prev) => new Set(prev).add(exercise.id))}
+                    style={{
+                      height: 40,
+                      borderRadius: 12,
+                      background: "transparent",
+                      border: "1px dashed rgba(255,255,255,0.1)",
+                      fontFamily: "K2D, sans-serif",
+                      fontSize: 12,
+                      color: "var(--ink-soft)",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 6,
+                    }}
+                  >
+                    <svg
+                      viewBox="0 0 16 16"
+                      width={12}
+                      height={12}
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M8 3v10M3 8h10" />
+                    </svg>
+                    {t("addSet")}
+                  </button>
+                )
+              )}
             </div>
           </div>
         ))}
@@ -547,7 +635,7 @@ export function WorkoutLoggerView({
       {/* Rest timer */}
       {restActive && restWorkoutId === workoutId && <RestTimer workoutId={workoutId} />}
 
-      <CompleteWorkoutBar workoutId={workoutId} startedAt={workout.startedAt} />
+      <CompleteWorkoutBar workoutId={workoutId} startedAt={workout.startedAt} isOnline={isOnline} />
 
       {pickerOpen && (
         <ExercisePicker
