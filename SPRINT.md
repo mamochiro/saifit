@@ -334,45 +334,45 @@
 **Goal:** Green tests, complete docs, deployment playbook.
 
 ### Tests
-- [ ] Unit tests (Vitest):
-  - [ ] estimate1RM — normal reps, reps=1, reps>12 returns null
-  - [ ] calculateVolume — normal sets, bodyweight sets (null weightKg)
-  - [ ] Streak logic — consecutive days, gap > 1, grace day within 7-day window
-  - [ ] PR detection — new PR, no PR, tie
-  - [ ] Decimal normalizer — comma → dot
-- [ ] Integration tests:
-  - [ ] Workout logger auto-save flow (debounce + optimistic)
-  - [ ] IndexedDB queue reconciliation on reconnect
-  - [ ] PR detection on set completion
-  - [ ] DB client against both node-postgres and neon-http
-- [ ] `biome check .` passes across all packages
-- [ ] `vitest` passes
+- [x] Unit tests (Vitest):
+  - [x] estimate1RM — normal reps, reps=1, reps>12 returns null
+  - [x] calculateVolume — normal sets, bodyweight sets (null weightKg)
+  - [x] Streak logic — consecutive days, gap > 1, grace day within 7-day window
+  - [x] PR detection — new PR, no PR, tie
+  - [x] Decimal normalizer — comma → dot
+- [x] Integration tests:
+  - [x] Workout logger auto-save flow (debounce + optimistic)
+  - [x] IndexedDB queue reconciliation on reconnect
+  - [x] PR detection on set completion
+  - [x] DB client against both node-postgres and neon-http
+- [x] `biome check .` passes across all packages
+- [x] `vitest` passes
 
 ### README.md
-- [ ] Project overview (1 paragraph)
-- [ ] Architecture diagram (ASCII)
-- [ ] Quick start (3 commands)
-- [ ] Detailed setup (Docker, Bun, pnpm)
-- [ ] Docker commands cheatsheet
-- [ ] DB commands cheatsheet
-- [ ] Dev workflow
-- [ ] Test login: dev@saifit.local / devpassword123
-- [ ] Tech stack summary
-- [ ] Placeholder content list (GIF URLs, LINE OA ID, etc.)
+- [x] Project overview (1 paragraph)
+- [x] Architecture diagram (ASCII)
+- [x] Quick start (3 commands)
+- [x] Detailed setup (Docker, Bun, pnpm)
+- [x] Docker commands cheatsheet
+- [x] DB commands cheatsheet
+- [x] Dev workflow
+- [x] Test login: dev@saifit.local / devpassword123
+- [x] Tech stack summary
+- [x] Placeholder content list (GIF URLs, LINE OA ID, etc.)
 
 ### DEPLOYMENT.md
-- [ ] Neon: project creation, connection string, branch setup (main + dev branch)
-- [ ] Better Auth: generate BETTER_AUTH_SECRET, set LINE + Google OAuth credentials
-- [ ] LINE Developers Console: Login channel (for Better Auth), Messaging API channel (for bot), tokens
-- [ ] Vercel: repo connect, env vars, deploy
-- [ ] Cloudflare Workers: wrangler login, secrets, cron config, deploy
-- [ ] Set webhook URL in LINE console
-- [ ] Smoke test checklist: sign up → onboard → start program → log workout → see progress → receive LINE reminder
+- [x] Neon: project creation, connection string, branch setup (main + dev branch)
+- [x] Better Auth: generate BETTER_AUTH_SECRET, set LINE + Google OAuth credentials
+- [x] LINE Developers Console: Login channel (for Better Auth), Messaging API channel (for bot), tokens
+- [x] Vercel: repo connect, env vars, deploy
+- [x] Cloudflare Workers: wrangler login, secrets, cron config, deploy
+- [x] Set webhook URL in LINE console
+- [x] Smoke test checklist: sign up → onboard → start program → log workout → see progress → receive LINE reminder
 
 ### Cost estimates
-- [ ] 100 users (free tiers)
-- [ ] 1,000 users (what breaks first)
-- [ ] 10,000 users (upgrade path + estimated cost)
+- [x] 100 users (free tiers)
+- [x] 1,000 users (what breaks first)
+- [x] 10,000 users (upgrade path + estimated cost)
 
 **Phase 14 done when:** All tests pass, biome clean, both docs complete ✅
 
@@ -395,7 +395,7 @@
 | 11 | Settings + PWA | ✅ |
 | 12 | LINE Bot Setup | ✅ |
 | 13 | Cron Handlers | ✅ |
-| 14 | Tests + Docs + Deployment | ⬜ |
+| 14 | Tests + Docs + Deployment | ✅ |
 
 ---
 
