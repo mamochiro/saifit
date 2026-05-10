@@ -145,9 +145,53 @@ export default function WelcomePage() {
           width: "100%",
         }}
       >
-        {step < 5 && (
-          <div style={{ marginBottom: 40 }}>
-            <ProgressDots step={step} />
+        {step <= 4 && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              marginBottom: 40,
+            }}
+          >
+            <div style={{ width: 36, flexShrink: 0 }}>
+              {step > 1 && (
+                <button
+                  type="button"
+                  onClick={() => setStep((s) => (s > 1 ? ((s - 1) as Step) : s))}
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: "50%",
+                    background: "none",
+                    border: "1px solid var(--glass-line)",
+                    color: "var(--ink-mute)",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  aria-label="ย้อนกลับ"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M15 18l-6-6 6-6" />
+                  </svg>
+                </button>
+              )}
+            </div>
+            <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+              <ProgressDots step={step} />
+            </div>
+            <div style={{ width: 36, flexShrink: 0 }} />
           </div>
         )}
 

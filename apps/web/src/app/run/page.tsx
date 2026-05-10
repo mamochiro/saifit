@@ -3,19 +3,21 @@
 import { useState } from "react";
 import { useLogRun, useRunSummary } from "./hooks";
 
-type RunKind = "easy" | "tempo" | "interval" | "long" | "rest";
+type RunKind = "easy" | "tempo" | "interval" | "long" | "race" | "rest";
 
 const KIND_COLOR: Record<RunKind, string> = {
   easy: "rgba(255,255,255,0.10)",
   tempo: "oklch(72% 0.20 270 / 60%)",
   interval: "oklch(78% 0.20 285)",
   long: "oklch(60% 0.20 240)",
+  race: "oklch(68% 0.22 340)",
   rest: "rgba(255,255,255,0.04)",
 };
 
 const KIND_GLOW: Partial<Record<RunKind, string>> = {
   tempo: "0 0 10px rgba(120,90,255,0.5)",
   long: "0 0 10px rgba(120,90,255,0.5)",
+  race: "0 0 12px rgba(200,80,120,0.6)",
 };
 
 function formatPace(secPerKm: number | null | undefined): string {
@@ -64,7 +66,7 @@ interface LogFormData {
   distanceKm: string;
   durationMin: string;
   durationSec: string;
-  runType: "easy" | "tempo" | "interval" | "long";
+  runType: "easy" | "tempo" | "interval" | "long" | "race";
 }
 
 export default function RunPage() {
@@ -296,6 +298,7 @@ export default function RunPage() {
                           width: `${Math.max(8, (km / (maxKm || 1)) * 100)}%`,
                           background: KIND_COLOR[kind],
                           boxShadow: KIND_GLOW[kind] ?? "none",
+                          transition: "width 0.4s ease-out",
                         }}
                       />
                     </div>
@@ -458,7 +461,7 @@ export default function RunPage() {
                   TYPE
                 </div>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                  {(["easy", "tempo", "interval", "long"] as const).map((t) => (
+                  {(["easy", "tempo", "interval", "long", "race"] as const).map((t) => (
                     <button
                       key={t}
                       type="button"

@@ -19,6 +19,10 @@ interface User {
   goal: "build_muscle" | "lose_fat" | "get_stronger" | "stay_active" | null;
   gymType: "commercial" | "home_equipment" | "home_no_equipment" | null;
   daysPerWeek: number | null;
+  defaultTargetKcal: number | null;
+  defaultTargetProteinG: number | null;
+  defaultTargetCarbsG: number | null;
+  defaultTargetFatG: number | null;
 }
 
 interface ConnectedAccount {
@@ -249,13 +253,22 @@ export default function SettingsPage() {
     patchMe({ displayName: debouncedName });
   }, [debouncedName]);
 
-  // Section 2 — nutrition local state
-  // TODO: Add defaultTargetKcal, defaultTargetProteinG, defaultTargetCarbsG, defaultTargetFatG
-  // columns to the users table (packages/db/src/schema.ts) then wire these to PATCH /api/me.
+  // Section 2 — nutrition local state (persisted on blur via PATCH /api/me)
   const [kcal, setKcal] = useState(2100);
   const [protein, setProtein] = useState(150);
   const [carbs, setCarbs] = useState(220);
   const [fat, setFat] = useState(70);
+  const nutritionInitialized = useRef(false);
+
+  useEffect(() => {
+    if (data && !nutritionInitialized.current) {
+      if (data.defaultTargetKcal != null) setKcal(data.defaultTargetKcal);
+      if (data.defaultTargetProteinG != null) setProtein(data.defaultTargetProteinG);
+      if (data.defaultTargetCarbsG != null) setCarbs(data.defaultTargetCarbsG);
+      if (data.defaultTargetFatG != null) setFat(data.defaultTargetFatG);
+      nutritionInitialized.current = true;
+    }
+  }, [data]);
 
   // Section 4 — data actions
   const [exporting, setExporting] = useState(false);
@@ -290,6 +303,15 @@ export default function SettingsPage() {
   async function handleReminderTime(time: string) {
     await patchMe({ reminderTime: time });
     queryClient.setQueryData<User>(["me"], (old) => (old ? { ...old, reminderTime: time } : old));
+  }
+
+  async function handleNutritionBlur() {
+    await patchMe({
+      defaultTargetKcal: kcal,
+      defaultTargetProteinG: protein,
+      defaultTargetCarbsG: carbs,
+      defaultTargetFatG: fat,
+    });
   }
 
   async function handleTrainingField(field: "goal" | "gymType" | "daysPerWeek", value: string) {
@@ -484,8 +506,6 @@ export default function SettingsPage() {
         </span>
       </div>
       <div className="glass" style={{ margin: "8px 24px", padding: "4px 0" }}>
-        {/* TODO: Add defaultTargetKcal, defaultTargetProteinG, defaultTargetCarbsG,
-            defaultTargetFatG columns to users table then wire PATCH /api/me here. */}
         {NUTRITION_FIELDS.map((field, idx) => (
           <div
             key={field.id}
@@ -517,6 +537,7 @@ export default function SettingsPage() {
                 max={field.max}
                 value={field.value}
                 onChange={(e) => field.set(Number(e.target.value) as never)}
+                onBlur={handleNutritionBlur}
               />
             </div>
           </div>

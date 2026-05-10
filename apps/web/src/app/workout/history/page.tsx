@@ -151,20 +151,56 @@ export default function WorkoutHistoryPage() {
     <div className="saifit-bg" style={{ minHeight: "100vh", paddingBottom: 110 }}>
       {/* Header */}
       <div style={{ padding: "40px 24px 0" }}>
-        <span className="t-label">HISTORY</span>
-        <h1
-          style={{
-            fontFamily: "K2D, sans-serif",
-            fontWeight: 700,
-            fontSize: 26,
-            color: "var(--ink)",
-            letterSpacing: "-0.01em",
-            lineHeight: 1.15,
-            margin: "6px 0 20px",
-          }}
-        >
-          {t("title")}
-        </h1>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div>
+            <span className="t-label">HISTORY</span>
+            <h1
+              style={{
+                fontFamily: "K2D, sans-serif",
+                fontWeight: 700,
+                fontSize: 26,
+                color: "var(--ink)",
+                letterSpacing: "-0.01em",
+                lineHeight: 1.15,
+                margin: "6px 0 20px",
+              }}
+            >
+              {t("title")}
+            </h1>
+          </div>
+          <Link
+            href="/settings"
+            aria-label="ตั้งค่า"
+            style={{
+              marginTop: 36,
+              width: 38,
+              height: 38,
+              borderRadius: "50%",
+              background: "rgba(255,255,255,0.06)",
+              border: "1px solid var(--glass-line)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "var(--ink-mute)",
+              flexShrink: 0,
+            }}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width={17}
+              height={17}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+          </Link>
+        </div>
 
         {/* Abandoned workout banner */}
         {abandonedWorkout && (

@@ -39,7 +39,7 @@ export interface LogRunInput {
   runDate: string;
   distanceKm: number;
   durationSeconds: number;
-  runType?: "easy" | "tempo" | "interval" | "long";
+  runType?: "easy" | "tempo" | "interval" | "long" | "race";
   notes?: string | null;
 }
 

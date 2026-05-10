@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   type MealItem,
   useAddMealItem,
@@ -20,13 +20,20 @@ function CalorieRing({ eaten, target }: { eaten: number; target: number }) {
   const pct = Math.min(eaten / (target || 1), 1);
   const r = 42;
   const circumference = 2 * Math.PI * r;
+  const [offset, setOffset] = useState(circumference);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setOffset(circumference * (1 - pct)));
+    return () => cancelAnimationFrame(id);
+  }, [pct, circumference]);
+
   return (
     <div style={{ position: "relative", width: 110, height: 110, flexShrink: 0 }}>
       <svg width="110" height="110" viewBox="0 0 110 110" aria-hidden="true">
         <defs>
           <linearGradient id="calGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="oklch(72% 0.20 270)" />
-            <stop offset="100%" stopColor="oklch(60% 0.20 240)" />
+            <stop offset="0%" stopColor="var(--violet)" />
+            <stop offset="100%" stopColor="var(--violet-deep)" />
           </linearGradient>
         </defs>
         <circle cx="55" cy="55" r={r} stroke="rgba(255,255,255,0.06)" strokeWidth="6" fill="none" />
@@ -38,10 +45,13 @@ function CalorieRing({ eaten, target }: { eaten: number; target: number }) {
           strokeWidth="6"
           fill="none"
           strokeDasharray={circumference}
-          strokeDashoffset={circumference * (1 - pct)}
+          strokeDashoffset={offset}
           strokeLinecap="round"
           transform="rotate(-90 55 55)"
-          style={{ filter: "drop-shadow(0 0 6px var(--violet))" }}
+          style={{
+            filter: "drop-shadow(0 0 6px var(--violet))",
+            transition: "stroke-dashoffset 0.8s ease-out",
+          }}
         />
       </svg>
       <div
@@ -227,20 +237,15 @@ export default function FoodPage() {
                 label="P · โปรตีน"
                 value={totalProtein}
                 target={targetProtein}
-                color="oklch(72% 0.20 270)"
+                color="var(--violet)"
               />
               <MacroBar
                 label="C · คาร์บ"
                 value={totalCarbs}
                 target={targetCarbs}
-                color="oklch(78% 0.16 200)"
+                color="var(--cyan)"
               />
-              <MacroBar
-                label="F · ไขมัน"
-                value={totalFat}
-                target={targetFat}
-                color="oklch(74% 0.14 80)"
-              />
+              <MacroBar label="F · ไขมัน" value={totalFat} target={targetFat} color="var(--amber)" />
             </div>
           </div>
         </div>
@@ -249,16 +254,18 @@ export default function FoodPage() {
       {/* Meal groups */}
       <div style={{ padding: "14px 24px 0", display: "flex", flexDirection: "column", gap: 10 }}>
         {isLoading ? (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "40px 0",
-              fontFamily: "K2D, sans-serif",
-              fontSize: 13,
-              color: "var(--ink-mute)",
-            }}
-          >
-            กำลังโหลด...
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {(["fs-a", "fs-b", "fs-c"] as const).map((k) => (
+              <div
+                key={k}
+                style={{
+                  height: 60,
+                  borderRadius: 20,
+                  background: "rgba(255,255,255,0.04)",
+                  animation: "pulse 1.5s ease-in-out infinite",
+                }}
+              />
+            ))}
           </div>
         ) : groupedItems.every((g) => g.items.length === 0) ? (
           <div className="glass" style={{ padding: 24, textAlign: "center" }}>
@@ -340,7 +347,7 @@ export default function FoodPage() {
             เพิ่มอาหาร / ADD FOOD
           </button>
         ) : (
-          <div className="glass" style={{ padding: 18 }}>
+          <div className="glass" style={{ padding: 18, animation: "slideUp 0.25s ease-out" }}>
             <div className="t-label" style={{ marginBottom: 14 }}>
               เพิ่มรายการอาหาร
             </div>
@@ -526,7 +533,10 @@ function MealCard({
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   return (
-    <div className="glass" style={{ padding: 14, opacity: item.isDone ? 0.65 : 1 }}>
+    <div
+      className="glass"
+      style={{ padding: 14, opacity: item.isDone ? 0.72 : 1, transition: "opacity 0.2s" }}
+    >
       <div
         style={{
           display: "flex",
@@ -555,7 +565,14 @@ function MealCard({
             aria-label={item.isDone ? "ยกเลิก" : "เสร็จแล้ว"}
           >
             {item.isDone && (
-              <svg width="10" height="8" viewBox="0 0 12 10" fill="none" aria-hidden="true">
+              <svg
+                width="10"
+                height="8"
+                viewBox="0 0 12 10"
+                fill="none"
+                aria-hidden="true"
+                style={{ animation: "checkScale 0.2s ease-out" }}
+              >
                 <path
                   d="M1 5L4.5 8.5L11 1"
                   stroke="white"
@@ -572,6 +589,8 @@ function MealCard({
               fontSize: 13,
               color: "var(--ink)",
               lineHeight: "var(--leading-relaxed)",
+              textDecoration: item.isDone ? "line-through" : "none",
+              transition: "opacity 0.2s",
             }}
           >
             {item.name}

@@ -35,6 +35,14 @@ const patchSchema = v.object({
   ),
   displayName: v.optional(v.pipe(v.string(), v.maxLength(128))),
   avatarUrl: v.optional(v.nullable(v.string())),
+  defaultTargetKcal: v.optional(
+    v.pipe(v.number(), v.integer(), v.minValue(500), v.maxValue(10000)),
+  ),
+  defaultTargetProteinG: v.optional(
+    v.pipe(v.number(), v.integer(), v.minValue(0), v.maxValue(1000)),
+  ),
+  defaultTargetCarbsG: v.optional(v.pipe(v.number(), v.integer(), v.minValue(0), v.maxValue(1500))),
+  defaultTargetFatG: v.optional(v.pipe(v.number(), v.integer(), v.minValue(0), v.maxValue(500))),
 });
 
 export async function GET(request: NextRequest) {
@@ -78,6 +86,10 @@ export async function PATCH(request: NextRequest) {
     reminderTime,
     displayName,
     avatarUrl,
+    defaultTargetKcal,
+    defaultTargetProteinG,
+    defaultTargetCarbsG,
+    defaultTargetFatG,
   } = result.output;
   const updateData = Object.fromEntries(
     Object.entries({
@@ -92,6 +104,10 @@ export async function PATCH(request: NextRequest) {
       reminderTime,
       displayName,
       avatarUrl,
+      defaultTargetKcal,
+      defaultTargetProteinG,
+      defaultTargetCarbsG,
+      defaultTargetFatG,
     }).filter(([, val]) => val !== undefined),
   );
 

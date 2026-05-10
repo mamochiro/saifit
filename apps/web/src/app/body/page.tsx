@@ -58,7 +58,7 @@ function MuscleMap({ primary, secondary }: { primary: MuscleId[]; secondary: Mus
 function DeltaBadge({ delta }: { delta: number | null }) {
   if (delta == null || delta === 0) return null;
   const positive = delta > 0;
-  const color = positive ? "oklch(70% 0.16 150)" : "var(--violet-bright)";
+  const color = positive ? "var(--success)" : "var(--violet-bright)";
   const sign = positive ? "+" : "";
   return (
     <div
@@ -73,13 +73,7 @@ function DeltaBadge({ delta }: { delta: number | null }) {
         color,
       }}
     >
-      <svg width="9" height="9" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-        {positive ? (
-          <path d="M2 8l4-4 4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        ) : (
-          <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        )}
-      </svg>
+      <span aria-hidden="true">{positive ? "▲" : "▼"}</span>
       {sign}
       {delta}
     </div>

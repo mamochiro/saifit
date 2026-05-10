@@ -75,6 +75,9 @@ body {
   --violet-glow: oklch(72% 0.2 270 / 25%);
   --violet-edge: oklch(72% 0.2 270 / 45%);
   --danger: oklch(62% 0.2 25);
+  --success: oklch(70% 0.16 150);
+  --amber: oklch(74% 0.14 80);
+  --cyan: oklch(78% 0.16 200);
   --line-green: #00b900;
 
   /* radius */
@@ -389,6 +392,39 @@ body {
   border-radius: 3px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.04);
+  transition: opacity 0.15s;
+}
+.heatmap-cell:hover {
+  opacity: 0.8;
+}
+
+/* ───────── Animations ───────── */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes checkScale {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes slideUp {
+  from {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 /* ───────── Misc ───────── */
