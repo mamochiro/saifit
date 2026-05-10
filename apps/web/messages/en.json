@@ -124,5 +124,20 @@
     "english": "English",
     "kg": "Kilograms",
     "lb": "Pounds"
+  },
+  "history": {
+    "title": "History",
+    "empty": "No workout history yet",
+    "startNow": "Start now",
+    "thisWeek": "This week",
+    "lastWeek": "Last week",
+    "abandoned": "You have an unfinished workout",
+    "resume": "Resume",
+    "discard": "Discard",
+    "deleteConfirm": "Delete this workout?",
+    "sets": "{n} sets",
+    "exercises": "{n} exercises",
+    "deleteWorkout": "Delete workout",
+    "volume": "{n} kg"
   }
 }

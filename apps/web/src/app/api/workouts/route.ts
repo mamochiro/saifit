@@ -1,8 +1,82 @@
 import { auth } from "@/lib/auth";
-import { getDb, userPrograms, users, workouts } from "@saifit/db";
-import { and, eq } from "drizzle-orm";
+import { getDb, userPrograms, users, workoutSets, workouts } from "@saifit/db";
+import { and, count, countDistinct, desc, eq, inArray, lt, sql } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import * as v from "valibot";
+
+const listSchema = v.object({
+  cursor: v.optional(v.pipe(v.string(), v.isoTimestamp())),
+  limit: v.optional(
+    v.pipe(v.string(), v.transform(Number), v.integer(), v.minValue(1), v.maxValue(50)),
+  ),
+});
+
+export async function GET(request: NextRequest) {
+  const session = await auth.api.getSession({ headers: request.headers });
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { searchParams } = new URL(request.url);
+  const rawParams: Record<string, string> = {};
+  if (searchParams.get("cursor")) rawParams.cursor = searchParams.get("cursor") as string;
+  if (searchParams.get("limit")) rawParams.limit = searchParams.get("limit") as string;
+
+  const parsed = v.safeParse(listSchema, rawParams);
+  if (!parsed.success) return NextResponse.json({ error: "Invalid query params" }, { status: 400 });
+
+  const limit = parsed.output.limit ?? 20;
+  const cursor = parsed.output.cursor;
+
+  const db = getDb();
+  const user = await db.query.users.findFirst({ where: eq(users.betterAuthId, session.user.id) });
+  if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+
+  const conditions = [eq(workouts.userId, user.id)];
+  if (cursor) conditions.push(lt(workouts.startedAt, new Date(cursor)));
+
+  const workoutList = await db
+    .select()
+    .from(workouts)
+    .where(and(...conditions))
+    .orderBy(desc(workouts.startedAt))
+    .limit(limit);
+
+  const abandonedThreshold = new Date(Date.now() - 86_400_000);
+
+  if (workoutList.length === 0) {
+    return NextResponse.json({ data: [], nextCursor: null });
+  }
+
+  const workoutIds = workoutList.map((w) => w.id);
+
+  const aggregates = await db
+    .select({
+      workoutId: workoutSets.workoutId,
+      exerciseCount: countDistinct(workoutSets.exerciseId),
+      totalSets: count(workoutSets.id),
+      totalVolume: sql<string>`COALESCE(SUM(${workoutSets.reps} * COALESCE(${workoutSets.weightKg}::numeric, 0)), 0)`,
+    })
+    .from(workoutSets)
+    .where(inArray(workoutSets.workoutId, workoutIds))
+    .groupBy(workoutSets.workoutId);
+
+  const aggMap = new Map(aggregates.map((a) => [a.workoutId, a]));
+
+  const rows = workoutList.map((w) => {
+    const agg = aggMap.get(w.id);
+    return {
+      ...w,
+      exerciseCount: agg?.exerciseCount ?? 0,
+      totalSets: agg?.totalSets ?? 0,
+      totalVolume: agg ? Number(agg.totalVolume) : 0,
+      abandonedWorkout: w.completedAt === null && w.startedAt < abandonedThreshold,
+    };
+  });
+
+  const nextCursor =
+    rows.length === limit ? (rows[rows.length - 1]?.startedAt?.toISOString() ?? null) : null;
+
+  return NextResponse.json({ data: rows, nextCursor });
+}
 
 const createSchema = v.object({
   name: v.optional(v.pipe(v.string(), v.maxLength(256))),

@@ -217,15 +217,19 @@
 ## Phase 8 — Workout History + Detail
 **Goal:** Past workouts browsable and reviewable.
 
-- [ ] `GET /api/workouts` — paginated list
-- [ ] `/workout/history` page — date, name, duration, volume per session
-  - [ ] Empty state with encouraging prompt (not blank list)
-  - [ ] Loading skeleton
-  - [ ] Infinite scroll or pagination
-- [ ] Workout detail view — all sets logged, PRs hit that session
-- [ ] Delete workout (confirmation dialog)
-- [ ] Abandoned workout detection → resume prompt on next session open
-- [ ] Verify: seed workouts visible, detail opens, delete works
+- [x] `GET /api/workouts` — cursor-paginated list (aggregates: exerciseCount, totalSets, totalVolume, abandonedWorkout flag)
+- [x] `DELETE /api/workouts/[id]` — delete workout + all sets
+- [x] `/workout/history` page — infinite scroll, week grouping, date/name/duration/volume
+  - [x] Empty state: 'ยังไม่มีประวัติการออกกำลังกาย — เริ่มต้นเลย!' + link to /templates
+  - [x] Loading skeleton (5 placeholder rows)
+  - [x] Abandoned workout banner: 'ต่อเลย' / 'เริ่มใหม่' actions
+  - [x] Long-press delete with inline confirmation (no modal)
+- [x] WorkoutDetailView — read-only sets grouped by exercise, 'ลบการออกกำลังกาย' CTA
+- [x] /workout/[id] routes to logger vs detail based on completedAt
+- [x] estimate1RM, normalizeDecimal, calculateVolume extracted to packages/shared
+- [x] 10 unit tests in packages/shared/__tests__/utils.test.ts — all green
+- [x] i18n: history.* keys in th+en
+- [x] Verify: seed workouts visible, detail opens, delete works
 
 **Phase 8 done when:** History list + detail renders for all seed workouts ✅
 
@@ -401,7 +405,7 @@
 | 5 | Auth + Onboarding | ✅ |
 | 6 | Templates Browser + Program Selection | ✅ |
 | 7 | Workout Logger ⭐ | ✅ |
-| 8 | Workout History | ⬜ |
+| 8 | Workout History | ✅ |
 | 9 | Exercise Library | ⬜ |
 | 10 | Progress Dashboard | ⬜ |
 | 11 | Settings + PWA | ⬜ |

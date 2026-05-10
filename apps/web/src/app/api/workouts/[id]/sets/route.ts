@@ -1,14 +1,9 @@
 import { auth } from "@/lib/auth";
 import { getDb, personalRecords, users, workoutSets, workouts } from "@saifit/db";
+import { estimate1RM } from "@saifit/shared";
 import { and, eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import * as v from "valibot";
-
-function estimate1RM(weight: number, reps: number): number | null {
-  if (reps === 1) return weight;
-  if (reps > 12) return null;
-  return weight * (36 / (37 - reps));
-}
 
 const createSetSchema = v.object({
   clientSetId: v.pipe(v.string(), v.minLength(1), v.maxLength(36)),

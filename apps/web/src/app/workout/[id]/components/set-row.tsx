@@ -1,6 +1,7 @@
 "use client";
 
 import { enqueue, getClientId } from "@/lib/workout-queue";
+import { normalizeDecimal } from "@saifit/shared";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useCallback, useRef, useState } from "react";
@@ -15,10 +16,6 @@ interface WorkoutSet {
   isBodyweight: boolean;
   completedAt: string;
   exercise: { nameTh: string; nameEn: string } | null;
-}
-
-function normalizeDecimal(v: string): string {
-  return v.replace(",", ".");
 }
 
 export function SetRow({

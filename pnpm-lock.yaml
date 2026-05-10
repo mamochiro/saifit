@@ -57,6 +57,9 @@ importers:
       '@saifit/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@saifit/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       '@serwist/next':
         specifier: ^9.0.0
         version: 9.5.11(next@15.5.18(@babel/core@7.29.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)(typescript@5.9.3)

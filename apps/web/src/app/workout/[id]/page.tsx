@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
+import { WorkoutDetailView } from "./components/workout-detail-view";
 import { WorkoutLoggerView } from "./components/workout-logger-view";
 
 export default async function WorkoutPage({
@@ -24,6 +25,10 @@ export default async function WorkoutPage({
   if (!res.ok) throw new Error("Failed to load workout");
 
   const { data: initialWorkout } = await res.json();
+
+  if (initialWorkout.completedAt) {
+    return <WorkoutDetailView workout={initialWorkout} />;
+  }
 
   return <WorkoutLoggerView workoutId={id} initialData={initialWorkout} />;
 }

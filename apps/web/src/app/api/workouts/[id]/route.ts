@@ -88,3 +88,26 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   await db.update(workouts).set(updateData).where(eq(workouts.id, id));
   return NextResponse.json({ ok: true });
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+  const session = await auth.api.getSession({ headers: request.headers });
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const db = getDb();
+  const user = await db.query.users.findFirst({ where: eq(users.betterAuthId, session.user.id) });
+  if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+
+  const workout = await db.query.workouts.findFirst({
+    where: and(eq(workouts.id, id), eq(workouts.userId, user.id)),
+  });
+  if (!workout) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  await db.delete(workoutSets).where(eq(workoutSets.workoutId, id));
+  await db.delete(workouts).where(and(eq(workouts.id, id), eq(workouts.userId, user.id)));
+
+  return NextResponse.json({ ok: true });
+}

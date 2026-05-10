@@ -13,6 +13,7 @@
     "@better-fetch/fetch": "^1.1.0",
     "@neondatabase/serverless": "^0.10.4",
     "@saifit/db": "workspace:*",
+    "@saifit/shared": "workspace:*",
     "@serwist/next": "^9.0.0",
     "@tanstack/react-form": "^0.38.0",
     "@tanstack/react-query": "^5.0.0",
