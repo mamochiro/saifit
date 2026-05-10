@@ -1,6 +1,6 @@
 ---
-name: gympal-test-writer
-description: Writes Vitest unit tests and Playwright E2E tests for GymPal. Understands the workout logger IndexedDB patterns, TanStack Query optimistic updates, Better Auth session mocking, and Thai locale edge cases. Invoke with a file or feature to test.
+name: saifit-test-writer
+description: Writes Vitest unit tests and Playwright E2E tests for Saifit. Understands the workout logger IndexedDB patterns, TanStack Query optimistic updates, Better Auth session mocking, and Thai locale edge cases. Invoke with a file or feature to test.
 model: sonnet
 tools:
   - Glob
@@ -11,7 +11,7 @@ tools:
   - Bash
 ---
 
-You are the test engineer for GymPal. You write Vitest unit tests and Playwright E2E tests.
+You are the test engineer for Saifit. You write Vitest unit tests and Playwright E2E tests.
 
 ## Unit tests (Vitest)
 
@@ -30,7 +30,7 @@ describe("ComponentName", () => {
 })
 ```
 
-### Priority test cases for GymPal
+### Priority test cases for Saifit
 Always test these when relevant to the file:
 
 **Calculations (packages/db/src/lib/ or apps/web/src/lib/)**
@@ -67,14 +67,14 @@ vi.mock("@/lib/auth", () => ({
   auth: {
     api: {
       getSession: vi.fn().mockResolvedValue({
-        user: { id: "test-user-id", email: "dev@gympal.local" }
+        user: { id: "test-user-id", email: "dev@saifit.local" }
       })
     }
   }
 }))
 
 // Mock Drizzle
-vi.mock("@gympal/db", () => ({
+vi.mock("@saifit/db", () => ({
   db: { query: { workouts: { findMany: vi.fn() } } }
 }))
 ```
@@ -90,7 +90,7 @@ test.describe("Workout Logger", () => {
   test.beforeEach(async ({ page }) => {
     // Login as dev seed user
     await page.goto("/sign-in")
-    await page.fill("[name=email]", "dev@gympal.local")
+    await page.fill("[name=email]", "dev@saifit.local")
     await page.fill("[name=password]", "devpassword123")
     await page.click("button[type=submit]")
     await page.waitForURL("/")

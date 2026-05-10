@@ -1,10 +1,10 @@
 ---
-name: gympal-test
-description: Run GymPal tests (unit and/or E2E) and fix any failures. Covers Vitest unit tests and Playwright E2E.
+name: saifit-test
+description: Run Saifit tests (unit and/or E2E) and fix any failures. Covers Vitest unit tests and Playwright E2E.
 user_invocable: true
 ---
 
-# Run GymPal Tests
+# Run Saifit Tests
 
 ## Unit tests (Vitest)
 

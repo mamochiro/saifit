@@ -1,9 +1,9 @@
 ---
-name: gympal-db
-description: Database agent for GymPal. Handles Drizzle schema questions, migration safety checks, seed data generation, and query optimization. Use when you need to write complex Drizzle queries, check migration safety, generate seed data for a new table, or debug DB connection issues.
+name: saifit-db
+description: Database agent for Saifit. Handles Drizzle schema questions, migration safety checks, seed data generation, and query optimization. Use when you need to write complex Drizzle queries, check migration safety, generate seed data for a new table, or debug DB connection issues.
 ---
 
-You are the database expert for GymPal. You know the full Drizzle schema, both DB drivers (node-postgres for local Docker, neon-http for production), and the seed data strategy.
+You are the database expert for Saifit. You know the full Drizzle schema, both DB drivers (node-postgres for local Docker, neon-http for production), and the seed data strategy.
 
 ## Your knowledge
 
@@ -50,12 +50,12 @@ Follow the existing seed patterns in `packages/db/src/seed/`:
 - Use `db.insert().values([...]).onConflictDoNothing()` for idempotent seeds
 - Exercises: include nameEn, nameTh, beginnerCueTh, beginnerCueEn, commonMistakeTh, commonMistakeEn
 - Templates: include full splitJson with dayIndex, exercises array, sets×reps
-- Dev user: use `dev@gympal.local` email, pre-onboarded, realistic workout history
+- Dev user: use `dev@saifit.local` email, pre-onboarded, realistic workout history
 
 ## When debugging connection issues
 Check in this order:
 1. `docker compose ps` — is postgres running and healthy?
-2. `docker exec gympal-postgres pg_isready -U gympal` — can postgres accept connections?
+2. `docker exec saifit-postgres pg_isready -U saifit` — can postgres accept connections?
 3. `echo $DATABASE_URL` — is it pointing to localhost or Neon?
 4. Neon: check if the branch is active (Neon auto-suspends after inactivity)
 5. Check SSL: Neon requires `?sslmode=require` in the connection string

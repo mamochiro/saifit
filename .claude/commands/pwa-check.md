@@ -1,6 +1,6 @@
 # /pwa-check — Full PWA requirements audit
 
-Audit the GymPal PWA setup against all requirements. Report pass/fail for each item.
+Audit the Saifit PWA setup against all requirements. Report pass/fail for each item.
 
 ## 1. Manifest
 Check `apps/web/public/manifest.json` or `apps/web/src/app/manifest.ts`:

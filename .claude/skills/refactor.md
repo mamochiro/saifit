@@ -1,10 +1,10 @@
 ---
-name: gympal-refactor
-description: Safely refactor GymPal code while preserving behavior. Runs tests before and after, checks Biome, and validates Thai UX rules are not broken.
+name: saifit-refactor
+description: Safely refactor Saifit code while preserving behavior. Runs tests before and after, checks Biome, and validates Thai UX rules are not broken.
 user_invocable: true
 ---
 
-# Refactor GymPal Code
+# Refactor Saifit Code
 
 Refactoring is structure-only. Behavior must not change.
 

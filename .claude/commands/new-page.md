@@ -1,9 +1,9 @@
-# /new-page — Scaffold a Next.js page with full GymPal boilerplate
+# /new-page — Scaffold a Next.js page with full Saifit boilerplate
 
 Usage: `/new-page <route>`
 Examples: `/new-page /progress`, `/new-page /workout/[id]`
 
-Scaffold a production-ready Next.js App Router page for GymPal. Follow this exact pattern:
+Scaffold a production-ready Next.js App Router page for Saifit. Follow this exact pattern:
 
 ## File structure to create
 
@@ -30,7 +30,7 @@ export default async function FooPage() {
   const session = await auth.api.getSession({ headers: await headers() })
   if (!session) redirect("/sign-in")
 
-  // Fetch data here using Drizzle via @gympal/db
+  // Fetch data here using Drizzle via @saifit/db
   // Pass as props to Client Component
 
   return <FooView />

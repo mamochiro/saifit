@@ -39,7 +39,7 @@ export async function seedDevUser(db: Db) {
     .values({
       id: DEV_USER_ID,
       displayName: "Dev User",
-      email: "dev@gympal.local",
+      email: "dev@saifit.local",
       locale: "th",
       goal: "build_muscle",
       experienceLevel: "beginner",

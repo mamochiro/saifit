@@ -75,6 +75,7 @@ export const users = pgTable(
   "users",
   {
     id: uuid("id").primaryKey().defaultRandom(),
+    betterAuthId: text("better_auth_id").unique(),
     lineUserId: varchar("line_user_id", { length: 64 }).unique(),
     displayName: varchar("display_name", { length: 128 }).notNull(),
     avatarUrl: text("avatar_url"),

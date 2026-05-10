@@ -1,5 +1,5 @@
 {
-  "name": "@gympal/web",
+  "name": "@saifit/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -22,7 +22,7 @@
     "@serwist/next": "^9.0.0",
     "recharts": "^2.0.0",
     "lucide-react": "^0.400.0",
-    "@gympal/db": "workspace:*",
+    "@saifit/db": "workspace:*",
     "drizzle-orm": "^0.38.3",
     "pg": "^8.13.1",
     "@neondatabase/serverless": "^0.10.4",

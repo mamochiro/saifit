@@ -21,7 +21,7 @@ Run this before any production deploy. Check each item and report status.
 - [ ] All migrations applied to Supabase production DB
 - [ ] RLS enabled on all user-scoped tables
 - [ ] E2E auth test passes against Supabase (not just local mock)
-- [ ] Seed data NOT in production (dev user dev@gympal.local does not exist in prod)
+- [ ] Seed data NOT in production (dev user dev@saifit.local does not exist in prod)
 
 ## PWA
 - [ ] Manifest icons present at 192/256/384/512px

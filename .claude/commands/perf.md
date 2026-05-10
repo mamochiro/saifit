@@ -1,4 +1,4 @@
-# /perf — Performance audit for critical GymPal pages
+# /perf — Performance audit for critical Saifit pages
 
 Diagnose and fix performance issues. Focus on the workout logger (Phase 7 — the product).
 

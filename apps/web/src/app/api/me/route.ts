@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
 
   const db = getDb();
   const user = await db.query.users.findFirst({
-    where: eq(users.id, session.user.id),
+    where: eq(users.betterAuthId, session.user.id),
   });
   if (!user) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
@@ -63,7 +63,7 @@ export async function PATCH(request: NextRequest) {
   await db
     .update(users)
     .set({ ...updateData, updatedAt: new Date() })
-    .where(eq(users.id, session.user.id));
+    .where(eq(users.betterAuthId, session.user.id));
 
   return NextResponse.json({ ok: true });
 }

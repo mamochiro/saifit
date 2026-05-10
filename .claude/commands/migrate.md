@@ -11,7 +11,7 @@ Safe workflow for creating and applying a Drizzle migration. Never run destructi
 ls packages/db/drizzle/migrations/
 
 # Show tables in local DB
-docker exec gympal-postgres psql -U gympal -c "\dt public.*"
+docker exec saifit-postgres psql -U saifit -c "\dt public.*"
 ```
 
 ## Step 2 — Edit schema
@@ -37,7 +37,7 @@ cd packages/db && pnpm db:migrate
 
 Verify the migration applied:
 ```bash
-docker exec gympal-postgres psql -U gympal -c "\d public.<affected_table>"
+docker exec saifit-postgres psql -U saifit -c "\d public.<affected_table>"
 ```
 
 ## Step 5 — Test that seed still works

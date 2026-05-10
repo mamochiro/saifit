@@ -1,4 +1,4 @@
-# GymPal — Claude Code Project Instructions
+# Saifit — Claude Code Project Instructions
 
 ## Role
 Senior full-stack engineer building a production-ready fitness tracking PWA + LINE OA bot for the Thailand market. Solo developer, MVP in 6 weeks, Docker-based local development.
@@ -43,7 +43,7 @@ Fast workout-tracking PWA for Bangkok gym-goers. Pick a template, log sets/reps/
 
 ## Repo structure
 ```
-gympal/
+saifit/
 ├── apps/
 │   ├── web/          # Next.js PWA
 │   └── line-bot/     # Cloudflare Workers
@@ -71,7 +71,7 @@ Docker:  Postgres :5432 |  Redis :6379 |  pgAdmin :5050 |  Mailhog :8025
 - Production: `drizzle-orm/neon-http` (Neon serverless — HTTP-based, edge-compatible)
 - CRITICAL: neon-http returns dates as strings; node-postgres returns Date objects — add explicit Drizzle date coercions in schema to normalize both
 - Run integration tests against both drivers in CI
-- Neon connection string format: `postgresql://user:pass@ep-xxx.neon.tech/gympal?sslmode=require`
+- Neon connection string format: `postgresql://user:pass@ep-xxx.neon.tech/saifit?sslmode=require`
 
 ### Schema amendments from review
 - `workoutSets.weightKg`: nullable + `isBodyweight` boolean (for pull-ups, dips)

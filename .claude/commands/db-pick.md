@@ -1,6 +1,6 @@
 # /db-pick — Database & Auth provider decision helper
 
-Evaluate the best database + auth stack for GymPal. The user is concerned about cost and vendor lock-in with Supabase. Run this analysis and give a clear recommendation.
+Evaluate the best database + auth stack for Saifit. The user is concerned about cost and vendor lock-in with Supabase. Run this analysis and give a clear recommendation.
 
 ## Step 1 — Ask the user two questions before analyzing
 
@@ -9,7 +9,7 @@ Evaluate the best database + auth stack for GymPal. The user is concerned about 
 
 ## Step 2 — Present the comparison table
 
-Evaluate these 3 stacks against GymPal's specific needs:
+Evaluate these 3 stacks against Saifit's specific needs:
 
 ### Option A — Supabase (original plan)
 **DB:** Supabase Postgres  
@@ -63,7 +63,7 @@ Change these items in CLAUDE.md and SPRINT.md:
 - Remove Supabase-specific: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
 - Add Neon env vars: `DATABASE_URL` (Neon connection string)
 
-### Better Auth install for GymPal:
+### Better Auth install for Saifit:
 ```bash
 bun add better-auth
 ```
@@ -72,7 +72,7 @@ bun add better-auth
 ```ts
 import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
-import { db } from "@gympal/db"
+import { db } from "@saifit/db"
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg" }),
@@ -92,7 +92,7 @@ export const auth = betterAuth({
 ### New .env.example additions:
 ```
 # Neon
-DATABASE_URL=postgresql://user:pass@ep-xxx.neon.tech/gympal?sslmode=require
+DATABASE_URL=postgresql://user:pass@ep-xxx.neon.tech/saifit?sslmode=require
 
 # Better Auth
 BETTER_AUTH_SECRET=generate-with-openssl-rand-base64-32

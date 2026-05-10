@@ -1,4 +1,4 @@
-name = "gympal-line-bot"
+name = "saifit-line-bot"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 

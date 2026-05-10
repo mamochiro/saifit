@@ -1,4 +1,4 @@
-# GymPal — Sprint Plan & Checklist
+# Saifit — Sprint Plan & Checklist
 
 **Timeline:** 6–8 weeks solo · **Status legend:** ⬜ todo · 🔄 in progress · ✅ done · ❌ blocked
 
@@ -83,7 +83,7 @@
   - [x] Each has full splitJson (exercises per day, sets×reps), bilingual name + description
 - [x] `packages/db/src/seed/index.ts` — orchestrates exercises → templates → dev user
 - [x] Dev seed user:
-  - [x] Email: dev@gympal.local / Password: devpassword123
+  - [x] Email: dev@saifit.local / Password: devpassword123
   - [x] Pre-onboarded (goal=build_muscle, experience=beginner, days=3)
   - [x] Active program: Beginner Full Body 3-Day
   - [x] 5–10 workouts logged across 2 weeks
@@ -143,7 +143,7 @@
 - [ ] Save onboarding → users table → redirect to /
 - [ ] TanStack Form + Valibot validation
 - [ ] E2E smoke test against real Neon DB (not just local Docker)
-- [ ] Verify: login as dev@gympal.local → skip onboarding → land on home
+- [ ] Verify: login as dev@saifit.local → skip onboarding → land on home
 
 **Phase 5 done when:** Full auth + onboarding flow works, Neon E2E passes ✅
 
@@ -364,7 +364,7 @@
 - [ ] Docker commands cheatsheet
 - [ ] DB commands cheatsheet
 - [ ] Dev workflow
-- [ ] Test login: dev@gympal.local / devpassword123
+- [ ] Test login: dev@saifit.local / devpassword123
 - [ ] Tech stack summary
 - [ ] Placeholder content list (GIF URLs, LINE OA ID, etc.)
 

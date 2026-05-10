@@ -1,6 +1,6 @@
 # /schema-check — Validate DB schema against spec
 
-Audit `packages/db/src/schema.ts` against the GymPal schema spec. Report any missing fields, wrong types, or missing constraints.
+Audit `packages/db/src/schema.ts` against the Saifit schema spec. Report any missing fields, wrong types, or missing constraints.
 
 ## Check each table:
 

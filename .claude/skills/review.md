@@ -1,6 +1,6 @@
 ---
-name: gympal-review
-description: Review GymPal code before shipping. Routes to the right reviewer agent based on file type — web API routes and components use gympal-reviewer, LINE bot code uses gympal-line-bot-reviewer.
+name: saifit-review
+description: Review Saifit code before shipping. Routes to the right reviewer agent based on file type — web API routes and components use saifit-reviewer, LINE bot code uses saifit-line-bot-reviewer.
 user_invocable: true
 ---
 
@@ -15,12 +15,12 @@ Routes to the correct reviewer agent based on what's being reviewed.
 
 ## Routing logic
 
-- `apps/web/src/app/api/**` → use `gympal-reviewer` (API routes: auth, Valibot, Drizzle)
-- `apps/web/src/app/**/page.tsx` → use `gympal-reviewer` (pages: i18n, loading, error boundary)
-- `apps/web/src/components/**` → use `gympal-reviewer` (components: Thai UX, tap targets)
-- `apps/line-bot/src/**` → use `gympal-line-bot-reviewer` (Workers: signature, cron, idempotency)
-- `packages/db/src/schema.ts` → use `gympal-db` + `/schema-check`
-- `packages/db/src/seed/**` → use `gympal-db`
+- `apps/web/src/app/api/**` → use `saifit-reviewer` (API routes: auth, Valibot, Drizzle)
+- `apps/web/src/app/**/page.tsx` → use `saifit-reviewer` (pages: i18n, loading, error boundary)
+- `apps/web/src/components/**` → use `saifit-reviewer` (components: Thai UX, tap targets)
+- `apps/line-bot/src/**` → use `saifit-line-bot-reviewer` (Workers: signature, cron, idempotency)
+- `packages/db/src/schema.ts` → use `saifit-db` + `/schema-check`
+- `packages/db/src/seed/**` → use `saifit-db`
 
 ## What to review
 

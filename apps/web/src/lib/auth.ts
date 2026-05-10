@@ -25,7 +25,7 @@ export const auth = betterAuth({
             await db
               .insert(users)
               .values({
-                id: user.id,
+                betterAuthId: user.id,
                 displayName: user.name?.trim() || user.email?.split("@")[0] || "User",
                 email: user.email ?? null,
                 locale: "th",

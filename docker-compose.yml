@@ -1,26 +1,26 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: gympal-postgres
+    container_name: saifit-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: gympal
-      POSTGRES_PASSWORD: gympal
-      POSTGRES_DB: gympal
+      POSTGRES_USER: saifit
+      POSTGRES_PASSWORD: saifit
+      POSTGRES_DB: saifit
     ports:
       - "5435:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U gympal -d gympal"]
+      test: ["CMD-SHELL", "pg_isready -U saifit -d saifit"]
       interval: 5s
       timeout: 5s
       retries: 10
 
   redis:
     image: redis:7-alpine
-    container_name: gympal-redis
+    container_name: saifit-redis
     restart: unless-stopped
     ports:
       - "6385:6379"
@@ -34,10 +34,10 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: gympal-pgadmin
+    container_name: saifit-pgadmin
     restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@gympal.local
+      PGADMIN_DEFAULT_EMAIL: admin@saifit.local
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "5050:80"
@@ -49,7 +49,7 @@ services:
 
   mailhog:
     image: mailhog/mailhog:latest
-    container_name: gympal-mailhog
+    container_name: saifit-mailhog
     restart: unless-stopped
     ports:
       - "1025:1025"

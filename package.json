@@ -1,5 +1,5 @@
 {
-  "name": "gympal",
+  "name": "saifit",
   "private": true,
   "scripts": {
     "dev": "turbo run dev",
@@ -13,12 +13,12 @@
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f",
     "docker:reset": "docker compose down -v && docker compose up -d",
-    "db:generate": "turbo run db:generate --filter=@gympal/db",
-    "db:migrate": "turbo run db:migrate --filter=@gympal/db",
-    "db:push": "turbo run db:push --filter=@gympal/db",
-    "db:studio": "turbo run db:studio --filter=@gympal/db",
-    "db:seed": "turbo run db:seed --filter=@gympal/db",
-    "db:reset": "turbo run db:reset --filter=@gympal/db"
+    "db:generate": "turbo run db:generate --filter=@saifit/db",
+    "db:migrate": "turbo run db:migrate --filter=@saifit/db",
+    "db:push": "turbo run db:push --filter=@saifit/db",
+    "db:studio": "turbo run db:studio --filter=@saifit/db",
+    "db:seed": "turbo run db:seed --filter=@saifit/db",
+    "db:reset": "turbo run db:reset --filter=@saifit/db"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",

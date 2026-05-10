@@ -3,7 +3,7 @@
 Usage: `/new-api <method> <path>`
 Examples: `/new-api GET /api/workouts`, `/new-api POST /api/workouts/[id]/sets`
 
-Scaffold a production-ready API route for GymPal with Better Auth session check, Valibot validation, and Drizzle query.
+Scaffold a production-ready API route for Saifit with Better Auth session check, Valibot validation, and Drizzle query.
 
 ## File to create
 
@@ -15,7 +15,7 @@ Scaffold a production-ready API route for GymPal with Better Auth session check,
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
-import { db } from "@gympal/db"
+import { db } from "@saifit/db"
 import * as v from "valibot"
 
 // Input schema (for POST/PATCH — skip for GET/DELETE)

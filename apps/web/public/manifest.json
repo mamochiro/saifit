@@ -1,7 +1,7 @@
 {
-  "name": "GymPal",
-  "short_name": "GymPal",
-  "description": "ติดตามการออกกำลังกาย",
+  "name": "Saifit",
+  "short_name": "Saifit",
+  "description": "ติดตามการออกกำลังกาย สไตล์สายฟิต",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#09090b",

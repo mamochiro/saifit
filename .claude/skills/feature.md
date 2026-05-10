@@ -1,14 +1,14 @@
 ---
-name: gympal-feature
-description: Add a new feature to GymPal end-to-end. Runs gympal-feature-architect first to produce a blueprint, then implements it following the project conventions.
+name: saifit-feature
+description: Add a new feature to Saifit end-to-end. Runs saifit-feature-architect first to produce a blueprint, then implements it following the project conventions.
 user_invocable: true
 ---
 
-# Add a New GymPal Feature
+# Add a New Saifit Feature
 
 ## Step 1 — Blueprint first
 
-Use the `gympal-feature-architect` agent to design the feature before writing any code. Do not skip this step — coding without a blueprint causes architectural drift.
+Use the `saifit-feature-architect` agent to design the feature before writing any code. Do not skip this step — coding without a blueprint causes architectural drift.
 
 Review the blueprint with the user. Confirm:
 - DB schema changes (if any)
@@ -57,7 +57,7 @@ Run `/thai-check` to verify:
 
 ## Step 7 — Tests
 
-Use the `gympal-test-writer` agent to write:
+Use the `saifit-test-writer` agent to write:
 - Vitest unit tests for calculations and API routes
 - Playwright E2E for the critical user flow
 

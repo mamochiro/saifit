@@ -32,7 +32,7 @@ Send a mock LINE follow event to the webhook. Verify:
 
 ```bash
 # Check DB after sending follow event
-docker exec gympal-postgres psql -U gympal -c \
+docker exec saifit-postgres psql -U saifit -c \
   "SELECT line_user_id FROM users WHERE line_user_id IS NOT NULL;"
 ```
 
@@ -45,7 +45,7 @@ curl -X POST http://localhost:8787/__scheduled?cron=0+13+*+*+0
 ```
 Verify `reminderLog` is populated:
 ```bash
-docker exec gympal-postgres psql -U gympal -c \
+docker exec saifit-postgres psql -U saifit -c \
   "SELECT type, sent_at, delivered FROM reminder_log ORDER BY sent_at DESC LIMIT 10;"
 ```
 

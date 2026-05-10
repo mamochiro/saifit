@@ -5,8 +5,8 @@ import "./globals.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "GymPal",
-  description: "ติดตามการออกกำลังกาย",
+  title: "Saifit",
+  description: "ติดตามการออกกำลังกาย สไตล์สายฟิต",
   manifest: "/manifest.json",
 };
 

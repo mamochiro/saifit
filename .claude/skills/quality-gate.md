@@ -1,10 +1,10 @@
 ---
-name: gympal-quality-gate
-description: Run the full GymPal quality gate — Biome lint, TypeScript check, Vitest unit tests, and optionally E2E — before pushing or marking a phase done.
+name: saifit-quality-gate
+description: Run the full Saifit quality gate — Biome lint, TypeScript check, Vitest unit tests, and optionally E2E — before pushing or marking a phase done.
 user_invocable: true
 ---
 
-# GymPal Quality Gate
+# Saifit Quality Gate
 
 Run this before every push and before marking a phase done in SPRINT.md.
 
