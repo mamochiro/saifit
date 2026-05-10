@@ -1,62 +1,23 @@
-interface Meal {
-  time: string;
-  name: string;
-  items: string[];
-  kcal: number;
-  p: number;
-  c: number;
-  f: number;
-  done: boolean;
-}
+"use client";
 
-const MEALS: Meal[] = [
-  {
-    time: "07:30",
-    name: "มื้อเช้า · BREAKFAST",
-    items: ["ข้าวโอ๊ต + กล้วย + เวย์", "ไข่ดาว 2 ฟอง"],
-    kcal: 540,
-    p: 38,
-    c: 62,
-    f: 14,
-    done: true,
-  },
-  {
-    time: "12:30",
-    name: "มื้อกลางวัน · LUNCH",
-    items: ["ข้าวกล้อง + อกไก่ย่าง", "ผักรวม + น้ำสลัดงา"],
-    kcal: 720,
-    p: 52,
-    c: 78,
-    f: 18,
-    done: true,
-  },
-  {
-    time: "16:00",
-    name: "ของว่าง · SNACK",
-    items: ["โยเกิร์ตกรีก + เบอร์รี่"],
-    kcal: 220,
-    p: 18,
-    c: 22,
-    f: 6,
-    done: false,
-  },
-  {
-    time: "19:00",
-    name: "มื้อเย็น · DINNER",
-    items: ["ปลาแซลมอน + มันหวาน", "บร็อคโคลี่นึ่ง"],
-    kcal: 620,
-    p: 44,
-    c: 48,
-    f: 22,
-    done: false,
-  },
-];
+import { useState } from "react";
+import {
+  type MealItem,
+  useAddMealItem,
+  useDeleteMealItem,
+  useFoodLog,
+  useToggleMealItem,
+} from "./hooks";
 
-const EATEN = 1260;
-const TARGET = 2100;
+const MEAL_TYPES = [
+  { key: "breakfast", label: "มื้อเช้า · BREAKFAST" },
+  { key: "lunch", label: "มื้อกลางวัน · LUNCH" },
+  { key: "snack", label: "ของว่าง · SNACK" },
+  { key: "dinner", label: "มื้อเย็น · DINNER" },
+] as const;
 
 function CalorieRing({ eaten, target }: { eaten: number; target: number }) {
-  const pct = Math.min(eaten / target, 1);
+  const pct = Math.min(eaten / (target || 1), 1);
   const r = 42;
   const circumference = 2 * Math.PI * r;
   return (
@@ -118,13 +79,8 @@ function MacroBar({
   value,
   target,
   color,
-}: {
-  label: string;
-  value: number;
-  target: number;
-  color: string;
-}) {
-  const pct = Math.min(value / target, 1);
+}: { label: string; value: number; target: number; color: string }) {
+  const pct = Math.min(value / (target || 1), 1);
   return (
     <div>
       <div
@@ -140,7 +96,7 @@ function MacroBar({
         <span>{label}</span>
         <span>
           <span className="t-num" style={{ color: "var(--ink)", fontSize: 11 }}>
-            {value}
+            {Math.round(value)}
           </span>{" "}
           / {target}g
         </span>
@@ -154,24 +110,82 @@ function MacroBar({
         }}
       >
         <div
-          style={{
-            width: `${pct * 100}%`,
-            height: "100%",
-            borderRadius: 2,
-            background: color,
-          }}
+          style={{ width: `${pct * 100}%`, height: "100%", borderRadius: 2, background: color }}
         />
       </div>
     </div>
   );
 }
 
+interface AddFormData {
+  mealType: "breakfast" | "lunch" | "snack" | "dinner";
+  name: string;
+  kcal: string;
+  proteinG: string;
+  carbsG: string;
+  fatG: string;
+}
+
 export default function FoodPage() {
+  const todayBkk = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Bangkok" });
+  const { data, isLoading } = useFoodLog(todayBkk);
+  const toggleItem = useToggleMealItem();
+  const deleteItem = useDeleteMealItem();
+  const addItem = useAddMealItem();
+
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [addForm, setAddForm] = useState<AddFormData>({
+    mealType: "breakfast",
+    name: "",
+    kcal: "",
+    proteinG: "",
+    carbsG: "",
+    fatG: "",
+  });
+
+  const items = data?.items ?? [];
+  const log = data?.log;
+
+  const totalKcal = items.reduce((s, i) => s + i.kcal, 0);
+  const totalProtein = items.reduce((s, i) => s + Number(i.proteinG), 0);
+  const totalCarbs = items.reduce((s, i) => s + Number(i.carbsG), 0);
+  const totalFat = items.reduce((s, i) => s + Number(i.fatG), 0);
+
+  const targetKcal = log?.targetKcal ?? 2100;
+  const targetProtein = log?.targetProteinG ?? 150;
+  const targetCarbs = log?.targetCarbsG ?? 220;
+  const targetFat = log?.targetFatG ?? 70;
+
+  const dayLabel = new Date(todayBkk)
+    .toLocaleDateString("th-TH", { weekday: "short" })
+    .toUpperCase();
+
+  async function handleAdd() {
+    const kcal = Number(addForm.kcal);
+    if (!addForm.name || !kcal) return;
+
+    await addItem.mutateAsync({
+      date: todayBkk,
+      mealType: addForm.mealType,
+      name: addForm.name,
+      kcal,
+      proteinG: Number(addForm.proteinG.replace(",", ".")) || 0,
+      carbsG: Number(addForm.carbsG.replace(",", ".")) || 0,
+      fatG: Number(addForm.fatG.replace(",", ".")) || 0,
+    });
+    setShowAddForm(false);
+    setAddForm({ mealType: "breakfast", name: "", kcal: "", proteinG: "", carbsG: "", fatG: "" });
+  }
+
+  const groupedItems = MEAL_TYPES.map((mt) => ({
+    ...mt,
+    items: items.filter((i) => i.mealType === mt.key),
+  }));
+
   return (
     <div className="saifit-bg" style={{ minHeight: "100vh", paddingBottom: 110 }}>
-      {/* Header */}
       <div style={{ padding: "40px 24px 0" }}>
-        <span className="t-label">MON · CUTTING</span>
+        <span className="t-label">{dayLabel} · FOOD PLAN</span>
         <h1
           style={{
             fontFamily: "K2D, sans-serif",
@@ -193,181 +207,459 @@ export default function FoodPage() {
           className="glass glass-glow"
           style={{ padding: "22px 22px", display: "flex", alignItems: "center", gap: 18 }}
         >
-          <CalorieRing eaten={EATEN} target={TARGET} />
+          <CalorieRing eaten={totalKcal} target={targetKcal} />
           <div style={{ flex: 1 }}>
             <div className="t-label" style={{ marginBottom: 6 }}>
               วันนี้
             </div>
             <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
               <span className="t-num" style={{ fontSize: 30, color: "var(--ink)" }}>
-                {EATEN}
+                {totalKcal}
               </span>
               <span
                 style={{ fontFamily: "K2D, sans-serif", fontSize: 13, color: "var(--ink-mute)" }}
               >
-                / {TARGET} kcal
+                / {targetKcal} kcal
               </span>
             </div>
             <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
-              <MacroBar label="P · โปรตีน" value={90} target={150} color="oklch(72% 0.20 270)" />
-              <MacroBar label="C · คาร์บ" value={140} target={220} color="oklch(78% 0.16 200)" />
-              <MacroBar label="F · ไขมัน" value={32} target={70} color="oklch(74% 0.14 80)" />
+              <MacroBar
+                label="P · โปรตีน"
+                value={totalProtein}
+                target={targetProtein}
+                color="oklch(72% 0.20 270)"
+              />
+              <MacroBar
+                label="C · คาร์บ"
+                value={totalCarbs}
+                target={targetCarbs}
+                color="oklch(78% 0.16 200)"
+              />
+              <MacroBar
+                label="F · ไขมัน"
+                value={totalFat}
+                target={targetFat}
+                color="oklch(74% 0.14 80)"
+              />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Meal cards */}
+      {/* Meal groups */}
       <div style={{ padding: "14px 24px 0", display: "flex", flexDirection: "column", gap: 10 }}>
-        {MEALS.map((m) => (
-          <div key={m.time} className="glass" style={{ padding: 16, opacity: m.done ? 0.65 : 1 }}>
+        {isLoading ? (
+          <div
+            style={{
+              textAlign: "center",
+              padding: "40px 0",
+              fontFamily: "K2D, sans-serif",
+              fontSize: 13,
+              color: "var(--ink-mute)",
+            }}
+          >
+            กำลังโหลด...
+          </div>
+        ) : groupedItems.every((g) => g.items.length === 0) ? (
+          <div className="glass" style={{ padding: 24, textAlign: "center" }}>
             <div
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "flex-start",
-                marginBottom: 10,
+                fontFamily: "K2D, sans-serif",
+                fontSize: 14,
+                color: "var(--ink-mute)",
+                lineHeight: "var(--leading-relaxed)",
               }}
             >
-              <div>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span className="t-num" style={{ fontSize: 16, color: "var(--ink)" }}>
-                    {m.time}
-                  </span>
-                  {m.done && (
-                    <span
-                      style={{
-                        width: 18,
-                        height: 18,
-                        borderRadius: "50%",
-                        background: "var(--violet)",
-                        color: "#fff",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        boxShadow: "0 0 8px var(--violet)",
-                      }}
-                    >
-                      <svg width="10" height="8" viewBox="0 0 12 10" fill="none" aria-hidden="true">
-                        <path
-                          d="M1 5L4.5 8.5L11 1"
-                          stroke="white"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </span>
-                  )}
-                </div>
-                <div
-                  style={{
-                    fontFamily: "K2D, sans-serif",
-                    fontSize: 11,
-                    color: "var(--ink-soft)",
-                    letterSpacing: "0.04em",
-                    marginTop: 1,
-                  }}
-                >
-                  {m.name}
-                </div>
-              </div>
-              <div style={{ textAlign: "right" }}>
-                <div className="t-num" style={{ fontSize: 18, color: "var(--ink)" }}>
-                  {m.kcal}
-                </div>
-                <div
-                  style={{
-                    fontFamily: "system-ui, sans-serif",
-                    fontSize: 9,
-                    color: "var(--ink-soft)",
-                    letterSpacing: "0.10em",
-                  }}
-                >
-                  KCAL
-                </div>
-              </div>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 10 }}>
-              {m.items.map((item) => (
-                <div
-                  key={item}
-                  style={{
-                    fontFamily: "K2D, sans-serif",
-                    fontSize: 13,
-                    color: "var(--ink-mute)",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                  }}
-                >
-                  <span
-                    aria-hidden="true"
-                    style={{
-                      width: 4,
-                      height: 4,
-                      borderRadius: "50%",
-                      background: "var(--ink-soft)",
-                      flexShrink: 0,
-                    }}
-                  />
-                  {item}
-                </div>
-              ))}
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                gap: 10,
-                fontFamily: "Chakra Petch, monospace",
-                fontSize: 11,
-                color: "var(--ink-soft)",
-                letterSpacing: "0.04em",
-              }}
-            >
-              <span>
-                P <span style={{ color: "var(--ink)" }}>{m.p}g</span>
-              </span>
-              <span>
-                C <span style={{ color: "var(--ink)" }}>{m.c}g</span>
-              </span>
-              <span>
-                F <span style={{ color: "var(--ink)" }}>{m.f}g</span>
-              </span>
+              ยังไม่มีรายการอาหาร
+              <br />
+              กดปุ่มด้านล่างเพื่อเพิ่ม
             </div>
           </div>
-        ))}
+        ) : (
+          groupedItems.map(
+            (group) =>
+              group.items.length > 0 && (
+                <div key={group.key}>
+                  <div
+                    style={{
+                      fontFamily: "system-ui, sans-serif",
+                      fontSize: 9,
+                      color: "var(--ink-soft)",
+                      letterSpacing: "0.14em",
+                      marginBottom: 6,
+                      paddingLeft: 2,
+                    }}
+                  >
+                    {group.label}
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {group.items.map((item) => (
+                      <MealCard
+                        key={item.id}
+                        item={item}
+                        onToggle={() =>
+                          toggleItem.mutate({ date: todayBkk, id: item.id, isDone: !item.isDone })
+                        }
+                        onDelete={() => deleteItem.mutate({ date: todayBkk, id: item.id })}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ),
+          )
+        )}
       </div>
 
       {/* Add food button */}
       <div style={{ padding: "14px 24px 0" }}>
-        <button
-          type="button"
-          className="btn-glass"
-          style={{
-            width: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 8,
-          }}
-        >
-          <svg
-            viewBox="0 0 16 16"
-            width={14}
-            height={14}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            aria-hidden="true"
+        {!showAddForm ? (
+          <button
+            type="button"
+            className="btn-glass"
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+            }}
+            onClick={() => setShowAddForm(true)}
           >
-            <path d="M8 3v10M3 8h10" />
-          </svg>
-          เพิ่มอาหาร / SCAN BARCODE
-        </button>
+            <svg
+              viewBox="0 0 16 16"
+              width={14}
+              height={14}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              aria-hidden="true"
+            >
+              <path d="M8 3v10M3 8h10" />
+            </svg>
+            เพิ่มอาหาร / ADD FOOD
+          </button>
+        ) : (
+          <div className="glass" style={{ padding: 18 }}>
+            <div className="t-label" style={{ marginBottom: 14 }}>
+              เพิ่มรายการอาหาร
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div>
+                <div
+                  style={{
+                    fontFamily: "system-ui",
+                    fontSize: 9,
+                    color: "var(--ink-soft)",
+                    letterSpacing: "0.14em",
+                    marginBottom: 6,
+                  }}
+                >
+                  MEAL TYPE
+                </div>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  {MEAL_TYPES.map((mt) => (
+                    <button
+                      key={mt.key}
+                      type="button"
+                      className={`pill${addForm.mealType === mt.key ? " is-active" : ""}`}
+                      onClick={() => setAddForm((f) => ({ ...f, mealType: mt.key }))}
+                    >
+                      {mt.key}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label
+                  htmlFor="food-name"
+                  style={{
+                    fontFamily: "system-ui",
+                    fontSize: 9,
+                    color: "var(--ink-soft)",
+                    letterSpacing: "0.14em",
+                    display: "block",
+                    marginBottom: 4,
+                  }}
+                >
+                  NAME · ชื่ออาหาร
+                </label>
+                <input
+                  id="food-name"
+                  className="glass-input"
+                  value={addForm.name}
+                  onChange={(e) => setAddForm((f) => ({ ...f, name: e.target.value }))}
+                  placeholder="เช่น ข้าวกล้อง + อกไก่"
+                  style={{ width: "100%" }}
+                />
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                <div>
+                  <label
+                    htmlFor="food-kcal"
+                    style={{
+                      fontFamily: "system-ui",
+                      fontSize: 9,
+                      color: "var(--ink-soft)",
+                      letterSpacing: "0.14em",
+                      display: "block",
+                      marginBottom: 4,
+                    }}
+                  >
+                    KCAL
+                  </label>
+                  <input
+                    id="food-kcal"
+                    className="glass-input"
+                    inputMode="numeric"
+                    value={addForm.kcal}
+                    onChange={(e) => setAddForm((f) => ({ ...f, kcal: e.target.value }))}
+                    placeholder="0"
+                    style={{ width: "100%", textAlign: "right" }}
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="food-protein"
+                    style={{
+                      fontFamily: "system-ui",
+                      fontSize: 9,
+                      color: "var(--ink-soft)",
+                      letterSpacing: "0.14em",
+                      display: "block",
+                      marginBottom: 4,
+                    }}
+                  >
+                    PROTEIN · g
+                  </label>
+                  <input
+                    id="food-protein"
+                    className="glass-input"
+                    inputMode="decimal"
+                    value={addForm.proteinG}
+                    onChange={(e) => setAddForm((f) => ({ ...f, proteinG: e.target.value }))}
+                    placeholder="0"
+                    style={{ width: "100%", textAlign: "right" }}
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="food-carbs"
+                    style={{
+                      fontFamily: "system-ui",
+                      fontSize: 9,
+                      color: "var(--ink-soft)",
+                      letterSpacing: "0.14em",
+                      display: "block",
+                      marginBottom: 4,
+                    }}
+                  >
+                    CARBS · g
+                  </label>
+                  <input
+                    id="food-carbs"
+                    className="glass-input"
+                    inputMode="decimal"
+                    value={addForm.carbsG}
+                    onChange={(e) => setAddForm((f) => ({ ...f, carbsG: e.target.value }))}
+                    placeholder="0"
+                    style={{ width: "100%", textAlign: "right" }}
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="food-fat"
+                    style={{
+                      fontFamily: "system-ui",
+                      fontSize: 9,
+                      color: "var(--ink-soft)",
+                      letterSpacing: "0.14em",
+                      display: "block",
+                      marginBottom: 4,
+                    }}
+                  >
+                    FAT · g
+                  </label>
+                  <input
+                    id="food-fat"
+                    className="glass-input"
+                    inputMode="decimal"
+                    value={addForm.fatG}
+                    onChange={(e) => setAddForm((f) => ({ ...f, fatG: e.target.value }))}
+                    placeholder="0"
+                    style={{ width: "100%", textAlign: "right" }}
+                  />
+                </div>
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
+              <button
+                type="button"
+                className="btn-glass"
+                style={{ flex: 1 }}
+                onClick={() => setShowAddForm(false)}
+              >
+                ยกเลิก
+              </button>
+              <button
+                type="button"
+                className="btn-primary"
+                style={{ flex: 2 }}
+                onClick={handleAdd}
+                disabled={addItem.isPending}
+              >
+                {addItem.isPending ? "กำลังเพิ่ม..." : "เพิ่ม"}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function MealCard({
+  item,
+  onToggle,
+  onDelete,
+}: { item: MealItem; onToggle: () => void; onDelete: () => void }) {
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  return (
+    <div className="glass" style={{ padding: 14, opacity: item.isDone ? 0.65 : 1 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          marginBottom: 8,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1 }}>
+          <button
+            type="button"
+            onClick={onToggle}
+            style={{
+              width: 22,
+              height: 22,
+              borderRadius: "50%",
+              background: item.isDone ? "var(--violet)" : "rgba(255,255,255,0.06)",
+              border: "1px solid var(--glass-line)",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: item.isDone ? "0 0 8px var(--violet)" : "none",
+              cursor: "pointer",
+              flexShrink: 0,
+            }}
+            aria-label={item.isDone ? "ยกเลิก" : "เสร็จแล้ว"}
+          >
+            {item.isDone && (
+              <svg width="10" height="8" viewBox="0 0 12 10" fill="none" aria-hidden="true">
+                <path
+                  d="M1 5L4.5 8.5L11 1"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            )}
+          </button>
+          <div
+            style={{
+              fontFamily: "K2D, sans-serif",
+              fontSize: 13,
+              color: "var(--ink)",
+              lineHeight: "var(--leading-relaxed)",
+            }}
+          >
+            {item.name}
+          </div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 8 }}>
+          <div style={{ textAlign: "right" }}>
+            <div className="t-num" style={{ fontSize: 16, color: "var(--ink)" }}>
+              {item.kcal}
+            </div>
+            <div
+              style={{
+                fontFamily: "system-ui, sans-serif",
+                fontSize: 9,
+                color: "var(--ink-soft)",
+                letterSpacing: "0.10em",
+              }}
+            >
+              KCAL
+            </div>
+          </div>
+          {!confirmDelete ? (
+            <button
+              type="button"
+              onClick={() => setConfirmDelete(true)}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 4,
+                color: "var(--ink-mute)",
+              }}
+              aria-label="ลบ"
+            >
+              <svg
+                viewBox="0 0 16 16"
+                width={14}
+                height={14}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                aria-hidden="true"
+              >
+                <path d="M3 3l10 10M13 3L3 13" />
+              </svg>
+            </button>
+          ) : (
+            <div style={{ display: "flex", gap: 4 }}>
+              <button
+                type="button"
+                className="pill"
+                onClick={() => setConfirmDelete(false)}
+                style={{ fontSize: 10, padding: "2px 8px" }}
+              >
+                ไม่
+              </button>
+              <button
+                type="button"
+                className="pill is-active"
+                onClick={onDelete}
+                style={{ fontSize: 10, padding: "2px 8px", background: "var(--danger)" }}
+              >
+                ลบ
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          gap: 10,
+          fontFamily: "Chakra Petch, monospace",
+          fontSize: 11,
+          color: "var(--ink-soft)",
+          letterSpacing: "0.04em",
+        }}
+      >
+        <span>
+          P <span style={{ color: "var(--ink)" }}>{Number(item.proteinG).toFixed(0)}g</span>
+        </span>
+        <span>
+          C <span style={{ color: "var(--ink)" }}>{Number(item.carbsG).toFixed(0)}g</span>
+        </span>
+        <span>
+          F <span style={{ color: "var(--ink)" }}>{Number(item.fatG).toFixed(0)}g</span>
+        </span>
       </div>
     </div>
   );

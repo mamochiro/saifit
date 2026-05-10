@@ -1,3 +1,8 @@
+"use client";
+
+import { useState } from "react";
+import { useBodySummary, useLogMeasurement } from "./hooks";
+
 type MuscleId =
   | "shoulders"
   | "chest"
@@ -8,13 +13,7 @@ type MuscleId =
   | "glutes"
   | "hamstrings";
 
-function MuscleMap({
-  primary,
-  secondary,
-}: {
-  primary: MuscleId[];
-  secondary: MuscleId[];
-}) {
+function MuscleMap({ primary, secondary }: { primary: MuscleId[]; secondary: MuscleId[] }) {
   const color = (id: MuscleId) => {
     if (primary.includes(id)) return "oklch(72% 0.20 270 / 70%)";
     if (secondary.includes(id)) return "oklch(72% 0.20 270 / 30%)";
@@ -23,100 +22,205 @@ function MuscleMap({
 
   return (
     <svg width="100" height="150" viewBox="0 0 100 150" fill="none" aria-hidden="true">
-      {/* Body outline */}
       <ellipse cx="50" cy="12" rx="8" ry="9" fill="rgba(255,255,255,0.15)" />
-      {/* Neck */}
       <rect x="46" y="20" width="8" height="7" rx="2" fill="rgba(255,255,255,0.10)" />
-      {/* Torso */}
       <path
         d="M30 28 Q22 32 20 50 L18 78 L82 78 L80 50 Q78 32 70 28 Z"
         fill="rgba(255,255,255,0.06)"
         stroke="rgba(255,255,255,0.12)"
         strokeWidth="0.8"
       />
-
-      {/* Shoulders */}
       <ellipse cx="24" cy="32" rx="9" ry="7" fill={color("shoulders")} />
       <ellipse cx="76" cy="32" rx="9" ry="7" fill={color("shoulders")} />
-
-      {/* Chest */}
       <path d="M30 30 Q50 28 70 30 L68 50 Q50 54 32 50 Z" fill={color("chest")} />
-
-      {/* Lats (side torso, visible from front) */}
       <path d="M20 42 L30 40 L28 68 L18 66 Z" fill={color("lats")} />
       <path d="M80 42 L70 40 L72 68 L82 66 Z" fill={color("lats")} />
-
-      {/* Abs */}
       <path d="M36 52 L64 52 L62 76 L38 76 Z" fill={color("abs")} />
-
-      {/* Biceps */}
       <ellipse cx="17" cy="52" rx="5" ry="12" fill={color("biceps")} />
       <ellipse cx="83" cy="52" rx="5" ry="12" fill={color("biceps")} />
-
-      {/* Forearms */}
       <rect x="13" y="63" width="8" height="14" rx="3" fill="rgba(255,255,255,0.07)" />
       <rect x="79" y="63" width="8" height="14" rx="3" fill="rgba(255,255,255,0.07)" />
-
-      {/* Hips */}
       <path d="M30 76 L70 76 L74 90 L26 90 Z" fill="rgba(255,255,255,0.08)" />
-
-      {/* Glutes (partially visible from front) */}
       <ellipse cx="36" cy="88" rx="10" ry="8" fill={color("glutes")} />
       <ellipse cx="64" cy="88" rx="10" ry="8" fill={color("glutes")} />
-
-      {/* Quads */}
       <path d="M27 88 L42 88 L44 128 L24 128 Z" fill={color("quads")} />
       <path d="M73 88 L58 88 L56 128 L76 128 Z" fill={color("quads")} />
-
-      {/* Hamstrings (partially front) */}
       <path d="M24 100 L40 100 L42 128 L22 128 Z" fill={color("hamstrings")} opacity="0.6" />
       <path d="M76 100 L60 100 L58 128 L78 128 Z" fill={color("hamstrings")} opacity="0.6" />
-
-      {/* Knees */}
       <ellipse cx="33" cy="130" rx="8" ry="5" fill="rgba(255,255,255,0.07)" />
       <ellipse cx="67" cy="130" rx="8" ry="5" fill="rgba(255,255,255,0.07)" />
-
-      {/* Calves */}
       <path d="M27 134 L38 134 L36 150 L28 150 Z" fill="rgba(255,255,255,0.07)" />
       <path d="M62 134 L73 134 L72 150 L64 150 Z" fill="rgba(255,255,255,0.07)" />
     </svg>
   );
 }
 
-interface StatTile {
-  key: string;
-  value: string;
-  unit: string;
-  delta: string;
-  dpos: boolean | null;
+function DeltaBadge({ delta }: { delta: number | null }) {
+  if (delta == null || delta === 0) return null;
+  const positive = delta > 0;
+  const color = positive ? "oklch(70% 0.16 150)" : "var(--violet-bright)";
+  const sign = positive ? "+" : "";
+  return (
+    <div
+      style={{
+        marginTop: 4,
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 4,
+        fontFamily: "Chakra Petch, monospace",
+        fontSize: 11,
+        fontWeight: 600,
+        color,
+      }}
+    >
+      <svg width="9" height="9" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+        {positive ? (
+          <path d="M2 8l4-4 4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        ) : (
+          <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        )}
+      </svg>
+      {sign}
+      {delta}
+    </div>
+  );
 }
 
-const STATS: StatTile[] = [
-  { key: "BODY FAT", value: "18.4", unit: "%", delta: "−1.2%", dpos: true },
-  { key: "WEIGHT", value: "72.4", unit: "kg", delta: "−0.6 kg", dpos: true },
-  { key: "MUSCLE", value: "34.2", unit: "kg", delta: "+0.4 kg", dpos: true },
-  { key: "BMR", value: "1,684", unit: "kcal", delta: "", dpos: null },
-];
+function buildTrendPath(
+  points: Array<{ date: string; weightKg: number | null }>,
+  width = 300,
+  height = 80,
+): { path: string; fill: string; latest: { x: number; y: number } } | null {
+  const valid = points.filter((p) => p.weightKg != null) as Array<{
+    date: string;
+    weightKg: number;
+  }>;
+  if (valid.length < 2) return null;
 
-interface Measurement {
-  key: string;
-  value: string;
-  delta: string;
+  const weights = valid.map((p) => p.weightKg);
+  const minW = Math.min(...weights);
+  const maxW = Math.max(...weights);
+  const range = maxW - minW || 1;
+
+  const dates = valid.map((p) => new Date(p.date).getTime());
+  const minD = Math.min(...dates);
+  const maxD = Math.max(...dates) - minD || 1;
+
+  const pts = valid.map((p) => ({
+    x: ((new Date(p.date).getTime() - minD) / maxD) * width,
+    y: height - ((p.weightKg - minW) / range) * (height - 10) - 5,
+  }));
+
+  const d = pts
+    .map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)} ${p.y.toFixed(1)}`)
+    .join(" ");
+  const fill = `${d} L${width} ${height} L0 ${height} Z`;
+  const latestPt = pts[pts.length - 1];
+  if (!latestPt) return null;
+  return { path: d, fill, latest: latestPt };
 }
 
-const MEASURES: Measurement[] = [
-  { key: "CHEST · อก", value: "102", delta: "+1" },
-  { key: "WAIST · เอว", value: "82", delta: "−2" },
-  { key: "ARM · แขน", value: "36", delta: "+0.5" },
-  { key: "THIGH · ขา", value: "58", delta: "+1" },
-];
+interface LogFormData {
+  weightKg: string;
+  bodyFatPct: string;
+  chestCm: string;
+  waistCm: string;
+  armCm: string;
+  thighCm: string;
+}
 
-const PHOTO_DATES = ["10 ก.พ.", "10 มี.ค.", "10 เม.ย.", "10 พ.ค."];
+function toNum(s: string): number | null {
+  const n = Number(s.replace(",", "."));
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
 
 export default function BodyPage() {
+  const { data: summary, isLoading } = useBodySummary();
+  const logMeasurement = useLogMeasurement();
+
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState<LogFormData>({
+    weightKg: "",
+    bodyFatPct: "",
+    chestCm: "",
+    waistCm: "",
+    armCm: "",
+    thighCm: "",
+  });
+
+  const todayBkk = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Bangkok" });
+
+  const latest = summary?.latest;
+  const deltas = summary?.deltas;
+  const trend90 = summary?.trend90 ?? [];
+
+  const trendPath = buildTrendPath(trend90);
+
+  const weightDelta90 = (() => {
+    const valid = trend90.filter((p) => p.weightKg != null);
+    const firstEl = valid[0];
+    const lastEl = valid[valid.length - 1];
+    if (!firstEl || !lastEl || valid.length < 2) return null;
+    const first = firstEl.weightKg ?? 0;
+    const last = lastEl.weightKg ?? 0;
+    return Math.round((last - first) * 10) / 10;
+  })();
+
+  async function handleLog() {
+    await logMeasurement.mutateAsync({
+      recordedAt: todayBkk,
+      weightKg: toNum(form.weightKg),
+      bodyFatPct: toNum(form.bodyFatPct),
+      chestCm: toNum(form.chestCm),
+      waistCm: toNum(form.waistCm),
+      armCm: toNum(form.armCm),
+      thighCm: toNum(form.thighCm),
+    });
+    setShowForm(false);
+    setForm({ weightKg: "", bodyFatPct: "", chestCm: "", waistCm: "", armCm: "", thighCm: "" });
+  }
+
+  const field = (key: keyof LogFormData, label: string, unit: string) => (
+    <div>
+      <label
+        htmlFor={`body-${key}`}
+        style={{
+          fontFamily: "system-ui",
+          fontSize: 9,
+          color: "var(--ink-soft)",
+          letterSpacing: "0.14em",
+          display: "block",
+          marginBottom: 4,
+        }}
+      >
+        {label}
+      </label>
+      <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+        <input
+          id={`body-${key}`}
+          className="glass-input"
+          inputMode="decimal"
+          value={form[key]}
+          onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
+          placeholder="0"
+          style={{ flex: 1, textAlign: "right" }}
+        />
+        <span
+          style={{
+            fontFamily: "K2D, sans-serif",
+            fontSize: 11,
+            color: "var(--ink-mute)",
+            minWidth: 24,
+          }}
+        >
+          {unit}
+        </span>
+      </div>
+    </div>
+  );
+
   return (
     <div className="saifit-bg" style={{ minHeight: "100vh", paddingBottom: 110 }}>
-      {/* Header */}
       <div style={{ padding: "40px 24px 0" }}>
         <span className="t-label">MAY 10 · 4-WEEK TREND</span>
         <h1
@@ -140,7 +244,6 @@ export default function BodyPage() {
           className="glass glass-glow"
           style={{ padding: "20px 22px", display: "flex", gap: 18 }}
         >
-          {/* Left — muscle map */}
           <div
             style={{
               width: 110,
@@ -155,28 +258,25 @@ export default function BodyPage() {
               secondary={["shoulders", "biceps", "abs", "glutes", "hamstrings"]}
             />
           </div>
-
-          {/* Right — stats */}
           <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
             <div>
-              <div className="t-label">COMPOSITION</div>
+              <div className="t-label">BODY FAT</div>
               <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginTop: 4 }}>
                 <span className="t-num" style={{ fontSize: 32, color: "var(--ink)" }}>
-                  18.4
+                  {isLoading
+                    ? "—"
+                    : latest?.bodyFatPct != null
+                      ? Number(latest.bodyFatPct).toFixed(1)
+                      : "—"}
                 </span>
                 <span
-                  style={{
-                    fontFamily: "K2D, sans-serif",
-                    fontSize: 12,
-                    color: "var(--ink-mute)",
-                  }}
+                  style={{ fontFamily: "K2D, sans-serif", fontSize: 12, color: "var(--ink-mute)" }}
                 >
                   % body fat
                 </span>
               </div>
+              {deltas?.bodyFatPct != null && <DeltaBadge delta={deltas.bodyFatPct} />}
             </div>
-
-            {/* Body-fat gradient bar */}
             <div>
               <div
                 style={{
@@ -203,103 +303,70 @@ export default function BodyPage() {
                     "linear-gradient(90deg, oklch(60% 0.20 240), oklch(72% 0.20 270 / 60%) 25%, oklch(72% 0.20 270 / 60%) 75%, oklch(62% 0.20 25))",
                 }}
               >
-                <div
-                  aria-hidden="true"
-                  style={{
-                    position: "absolute",
-                    top: -3,
-                    left: "52%",
-                    width: 3,
-                    height: 16,
-                    borderRadius: 2,
-                    background: "#fff",
-                    boxShadow: "0 0 10px #fff",
-                  }}
-                />
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  fontFamily: "Chakra Petch, monospace",
-                  fontSize: 10,
-                  color: "var(--ink-mute)",
-                  marginTop: 4,
-                }}
-              >
-                <span style={{ color: "var(--violet-bright)" }}>YOU · OPTIMAL ZONE</span>
+                {latest?.bodyFatPct != null && (
+                  <div
+                    aria-hidden="true"
+                    style={{
+                      position: "absolute",
+                      top: -3,
+                      left: `${Math.min(Math.max((Number(latest.bodyFatPct) / 35) * 100, 2), 98)}%`,
+                      width: 3,
+                      height: 16,
+                      borderRadius: 2,
+                      background: "#fff",
+                      boxShadow: "0 0 10px #fff",
+                    }}
+                  />
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 2×2 Stat tiles */}
+      {/* Stat tiles */}
       <div
-        style={{
-          padding: "14px 24px 0",
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: 8,
-        }}
+        style={{ padding: "14px 24px 0", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}
       >
-        {STATS.map((s) => (
+        {[
+          {
+            key: "WEIGHT",
+            val: latest?.weightKg != null ? Number(latest.weightKg).toFixed(1) : "—",
+            unit: "kg",
+            delta: deltas?.weightKg ?? null,
+          },
+          {
+            key: "BODY FAT",
+            val: latest?.bodyFatPct != null ? Number(latest.bodyFatPct).toFixed(1) : "—",
+            unit: "%",
+            delta: deltas?.bodyFatPct ?? null,
+          },
+          {
+            key: "CHEST · อก",
+            val: latest?.chestCm != null ? Number(latest.chestCm).toFixed(0) : "—",
+            unit: "cm",
+            delta: deltas?.chestCm ?? null,
+          },
+          {
+            key: "WAIST · เอว",
+            val: latest?.waistCm != null ? Number(latest.waistCm).toFixed(0) : "—",
+            unit: "cm",
+            delta: deltas?.waistCm ?? null,
+          },
+        ].map((s) => (
           <div key={s.key} className="glass" style={{ padding: 14 }}>
             <div className="t-label">{s.key}</div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "baseline",
-                gap: 4,
-                marginTop: 4,
-              }}
-            >
+            <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginTop: 4 }}>
               <span className="t-num" style={{ fontSize: 22, color: "var(--ink)" }}>
-                {s.value}
+                {isLoading ? "—" : s.val}
               </span>
               <span
-                style={{
-                  fontFamily: "K2D, sans-serif",
-                  fontSize: 11,
-                  color: "var(--ink-soft)",
-                }}
+                style={{ fontFamily: "K2D, sans-serif", fontSize: 11, color: "var(--ink-soft)" }}
               >
                 {s.unit}
               </span>
             </div>
-            {s.delta && (
-              <div
-                style={{
-                  marginTop: 4,
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 4,
-                  fontFamily: "Chakra Petch, monospace",
-                  fontSize: 11,
-                  fontWeight: 600,
-                  color: s.dpos ? "oklch(70% 0.16 150)" : "var(--danger)",
-                }}
-              >
-                <svg width="9" height="9" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                  {s.dpos ? (
-                    <path
-                      d="M2 8l4-4 4 4"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  ) : (
-                    <path
-                      d="M2 4l4 4 4-4"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  )}
-                </svg>
-                {s.delta}
-              </div>
-            )}
+            <DeltaBadge delta={s.delta} />
           </div>
         ))}
       </div>
@@ -316,42 +383,64 @@ export default function BodyPage() {
             }}
           >
             <div className="t-label">WEIGHT TREND · 90 DAYS</div>
-            <span className="t-num" style={{ fontSize: 12, color: "var(--violet-bright)" }}>
-              −3.2 kg
-            </span>
+            {weightDelta90 != null && (
+              <span
+                className="t-num"
+                style={{
+                  fontSize: 12,
+                  color: weightDelta90 < 0 ? "oklch(70% 0.16 150)" : "var(--danger)",
+                }}
+              >
+                {weightDelta90 > 0 ? "+" : ""}
+                {weightDelta90} kg
+              </span>
+            )}
           </div>
-          <svg
-            width="100%"
-            height="80"
-            viewBox="0 0 300 80"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            <defs>
-              <linearGradient id="wtFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="oklch(72% 0.20 270 / 35%)" />
-                <stop offset="100%" stopColor="oklch(72% 0.20 270 / 0%)" />
-              </linearGradient>
-            </defs>
-            <path
-              d="M0 20 Q30 22 50 28 T100 38 T160 44 T220 52 T300 60 L300 80 L0 80 Z"
-              fill="url(#wtFill)"
-            />
-            <path
-              d="M0 20 Q30 22 50 28 T100 38 T160 44 T220 52 T300 60"
-              stroke="oklch(72% 0.20 270)"
-              strokeWidth="1.6"
-              fill="none"
-              style={{ filter: "drop-shadow(0 0 6px var(--violet))" }}
-            />
-            <circle
-              cx="300"
-              cy="60"
-              r="3"
-              fill="#fff"
-              style={{ filter: "drop-shadow(0 0 6px var(--violet))" }}
-            />
-          </svg>
+          {trendPath ? (
+            <svg
+              width="100%"
+              height="80"
+              viewBox="0 0 300 80"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <defs>
+                <linearGradient id="wtFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="oklch(72% 0.20 270 / 35%)" />
+                  <stop offset="100%" stopColor="oklch(72% 0.20 270 / 0%)" />
+                </linearGradient>
+              </defs>
+              <path d={trendPath.fill} fill="url(#wtFill)" />
+              <path
+                d={trendPath.path}
+                stroke="oklch(72% 0.20 270)"
+                strokeWidth="1.6"
+                fill="none"
+                style={{ filter: "drop-shadow(0 0 6px var(--violet))" }}
+              />
+              <circle
+                cx={trendPath.latest.x}
+                cy={trendPath.latest.y}
+                r="3"
+                fill="#fff"
+                style={{ filter: "drop-shadow(0 0 6px var(--violet))" }}
+              />
+            </svg>
+          ) : (
+            <div
+              style={{
+                height: 80,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontFamily: "K2D, sans-serif",
+                fontSize: 12,
+                color: "var(--ink-mute)",
+              }}
+            >
+              ยังไม่มีข้อมูล — บันทึกน้ำหนักเพื่อดูกราฟ
+            </div>
+          )}
           <div
             style={{
               display: "flex",
@@ -363,10 +452,10 @@ export default function BodyPage() {
               letterSpacing: "0.10em",
             }}
           >
-            <span>FEB 10</span>
-            <span>MAR 10</span>
-            <span>APR 10</span>
-            <span>MAY 10</span>
+            <span>-90 วัน</span>
+            <span>-60 วัน</span>
+            <span>-30 วัน</span>
+            <span>วันนี้</span>
           </div>
         </div>
       </div>
@@ -377,14 +466,11 @@ export default function BodyPage() {
           <div className="t-label" style={{ marginBottom: 12 }}>
             MEASUREMENTS · cm
           </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: 12,
-            }}
-          >
-            {MEASURES.map((m) => (
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            {[
+              { key: "ARM · แขน", val: latest?.armCm, delta: deltas?.armCm },
+              { key: "THIGH · ขา", val: latest?.thighCm, delta: deltas?.thighCm },
+            ].map((m) => (
               <div
                 key={m.key}
                 style={{
@@ -405,29 +491,23 @@ export default function BodyPage() {
                 >
                   {m.key}
                 </div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "baseline",
-                    gap: 8,
-                    marginTop: 2,
-                  }}
-                >
+                <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginTop: 2 }}>
                   <span className="t-num" style={{ fontSize: 20, color: "var(--ink)" }}>
-                    {m.value}
+                    {isLoading ? "—" : m.val != null ? Number(m.val).toFixed(0) : "—"}
                   </span>
-                  <span
-                    style={{
-                      fontFamily: "Chakra Petch, monospace",
-                      fontSize: 11,
-                      fontWeight: 600,
-                      color: m.delta.startsWith("+")
-                        ? "oklch(70% 0.16 150)"
-                        : "var(--violet-bright)",
-                    }}
-                  >
-                    {m.delta}
-                  </span>
+                  {m.delta != null && (
+                    <span
+                      style={{
+                        fontFamily: "Chakra Petch, monospace",
+                        fontSize: 11,
+                        fontWeight: 600,
+                        color: m.delta > 0 ? "oklch(70% 0.16 150)" : "var(--violet-bright)",
+                      }}
+                    >
+                      {m.delta > 0 ? "+" : ""}
+                      {m.delta}
+                    </span>
+                  )}
                 </div>
               </div>
             ))}
@@ -435,80 +515,69 @@ export default function BodyPage() {
         </div>
       </div>
 
-      {/* Progress photos */}
+      {/* Log measurement button / form */}
       <div style={{ padding: "14px 24px 0" }}>
-        <div className="glass" style={{ padding: 18 }}>
-          <div
+        {!showForm ? (
+          <button
+            type="button"
+            className="btn-glass"
             style={{
+              width: "100%",
               display: "flex",
-              justifyContent: "space-between",
               alignItems: "center",
-              marginBottom: 12,
-            }}
-          >
-            <div className="t-label">PROGRESS PHOTOS</div>
-            <span
-              style={{
-                fontFamily: "Chakra Petch, monospace",
-                fontSize: 11,
-                color: "var(--violet-bright)",
-                cursor: "pointer",
-              }}
-            >
-              + ถ่ายใหม่
-            </span>
-          </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(4, 1fr)",
+              justifyContent: "center",
               gap: 8,
             }}
+            onClick={() => setShowForm(true)}
           >
-            {PHOTO_DATES.map((d) => (
-              <div
-                key={d}
-                style={{
-                  aspectRatio: "3/4",
-                  borderRadius: 10,
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid var(--glass-line)",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "flex-end",
-                  padding: 6,
-                  position: "relative",
-                  overflow: "hidden",
-                }}
+            <svg
+              viewBox="0 0 16 16"
+              width={14}
+              height={14}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              aria-hidden="true"
+            >
+              <path d="M8 3v10M3 8h10" />
+            </svg>
+            บันทึกการวัด · LOG MEASUREMENT
+          </button>
+        ) : (
+          <div className="glass" style={{ padding: 18 }}>
+            <div className="t-label" style={{ marginBottom: 14 }}>
+              บันทึกวันนี้
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {field("weightKg", "WEIGHT · kg", "kg")}
+              {field("bodyFatPct", "BODY FAT · %", "%")}
+              {field("chestCm", "CHEST · cm", "cm")}
+              {field("waistCm", "WAIST · cm", "cm")}
+              {field("armCm", "ARM · cm", "cm")}
+              {field("thighCm", "THIGH · cm", "cm")}
+            </div>
+            <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
+              <button
+                type="button"
+                className="btn-glass"
+                style={{ flex: 1 }}
+                onClick={() => setShowForm(false)}
               >
-                <svg
-                  width="60%"
-                  height="60%"
-                  viewBox="0 0 100 150"
-                  style={{ position: "absolute", top: "15%", opacity: 0.35 }}
-                  aria-hidden="true"
-                >
-                  <circle cx="50" cy="14" r="8" fill="rgba(255,255,255,0.4)" />
-                  <path
-                    d="M36 26 Q50 22 64 26 L66 70 L62 122 L58 148 L42 148 L38 122 L34 70 Z"
-                    fill="rgba(255,255,255,0.15)"
-                  />
-                </svg>
-                <span
-                  style={{
-                    fontFamily: "Chakra Petch, monospace",
-                    fontSize: 10,
-                    color: "var(--ink-mute)",
-                    position: "relative",
-                  }}
-                >
-                  {d}
-                </span>
-              </div>
-            ))}
+                ยกเลิก
+              </button>
+              <button
+                type="button"
+                className="btn-primary"
+                style={{ flex: 2 }}
+                onClick={handleLog}
+                disabled={logMeasurement.isPending}
+              >
+                {logMeasurement.isPending ? "กำลังบันทึก..." : "บันทึก"}
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -1,24 +1,9 @@
+"use client";
+
+import { useState } from "react";
+import { useLogRun, useRunSummary } from "./hooks";
+
 type RunKind = "easy" | "tempo" | "interval" | "long" | "rest";
-
-interface WeekDay {
-  th: string;
-  en: string;
-  kind: RunKind;
-  km: number;
-  pace: string;
-  label: string;
-  isToday?: boolean;
-}
-
-const WEEK: WeekDay[] = [
-  { th: "จ", en: "MON", kind: "easy", km: 5, pace: "6:30", label: "Easy run" },
-  { th: "อ", en: "TUE", kind: "rest", km: 0, pace: "—", label: "Rest" },
-  { th: "พ", en: "WED", kind: "tempo", km: 8, pace: "5:10", label: "Tempo", isToday: true },
-  { th: "พฤ", en: "THU", kind: "easy", km: 6, pace: "6:30", label: "Easy run" },
-  { th: "ศ", en: "FRI", kind: "rest", km: 0, pace: "—", label: "Cross train" },
-  { th: "ส", en: "SAT", kind: "interval", km: 7, pace: "4:40", label: "6×800m" },
-  { th: "อา", en: "SUN", kind: "long", km: 16, pace: "6:00", label: "Long run" },
-];
 
 const KIND_COLOR: Record<RunKind, string> = {
   easy: "rgba(255,255,255,0.10)",
@@ -32,6 +17,13 @@ const KIND_GLOW: Partial<Record<RunKind, string>> = {
   tempo: "0 0 10px rgba(120,90,255,0.5)",
   long: "0 0 10px rgba(120,90,255,0.5)",
 };
+
+function formatPace(secPerKm: number | null | undefined): string {
+  if (!secPerKm) return "—";
+  const min = Math.floor(secPerKm / 60);
+  const sec = secPerKm % 60;
+  return `${min}:${String(sec).padStart(2, "0")}`;
+}
 
 function StatTile({ label, value, unit }: { label: string; value: string; unit: string }) {
   return (
@@ -68,12 +60,51 @@ function StatTile({ label, value, unit }: { label: string; value: string; unit: 
   );
 }
 
+interface LogFormData {
+  distanceKm: string;
+  durationMin: string;
+  durationSec: string;
+  runType: "easy" | "tempo" | "interval" | "long";
+}
+
 export default function RunPage() {
+  const { data: summary, isLoading } = useRunSummary();
+  const logRun = useLogRun();
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState<LogFormData>({
+    distanceKm: "",
+    durationMin: "",
+    durationSec: "",
+    runType: "easy",
+  });
+
+  const todayBkk = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Bangkok" });
+
+  const todayPlan = summary?.weekPlan.find((d) => d.isToday);
+  const totalKm = summary?.totalKm ?? 0;
+  const latestPace = summary?.latestPace ?? null;
+
+  async function handleLog() {
+    const km = Number(form.distanceKm.replace(",", "."));
+    const mins = Number(form.durationMin) || 0;
+    const secs = Number(form.durationSec) || 0;
+    const totalSec = mins * 60 + secs;
+    if (!km || !totalSec) return;
+
+    await logRun.mutateAsync({
+      runDate: todayBkk,
+      distanceKm: km,
+      durationSeconds: totalSec,
+      runType: form.runType,
+    });
+    setShowForm(false);
+    setForm({ distanceKm: "", durationMin: "", durationSec: "", runType: "easy" });
+  }
+
   return (
     <div className="saifit-bg" style={{ minHeight: "100vh", paddingBottom: 110 }}>
-      {/* Header */}
       <div style={{ padding: "40px 24px 0" }}>
-        <span className="t-label">WEEK 4 / 12 · 5K SUB-22</span>
+        <span className="t-label">สัปดาห์นี้ · RUNNING PLAN</span>
         <h1
           style={{
             fontFamily: "K2D, sans-serif",
@@ -89,45 +120,48 @@ export default function RunPage() {
         </h1>
       </div>
 
-      {/* Hero — today's session */}
+      {/* Hero — today */}
       <div style={{ padding: "16px 24px 0" }}>
         <div
           className="glass glass-glow"
           style={{ padding: "20px 22px", position: "relative", overflow: "hidden" }}
         >
           <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-            }}
+            style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}
           >
-            <div className="t-label">วันนี้ · TEMPO</div>
-            <span className="tag-violet">8 KM</span>
+            <div className="t-label">
+              {todayPlan?.session ? `วันนี้ · ${todayPlan.session.runType.toUpperCase()}` : "วันนี้"}
+            </div>
+            {todayPlan?.session && (
+              <span className="tag-violet">{todayPlan.session.distanceKm.toFixed(1)} KM</span>
+            )}
           </div>
 
-          <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginTop: 14 }}>
-            <span className="t-num" style={{ fontSize: 56, lineHeight: 0.9 }}>
-              5:10
-            </span>
-            <span style={{ fontFamily: "K2D, sans-serif", fontSize: 13, color: "var(--ink-mute)" }}>
-              min/km · เป้าหมาย
-            </span>
-          </div>
+          {todayPlan?.session ? (
+            <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginTop: 14 }}>
+              <span className="t-num" style={{ fontSize: 56, lineHeight: 0.9 }}>
+                {formatPace(todayPlan.session.avgPaceSecPerKm)}
+              </span>
+              <span
+                style={{ fontFamily: "K2D, sans-serif", fontSize: 13, color: "var(--ink-mute)" }}
+              >
+                min/km · จริง
+              </span>
+            </div>
+          ) : (
+            <div
+              style={{
+                marginTop: 14,
+                fontFamily: "K2D, sans-serif",
+                fontSize: 15,
+                color: "var(--ink-mute)",
+                lineHeight: 1.6,
+              }}
+            >
+              {isLoading ? "กำลังโหลด..." : "ยังไม่ได้บันทึกการวิ่งวันนี้"}
+            </div>
+          )}
 
-          <div
-            style={{
-              marginTop: 10,
-              fontFamily: "K2D, sans-serif",
-              fontSize: 13,
-              color: "var(--ink-mute)",
-              lineHeight: 1.6,
-            }}
-          >
-            วอร์มอัพ 1km · เทมโป 6km · คูลดาวน์ 1km
-          </div>
-
-          {/* Terrain wave decoration */}
           <svg
             viewBox="0 0 200 30"
             style={{
@@ -159,11 +193,21 @@ export default function RunPage() {
               justifyContent: "center",
               gap: 8,
             }}
+            onClick={() => setShowForm(true)}
           >
-            <svg viewBox="0 0 16 16" width={14} height={14} fill="currentColor" aria-hidden="true">
-              <path d="M4 2.5v11l9-5.5L4 2.5Z" />
+            <svg
+              viewBox="0 0 16 16"
+              width={14}
+              height={14}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              aria-hidden="true"
+            >
+              <path d="M8 3v10M3 8h10" />
             </svg>
-            เริ่มวิ่ง
+            บันทึกการวิ่ง
           </button>
         </div>
       </div>
@@ -189,92 +233,112 @@ export default function RunPage() {
                 letterSpacing: "0.08em",
               }}
             >
-              42 KM PLANNED
+              {isLoading ? "..." : `${totalKm.toFixed(1)} KM`}
             </span>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {WEEK.map((w) => (
-              <div
-                key={w.en}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "32px 1fr auto auto",
-                  alignItems: "center",
-                  gap: 12,
-                  padding: "8px 10px",
-                  borderRadius: 10,
-                  background: w.isToday ? "rgba(140,100,255,0.08)" : "transparent",
-                  border: `1px solid ${w.isToday ? "var(--violet-edge)" : "transparent"}`,
-                }}
-              >
-                <div style={{ textAlign: "center" }}>
+          {(summary?.weekPlan ?? Array.from({ length: 7 })).length > 0 ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {(summary?.weekPlan ?? []).map((w) => {
+                const kind = (w.session?.runType as RunKind) ?? "rest";
+                const km = w.session?.distanceKm ?? 0;
+                const maxKm = Math.max(
+                  ...(summary?.weekPlan.map((d) => d.session?.distanceKm ?? 0) ?? [1]),
+                );
+                return (
                   <div
+                    key={w.en}
                     style={{
-                      fontFamily: "K2D, sans-serif",
-                      fontWeight: 700,
-                      fontSize: 13,
-                      color: w.isToday ? "var(--violet-bright)" : "var(--ink)",
+                      display: "grid",
+                      gridTemplateColumns: "32px 1fr auto auto",
+                      alignItems: "center",
+                      gap: 12,
+                      padding: "8px 10px",
+                      borderRadius: 10,
+                      background: w.isToday ? "rgba(140,100,255,0.08)" : "transparent",
+                      border: `1px solid ${w.isToday ? "var(--violet-edge)" : "transparent"}`,
                     }}
                   >
-                    {w.th}
+                    <div style={{ textAlign: "center" }}>
+                      <div
+                        style={{
+                          fontFamily: "K2D, sans-serif",
+                          fontWeight: 700,
+                          fontSize: 13,
+                          color: w.isToday ? "var(--violet-bright)" : "var(--ink)",
+                        }}
+                      >
+                        {w.th}
+                      </div>
+                      <div
+                        style={{
+                          fontFamily: "system-ui, sans-serif",
+                          fontSize: 8,
+                          color: "var(--ink-mute)",
+                          letterSpacing: "0.10em",
+                        }}
+                      >
+                        {w.en}
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        height: 22,
+                        position: "relative",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      <div
+                        style={{
+                          height: 8,
+                          borderRadius: 4,
+                          width: `${Math.max(8, (km / (maxKm || 1)) * 100)}%`,
+                          background: KIND_COLOR[kind],
+                          boxShadow: KIND_GLOW[kind] ?? "none",
+                        }}
+                      />
+                    </div>
+                    <span
+                      style={{
+                        fontFamily: "K2D, sans-serif",
+                        fontSize: 11,
+                        color: "var(--ink-soft)",
+                        minWidth: 70,
+                        textAlign: "right",
+                      }}
+                    >
+                      {w.session?.runType ?? "—"}
+                    </span>
+                    <span
+                      className="t-num"
+                      style={{
+                        fontSize: 14,
+                        color: km ? "var(--ink)" : "var(--ink-mute)",
+                        minWidth: 36,
+                        textAlign: "right",
+                      }}
+                    >
+                      {km ? km.toFixed(1) : "—"}
+                    </span>
                   </div>
-                  <div
-                    style={{
-                      fontFamily: "system-ui, sans-serif",
-                      fontSize: 8,
-                      color: "var(--ink-mute)",
-                      letterSpacing: "0.10em",
-                    }}
-                  >
-                    {w.en}
-                  </div>
-                </div>
-
-                <div
-                  style={{
-                    height: 22,
-                    position: "relative",
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                >
-                  <div
-                    style={{
-                      height: 8,
-                      borderRadius: 4,
-                      width: `${Math.max(8, (w.km / 16) * 100)}%`,
-                      background: KIND_COLOR[w.kind],
-                      boxShadow: KIND_GLOW[w.kind] ?? "none",
-                    }}
-                  />
-                </div>
-
-                <span
-                  style={{
-                    fontFamily: "K2D, sans-serif",
-                    fontSize: 11,
-                    color: "var(--ink-soft)",
-                    minWidth: 70,
-                    textAlign: "right",
-                  }}
-                >
-                  {w.label}
-                </span>
-                <span
-                  className="t-num"
-                  style={{
-                    fontSize: 14,
-                    color: w.km ? "var(--ink)" : "var(--ink-mute)",
-                    minWidth: 36,
-                    textAlign: "right",
-                  }}
-                >
-                  {w.km || "—"}
-                </span>
-              </div>
-            ))}
-          </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div
+              style={{
+                padding: "20px 0",
+                textAlign: "center",
+                fontFamily: "K2D, sans-serif",
+                fontSize: 13,
+                color: "var(--ink-mute)",
+                lineHeight: "var(--leading-relaxed)",
+              }}
+            >
+              ยังไม่มีการวิ่งสัปดาห์นี้
+            </div>
+          )}
         </div>
       </div>
 
@@ -287,10 +351,148 @@ export default function RunPage() {
           gap: 8,
         }}
       >
-        <StatTile label="VO₂ MAX" value="48.2" unit="ml/kg" />
-        <StatTile label="WEEKLY" value="32" unit="km" />
-        <StatTile label="PR · 5K" value="22:14" unit="" />
+        <StatTile label="WEEKLY" value={isLoading ? "—" : `${totalKm.toFixed(1)}`} unit="km" />
+        <StatTile
+          label="LONGEST"
+          value={isLoading ? "—" : `${(summary?.longestKm ?? 0).toFixed(1)}`}
+          unit="km"
+        />
+        <StatTile label="LATEST PACE" value={isLoading ? "—" : (latestPace ?? "—")} unit="min/km" />
       </div>
+
+      {/* Log form */}
+      {showForm && (
+        <div style={{ padding: "14px 24px 0" }}>
+          <div className="glass" style={{ padding: 18 }}>
+            <div className="t-label" style={{ marginBottom: 14 }}>
+              บันทึกการวิ่งวันนี้
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <div>
+                <label
+                  htmlFor="run-distance"
+                  style={{
+                    fontFamily: "system-ui",
+                    fontSize: 9,
+                    color: "var(--ink-soft)",
+                    letterSpacing: "0.14em",
+                    display: "block",
+                    marginBottom: 4,
+                  }}
+                >
+                  DISTANCE · km
+                </label>
+                <input
+                  id="run-distance"
+                  className="glass-input"
+                  inputMode="decimal"
+                  value={form.distanceKm}
+                  onChange={(e) => setForm((f) => ({ ...f, distanceKm: e.target.value }))}
+                  placeholder="0.0"
+                  style={{ width: "100%", textAlign: "right" }}
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="run-duration-min"
+                  style={{
+                    fontFamily: "system-ui",
+                    fontSize: 9,
+                    color: "var(--ink-soft)",
+                    letterSpacing: "0.14em",
+                    display: "block",
+                    marginBottom: 4,
+                  }}
+                >
+                  DURATION
+                </label>
+                <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                  <input
+                    id="run-duration-min"
+                    className="glass-input"
+                    inputMode="numeric"
+                    value={form.durationMin}
+                    onChange={(e) => setForm((f) => ({ ...f, durationMin: e.target.value }))}
+                    placeholder="0"
+                    style={{ flex: 1, textAlign: "right" }}
+                  />
+                  <span
+                    style={{
+                      fontFamily: "K2D, sans-serif",
+                      fontSize: 11,
+                      color: "var(--ink-mute)",
+                    }}
+                  >
+                    min
+                  </span>
+                  <input
+                    id="run-duration-sec"
+                    className="glass-input"
+                    inputMode="numeric"
+                    value={form.durationSec}
+                    onChange={(e) => setForm((f) => ({ ...f, durationSec: e.target.value }))}
+                    placeholder="0"
+                    style={{ flex: 1, textAlign: "right" }}
+                  />
+                  <span
+                    style={{
+                      fontFamily: "K2D, sans-serif",
+                      fontSize: 11,
+                      color: "var(--ink-mute)",
+                    }}
+                  >
+                    sec
+                  </span>
+                </div>
+              </div>
+              <div>
+                <div
+                  style={{
+                    fontFamily: "system-ui",
+                    fontSize: 9,
+                    color: "var(--ink-soft)",
+                    letterSpacing: "0.14em",
+                    marginBottom: 6,
+                  }}
+                >
+                  TYPE
+                </div>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  {(["easy", "tempo", "interval", "long"] as const).map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      className={`pill${form.runType === t ? " is-active" : ""}`}
+                      onClick={() => setForm((f) => ({ ...f, runType: t }))}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
+              <button
+                type="button"
+                className="btn-glass"
+                style={{ flex: 1 }}
+                onClick={() => setShowForm(false)}
+              >
+                ยกเลิก
+              </button>
+              <button
+                type="button"
+                className="btn-primary"
+                style={{ flex: 2 }}
+                onClick={handleLog}
+                disabled={logRun.isPending}
+              >
+                {logRun.isPending ? "กำลังบันทึก..." : "บันทึก"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
