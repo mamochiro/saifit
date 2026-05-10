@@ -82,6 +82,10 @@ export const users = pgTable(
     reminderTime: varchar("reminder_time", { length: 8 }).notNull().default("18:00"),
     timezone: varchar("timezone", { length: 64 }).notNull().default("Asia/Bangkok"),
     onboardingCompleted: boolean("onboarding_completed").notNull().default(false),
+    defaultTargetKcal: integer("default_target_kcal").notNull().default(2100),
+    defaultTargetProteinG: integer("default_target_protein_g").notNull().default(150),
+    defaultTargetCarbsG: integer("default_target_carbs_g").notNull().default(220),
+    defaultTargetFatG: integer("default_target_fat_g").notNull().default(70),
     createdAt: timestamp("created_at").notNull().defaultNow().$type<Date>(),
     updatedAt: timestamp("updated_at").notNull().defaultNow().$type<Date>(),
   },
@@ -228,6 +232,67 @@ export const subscriptions = pgTable("subscriptions", {
   startedAt: timestamp("started_at").notNull().defaultNow().$type<Date>(),
   endsAt: timestamp("ends_at").$type<Date>(),
   createdAt: timestamp("created_at").notNull().defaultNow().$type<Date>(),
+});
+
+export const bodyMeasurements = pgTable("body_measurements", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  recordedAt: date("recorded_at").notNull(),
+  weightKg: numeric("weight_kg", { precision: 5, scale: 2 }),
+  bodyFatPct: numeric("body_fat_pct", { precision: 4, scale: 1 }),
+  chestCm: numeric("chest_cm", { precision: 5, scale: 1 }),
+  waistCm: numeric("waist_cm", { precision: 5, scale: 1 }),
+  armCm: numeric("arm_cm", { precision: 5, scale: 1 }),
+  thighCm: numeric("thigh_cm", { precision: 5, scale: 1 }),
+  createdAt: timestamp("created_at").defaultNow().notNull().$type<Date>(),
+});
+
+export const runningSessions = pgTable("running_sessions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  runDate: date("run_date").notNull(),
+  distanceKm: numeric("distance_km", { precision: 6, scale: 2 }).notNull(),
+  durationSeconds: integer("duration_seconds").notNull(),
+  avgPaceSecPerKm: integer("avg_pace_sec_per_km"),
+  runType: text("run_type").notNull().default("easy"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull().$type<Date>(),
+});
+
+export const foodLogs = pgTable(
+  "food_logs",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    logDate: date("log_date").notNull(),
+    targetKcal: integer("target_kcal").notNull().default(2100),
+    targetProteinG: integer("target_protein_g").notNull().default(150),
+    targetCarbsG: integer("target_carbs_g").notNull().default(220),
+    targetFatG: integer("target_fat_g").notNull().default(70),
+    createdAt: timestamp("created_at").defaultNow().notNull().$type<Date>(),
+  },
+  (t) => [uniqueIndex("food_logs_user_date_idx").on(t.userId, t.logDate)],
+);
+
+export const mealItems = pgTable("meal_items", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  foodLogId: uuid("food_log_id")
+    .notNull()
+    .references(() => foodLogs.id, { onDelete: "cascade" }),
+  mealType: text("meal_type").notNull(),
+  name: text("name").notNull(),
+  kcal: integer("kcal").notNull(),
+  proteinG: numeric("protein_g", { precision: 5, scale: 1 }).notNull(),
+  carbsG: numeric("carbs_g", { precision: 5, scale: 1 }).notNull(),
+  fatG: numeric("fat_g", { precision: 5, scale: 1 }).notNull(),
+  isDone: boolean("is_done").notNull().default(false),
+  loggedAt: timestamp("logged_at").defaultNow().notNull().$type<Date>(),
 });
 
 // ─── Relations (TypeScript-only, no migration needed) ─────────────────────────
