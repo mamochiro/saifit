@@ -2,7 +2,7 @@ import { betterFetch } from "@better-fetch/fetch";
 import type { Session } from "better-auth/types";
 import { type NextRequest, NextResponse } from "next/server";
 
-const PUBLIC_PATHS = ["/sign-in", "/sign-up", "/api/auth"];
+const PUBLIC_PATHS = ["/sign-in", "/sign-up", "/api/auth", "/api/templates", "/api/exercises"];
 // Auth required but skip onboarding check (also /api/* to prevent infinite loop)
 const SKIP_ONBOARDING = ["/welcome", "/api/", "/auth/"];
 

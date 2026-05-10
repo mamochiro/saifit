@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   boolean,
   date,
@@ -223,3 +224,33 @@ export const subscriptions = pgTable("subscriptions", {
   endsAt: timestamp("ends_at").$type<Date>(),
   createdAt: timestamp("created_at").notNull().defaultNow().$type<Date>(),
 });
+
+// ─── Relations (TypeScript-only, no migration needed) ─────────────────────────
+
+export const userProgramsRelations = relations(userPrograms, ({ one }) => ({
+  user: one(users, { fields: [userPrograms.userId], references: [users.id] }),
+  template: one(templates, { fields: [userPrograms.templateId], references: [templates.id] }),
+}));
+
+export const workoutsRelations = relations(workouts, ({ one, many }) => ({
+  user: one(users, { fields: [workouts.userId], references: [users.id] }),
+  userProgram: one(userPrograms, {
+    fields: [workouts.userProgramId],
+    references: [userPrograms.id],
+  }),
+  sets: many(workoutSets),
+}));
+
+export const workoutSetsRelations = relations(workoutSets, ({ one }) => ({
+  workout: one(workouts, { fields: [workoutSets.workoutId], references: [workouts.id] }),
+  exercise: one(exercises, { fields: [workoutSets.exerciseId], references: [exercises.id] }),
+}));
+
+export const personalRecordsRelations = relations(personalRecords, ({ one }) => ({
+  user: one(users, { fields: [personalRecords.userId], references: [users.id] }),
+  exercise: one(exercises, { fields: [personalRecords.exerciseId], references: [exercises.id] }),
+  workoutSet: one(workoutSets, {
+    fields: [personalRecords.workoutSetId],
+    references: [workoutSets.id],
+  }),
+}));

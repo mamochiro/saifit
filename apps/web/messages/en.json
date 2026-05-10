@@ -56,7 +56,20 @@
     "browse": "Browse templates",
     "startProgram": "Start this program",
     "daysPerWeek": "Days per week",
-    "difficulty": "Difficulty"
+    "difficulty": "Difficulty",
+    "title": "Training Programs",
+    "filter": {
+      "all": "All",
+      "goal": "Goal",
+      "difficulty": "Difficulty",
+      "days": "Days/week"
+    },
+    "empty": "No programs match your filters",
+    "currentlyActive": "Currently active program"
+  },
+  "programs": {
+    "started": "Program started",
+    "ended": "Program ended"
   },
   "onboarding": {
     "goal": "Your goal",

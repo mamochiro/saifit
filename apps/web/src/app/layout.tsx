@@ -1,8 +1,21 @@
 import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
+import { Chakra_Petch, K2D } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+
+const chakraPetch = Chakra_Petch({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  variable: "--font-display",
+});
+
+const k2d = K2D({
+  subsets: ["latin", "thai"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-body",
+});
 
 export const metadata: Metadata = {
   title: "Saifit",
@@ -19,8 +32,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const messages = await getMessages();
 
   return (
-    <html lang={locale}>
-      <body>
+    <html lang={locale} className={`${chakraPetch.variable} ${k2d.variable}`}>
+      <body className="font-body">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>{children}</Providers>
         </NextIntlClientProvider>

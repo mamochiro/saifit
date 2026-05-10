@@ -152,19 +152,23 @@
 ## Phase 6 — Templates Browser + Program Selection
 **Goal:** User can browse templates and activate one as their program.
 
-- [ ] `GET /api/templates` — list with filters
-- [ ] `GET /api/templates/:id` — detail
-- [ ] `GET /api/programs/active` — current program + today's workout
-- [ ] `POST /api/programs/start` — activate template
-- [ ] `DELETE /api/programs/active` — end program
-- [ ] `/templates` page — grid with filters (goal, difficulty, days/week)
-  - [ ] Empty state for no results
-  - [ ] Loading skeleton
-- [ ] `/templates/[id]` page — description, split view (day-by-day), exercise list, "Start this program" CTA
-- [ ] Home page (`/`) — today's workout card, streak banner, quick stats, "Start Workout" CTA
-  - [ ] Empty state if no active program (prompt to browse templates)
-  - [ ] Loading skeleton
-- [ ] Verify: browse → select template → home shows today's scheduled workout
+- [x] `GET /api/templates` — list with filters (public route)
+- [x] `GET /api/templates/:id` — detail (public route)
+- [x] `GET /api/programs/active` — current program + today's workout
+- [x] `POST /api/programs/start` — activate template
+- [x] `DELETE /api/programs/active` — end program
+- [x] `/templates` page — grid with filters (goal, difficulty, days/week)
+  - [x] Empty state for no results
+  - [x] Loading skeleton
+- [x] `/templates/[id]` page — description, split view (day-by-day), exercise list, "เริ่มโปรแกรมนี้" CTA
+- [x] Home page (`/`) — streak banner, today's workout card, "เริ่มออกกำลังกาย" CTA
+  - [x] Empty state if no active program (เลือกโปรแกรม → /templates)
+  - [x] Loading skeleton
+- [x] Design system applied: Chakra Petch + K2D fonts, OKLCH color tokens
+- [x] Middleware PUBLIC_PATHS updated: /api/templates, /api/exercises added
+- [x] getUserActiveProgram(userId) helper in @saifit/db
+- [x] i18n keys: templates.*, home.*, programs.* in th.json + en.json
+- [x] Verify: browse → select template → home shows today's scheduled workout
 
 **Phase 6 done when:** Program selection → home workout card renders ✅
 
@@ -395,7 +399,7 @@
 | 3 | Templates Seed + Dev User | ✅ |
 | 4 | Next.js Setup | ✅ |
 | 5 | Auth + Onboarding | ✅ |
-| 6 | Templates Browser + Program Selection | ⬜ |
+| 6 | Templates Browser + Program Selection | ✅ |
 | 7 | Workout Logger ⭐ | ⬜ |
 | 8 | Workout History | ⬜ |
 | 9 | Exercise Library | ⬜ |
