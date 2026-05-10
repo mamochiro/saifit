@@ -2,7 +2,14 @@ import { betterFetch } from "@better-fetch/fetch";
 import type { Session } from "better-auth/types";
 import { type NextRequest, NextResponse } from "next/server";
 
-const PUBLIC_PATHS = ["/sign-in", "/sign-up", "/api/auth", "/api/templates", "/api/exercises"];
+const PUBLIC_PATHS = [
+  "/sign-in",
+  "/sign-up",
+  "/offline",
+  "/api/auth",
+  "/api/templates",
+  "/api/exercises",
+];
 const SKIP_ONBOARDING = ["/welcome", "/api/", "/auth/"];
 
 export async function middleware(request: NextRequest) {
