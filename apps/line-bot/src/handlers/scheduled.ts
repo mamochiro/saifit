@@ -165,12 +165,14 @@ async function handleStreakWarning(env: Env): Promise<void> {
   }
 }
 
-export async function scheduledHandler(
-  event: ScheduledEvent,
-  env: Env,
-  _ctx: ExecutionContext,
-): Promise<void> {
-  switch (event.cron) {
+export async function scheduledHandler({
+  cron,
+  env,
+}: {
+  cron: string;
+  env: Env;
+}): Promise<void> {
+  switch (cron) {
     case "0 11 * * *":
       await handleDailyReminder(env);
       break;
@@ -184,6 +186,6 @@ export async function scheduledHandler(
       await handleStreakWarning(env);
       break;
     default:
-      console.log("Unknown cron:", event.cron);
+      console.log("Unknown cron:", cron);
   }
 }

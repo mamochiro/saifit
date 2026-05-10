@@ -1,0 +1,36 @@
+{
+    email {$CADDY_EMAIL}
+}
+
+# Main PWA
+{$DOMAIN} {
+    reverse_proxy web:3000
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options nosniff
+        X-Frame-Options SAMEORIGIN
+        Referrer-Policy strict-origin-when-cross-origin
+        Permissions-Policy "camera=(), microphone=(), geolocation=()"
+    }
+
+    encode gzip zstd
+
+    log {
+        output file /var/log/caddy/access.log {
+            roll_size 10mb
+            roll_keep 5
+        }
+    }
+}
+
+# LINE bot webhook — only POST /webhook exposed
+line.{$DOMAIN} {
+    route /webhook {
+        reverse_proxy line-bot:3001
+    }
+
+    route /* {
+        respond 404
+    }
+}

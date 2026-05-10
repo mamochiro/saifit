@@ -2,7 +2,7 @@ import { Avatar } from "@/components/avatar";
 import { BodyFrontIcon } from "@/components/icons";
 import { auth } from "@/lib/auth";
 import { getDb, streaks, templates, userPrograms, users, workouts } from "@saifit/db";
-import { and, eq, gte } from "drizzle-orm";
+import { and, desc, eq, gte, isNull } from "drizzle-orm";
 import { getTranslations } from "next-intl/server";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -33,7 +33,9 @@ export default async function HomePage() {
   const fourteenDaysAgo = new Date();
   fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
 
-  const [streakRow, activeProgramRows, recentWorkouts] = await Promise.all([
+  const oneDayAgo = new Date(Date.now() - 86_400_000);
+
+  const [streakRow, activeProgramRows, recentWorkouts, inProgressRows] = await Promise.all([
     db.query.streaks.findFirst({ where: eq(streaks.userId, user.id) }),
     db
       .select({
@@ -52,7 +54,21 @@ export default async function HomePage() {
       .select({ startedAt: workouts.startedAt })
       .from(workouts)
       .where(and(eq(workouts.userId, user.id), gte(workouts.startedAt, fourteenDaysAgo))),
+    db
+      .select({ id: workouts.id, name: workouts.name, startedAt: workouts.startedAt })
+      .from(workouts)
+      .where(
+        and(
+          eq(workouts.userId, user.id),
+          isNull(workouts.completedAt),
+          gte(workouts.startedAt, oneDayAgo),
+        ),
+      )
+      .orderBy(desc(workouts.startedAt))
+      .limit(1),
   ]);
+
+  const inProgressWorkout = inProgressRows[0] ?? null;
 
   const activeProgram = activeProgramRows[0] ?? null;
 
@@ -171,6 +187,91 @@ export default async function HomePage() {
             <Avatar name={user.displayName} />
           </div>
         </div>
+
+        {/* In-progress workout resume card */}
+        {inProgressWorkout && (
+          <Link
+            href={`/workout/${inProgressWorkout.id}`}
+            style={{ display: "block", marginBottom: 16, textDecoration: "none" }}
+          >
+            <div
+              className="glass"
+              style={{
+                padding: "14px 18px",
+                display: "flex",
+                alignItems: "center",
+                gap: 14,
+                border: "1px solid var(--violet-edge)",
+                boxShadow: "0 0 0 1px var(--violet-glow), inset 0 0 20px rgba(130,100,255,0.06)",
+              }}
+            >
+              <div
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 10,
+                  background: "linear-gradient(135deg, oklch(65% 0.22 280), oklch(60% 0.20 240))",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                  boxShadow: "0 4px 10px -3px rgba(120,90,255,0.5)",
+                }}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  width={18}
+                  height={18}
+                  fill="currentColor"
+                  style={{ color: "white" }}
+                  aria-hidden="true"
+                >
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p
+                  style={{
+                    fontFamily: "K2D, sans-serif",
+                    fontWeight: 600,
+                    fontSize: 14,
+                    color: "var(--ink)",
+                    margin: 0,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {inProgressWorkout.name}
+                </p>
+                <p
+                  style={{
+                    fontFamily: "K2D, sans-serif",
+                    fontSize: 12,
+                    color: "var(--violet-bright)",
+                    margin: "2px 0 0",
+                  }}
+                >
+                  กำลังออกกำลังกายอยู่ — แตะเพื่อกลับ
+                </p>
+              </div>
+              <svg
+                viewBox="0 0 20 20"
+                width={16}
+                height={16}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ color: "var(--ink-soft)", flexShrink: 0 }}
+                aria-hidden="true"
+              >
+                <path d="M7 4l6 6-6 6" />
+              </svg>
+            </div>
+          </Link>
+        )}
 
         {/* Streak card */}
         {streakRow && (

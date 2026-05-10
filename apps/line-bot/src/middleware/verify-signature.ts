@@ -9,7 +9,8 @@ export const verifySignature: MiddlewareHandler<{
   const body = await c.req.text();
   const signature = c.req.header("x-line-signature") ?? "";
 
-  if (!validateSignature(body, c.env.LINE_CHANNEL_SECRET, signature)) {
+  const secret = c.env?.LINE_CHANNEL_SECRET ?? process.env.LINE_CHANNEL_SECRET ?? "";
+  if (!validateSignature(body, secret, signature)) {
     return c.json({ error: "Invalid signature" }, 401);
   }
 

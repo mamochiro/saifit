@@ -3,14 +3,16 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "target": "ES2022",
-    "module": "ES2022",
-    "moduleResolution": "bundler",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "outDir": "dist",
     "strict": true,
-    "types": ["@cloudflare/workers-types"],
+    "types": ["node"],
     "paths": {
       "@saifit/db": ["../../packages/db/src/index.ts"],
       "@saifit/shared": ["../../packages/shared/src/index.ts"]
     }
   },
-  "include": ["src", "test"]
+  "include": ["src", "test"],
+  "exclude": ["dist", "node_modules"]
 }

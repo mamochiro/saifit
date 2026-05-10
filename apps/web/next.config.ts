@@ -9,4 +9,4 @@ const withSerwist = withSerwistInit({
   disable: process.env.NODE_ENV !== "production",
 });
 
-export default withNextIntl(withSerwist({}));
+export default withNextIntl(withSerwist({ output: "standalone" }));
