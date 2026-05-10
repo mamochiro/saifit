@@ -3,13 +3,14 @@ import type { Session } from "better-auth/types";
 import { type NextRequest, NextResponse } from "next/server";
 
 const PUBLIC_PATHS = ["/sign-in", "/sign-up", "/api/auth", "/api/templates", "/api/exercises"];
-// Auth required but skip onboarding check (also /api/* to prevent infinite loop)
 const SKIP_ONBOARDING = ["/welcome", "/api/", "/auth/"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) return NextResponse.next();
+  if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
+    return NextResponse.next();
+  }
 
   const { data: session } = await betterFetch<Session>("/api/auth/get-session", {
     baseURL: request.nextUrl.origin,
@@ -23,7 +24,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
-  if (SKIP_ONBOARDING.some((p) => pathname.startsWith(p))) return NextResponse.next();
+  if (SKIP_ONBOARDING.some((p) => pathname.startsWith(p))) {
+    return NextResponse.next();
+  }
 
   const { data: user } = await betterFetch<{ onboardingCompleted: boolean }>("/api/me", {
     baseURL: request.nextUrl.origin,

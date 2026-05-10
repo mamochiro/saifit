@@ -58,28 +58,18 @@ function getWeekGroup(dateStr: string, t: (key: string) => string): string {
 
 function HistorySkeleton() {
   return (
-    <div className="px-4 py-4 space-y-0">
-      {Array.from({ length: 5 }).map((_, i) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton
-        <div key={i} className="py-4 border-b border-border animate-pulse">
-          <div className="h-4 bg-border rounded w-3/4 mb-2" />
-          <div className="h-3 bg-border rounded w-1/2" />
-        </div>
+    <div style={{ padding: "14px 24px 0", display: "flex", flexDirection: "column", gap: 10 }}>
+      {(["h-a", "h-b", "h-c", "h-d", "h-e"] as const).map((k) => (
+        <div
+          key={k}
+          style={{
+            height: 72,
+            borderRadius: 20,
+            background: "rgba(255,255,255,0.04)",
+            animation: "pulse 1.5s ease-in-out infinite",
+          }}
+        />
       ))}
-    </div>
-  );
-}
-
-function EmptyState({ t }: { t: ReturnType<typeof useTranslations> }) {
-  return (
-    <div className="px-4 py-12">
-      <p className="text-foreground font-medium leading-[1.7] mb-2">{t("empty")}</p>
-      <Link
-        href="/templates"
-        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-      >
-        {t("startNow")} →
-      </Link>
     </div>
   );
 }
@@ -104,7 +94,6 @@ export default function WorkoutHistoryPage() {
       getNextPageParam: (lastPage) => lastPage.nextCursor ?? null,
     });
 
-  // Infinite scroll observer
   useEffect(() => {
     const el = observerRef.current;
     if (!el) return;
@@ -119,8 +108,6 @@ export default function WorkoutHistoryPage() {
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const allWorkouts = data?.pages.flatMap((p) => p.data) ?? [];
-
-  // Find first abandoned workout
   const abandonedWorkout = allWorkouts.find((w) => w.abandonedWorkout) ?? null;
 
   async function handleResume() {
@@ -150,7 +137,6 @@ export default function WorkoutHistoryPage() {
     queryClient.invalidateQueries({ queryKey: ["workouts"] });
   }
 
-  // Group workouts by week label
   const workoutList = (() => {
     let lastGroup = "";
     return allWorkouts.map((workout) => {
@@ -162,54 +148,105 @@ export default function WorkoutHistoryPage() {
   })();
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="saifit-bg" style={{ minHeight: "100vh", paddingBottom: 110 }}>
       {/* Header */}
-      <div className="px-4 pt-10 pb-4 border-b border-border">
-        <h1 className="text-xl font-semibold leading-[1.7]">{t("title")}</h1>
-      </div>
+      <div style={{ padding: "40px 24px 0" }}>
+        <span className="t-label">HISTORY</span>
+        <h1
+          style={{
+            fontFamily: "K2D, sans-serif",
+            fontWeight: 700,
+            fontSize: 26,
+            color: "var(--ink)",
+            letterSpacing: "-0.01em",
+            lineHeight: 1.15,
+            margin: "6px 0 20px",
+          }}
+        >
+          {t("title")}
+        </h1>
 
-      {/* Abandoned workout banner — full-width, NO side-stripe border */}
-      {abandonedWorkout && (
-        <div className="px-4 py-4 bg-card border-b border-border flex items-center justify-between">
-          <p className="text-sm leading-[1.7] text-foreground">{t("abandoned")}</p>
-          <div className="flex gap-2 shrink-0 ml-4">
-            <button
-              type="button"
-              onClick={handleResume}
-              className="h-9 px-4 text-sm font-semibold bg-primary text-primary-foreground rounded-lg"
+        {/* Abandoned workout banner */}
+        {abandonedWorkout && (
+          <div
+            className="glass"
+            style={{
+              padding: "14px 18px",
+              marginBottom: 16,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <p
+              style={{
+                fontFamily: "K2D, sans-serif",
+                fontSize: 14,
+                color: "var(--ink)",
+                flex: 1,
+              }}
             >
-              {t("resume")}
-            </button>
-            <button
-              type="button"
-              onClick={handleDiscard}
-              className="h-9 px-4 text-sm text-muted-foreground border border-border rounded-lg"
-            >
-              {t("discard")}
-            </button>
+              {t("abandoned")}
+            </p>
+            <div style={{ display: "flex", gap: 8, flexShrink: 0, marginLeft: 12 }}>
+              <button
+                type="button"
+                onClick={handleResume}
+                className="btn-primary"
+                style={{ height: 36, padding: "0 14px", fontSize: 13 }}
+              >
+                {t("resume")}
+              </button>
+              <button
+                type="button"
+                onClick={handleDiscard}
+                className="btn-glass"
+                style={{ height: 36, padding: "0 14px", fontSize: 13 }}
+              >
+                {t("discard")}
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Content */}
       {isLoading ? (
         <HistorySkeleton />
       ) : allWorkouts.length === 0 ? (
-        <EmptyState t={t} />
+        <div style={{ padding: "64px 24px", textAlign: "center" }}>
+          <p
+            style={{
+              fontFamily: "K2D, sans-serif",
+              fontSize: 15,
+              color: "var(--ink-mute)",
+              marginBottom: 12,
+            }}
+          >
+            {t("empty")}
+          </p>
+          <Link
+            href="/templates"
+            style={{
+              fontFamily: "K2D, sans-serif",
+              fontSize: 13,
+              color: "var(--violet-bright)",
+              textDecoration: "none",
+            }}
+          >
+            {t("startNow")} →
+          </Link>
+        </div>
       ) : (
-        <div>
+        <div style={{ padding: "0 24px", display: "flex", flexDirection: "column", gap: 8 }}>
           {workoutList.map(({ workout, group, showHeader }) => (
-            <div key={workout.id} className="border-b border-border last:border-b-0">
-              {/* Week header — only when group changes */}
+            <div key={workout.id}>
               {showHeader && (
-                <div className="px-4 pt-6 pb-2">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide leading-[1.7]">
-                    {group}
-                  </p>
+                <div style={{ padding: "16px 0 6px" }}>
+                  <span className="t-label">{group}</span>
                 </div>
               )}
 
-              {/* Row */}
               <button
                 type="button"
                 onClick={() => deletingId !== workout.id && router.push(`/workout/${workout.id}`)}
@@ -220,36 +257,72 @@ export default function WorkoutHistoryPage() {
                 onTouchStart={() => handleTouchStart(workout.id)}
                 onTouchEnd={handleTouchEnd}
                 onTouchMove={handleTouchEnd}
-                className="w-full px-4 py-4 flex items-center justify-between text-left min-h-14 hover:bg-card/50 active:bg-card transition-colors"
+                className="glass"
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "14px 18px",
+                  textAlign: "left",
+                  cursor: "pointer",
+                  background: deletingId === workout.id ? "rgba(255,60,60,0.08)" : undefined,
+                }}
               >
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-foreground leading-[1.7] truncate">
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <p
+                    style={{
+                      fontFamily: "K2D, sans-serif",
+                      fontSize: 15,
+                      fontWeight: 500,
+                      color: "var(--ink)",
+                      lineHeight: 1.3,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
                     {workout.name}
                   </p>
-                  <p className="text-xs text-muted-foreground leading-[1.7]">
+                  <p
+                    style={{
+                      fontFamily: "K2D, sans-serif",
+                      fontSize: 11,
+                      color: "var(--ink-soft)",
+                      marginTop: 3,
+                    }}
+                  >
                     {formatDate(workout.startedAt)} · {t("exercises", { n: workout.exerciseCount })}{" "}
                     · {t("sets", { n: workout.totalSets })}
                   </p>
                 </div>
-                <div className="text-right ml-4 shrink-0">
-                  <p className="font-display tabular-nums text-sm text-foreground">
+                <div style={{ textAlign: "right", marginLeft: 14, flexShrink: 0 }}>
+                  <p className="t-num" style={{ fontSize: 14, color: "var(--ink)" }}>
                     {formatVolume(workout.totalVolume)}
                   </p>
-                  {workout.durationSeconds && (
-                    <p className="text-xs text-muted-foreground">
+                  {workout.durationSeconds ? (
+                    <p
+                      style={{
+                        fontFamily: "K2D, sans-serif",
+                        fontSize: 11,
+                        color: "var(--ink-soft)",
+                        marginTop: 2,
+                      }}
+                    >
                       {formatDuration(workout.durationSeconds)}
                     </p>
-                  )}
+                  ) : null}
                 </div>
               </button>
 
               {/* Inline delete confirmation */}
               {deletingId === workout.id && (
-                <div className="px-4 pb-4 flex gap-3">
+                <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
                   <button
                     type="button"
                     onClick={() => setDeletingId(null)}
-                    className="flex-1 h-10 border border-border rounded-lg text-sm text-muted-foreground"
+                    className="btn-glass"
+                    style={{ flex: 1, height: 44 }}
                   >
                     {t("discard")}
                   </button>
@@ -257,7 +330,19 @@ export default function WorkoutHistoryPage() {
                     type="button"
                     onClick={() => handleDeleteConfirm(workout.id)}
                     disabled={deleteLoading}
-                    className="flex-1 h-10 bg-destructive text-white font-semibold rounded-lg text-sm disabled:opacity-50"
+                    style={{
+                      flex: 1,
+                      height: 44,
+                      borderRadius: 14,
+                      background: "var(--danger)",
+                      color: "white",
+                      fontFamily: "K2D, sans-serif",
+                      fontWeight: 700,
+                      fontSize: 14,
+                      border: "none",
+                      cursor: "pointer",
+                      opacity: deleteLoading ? 0.5 : 1,
+                    }}
                   >
                     {deleteLoading ? "..." : t("deleteConfirm")}
                   </button>
@@ -268,10 +353,19 @@ export default function WorkoutHistoryPage() {
         </div>
       )}
 
-      {/* Infinite scroll sentinel */}
-      <div ref={observerRef} className="h-4" />
+      <div ref={observerRef} style={{ height: 16 }} />
       {isFetchingNextPage && (
-        <div className="py-4 text-center text-sm text-muted-foreground">กำลังโหลด...</div>
+        <div
+          style={{
+            padding: "16px 0",
+            textAlign: "center",
+            fontFamily: "K2D, sans-serif",
+            fontSize: 13,
+            color: "var(--ink-mute)",
+          }}
+        >
+          กำลังโหลด...
+        </div>
       )}
     </div>
   );

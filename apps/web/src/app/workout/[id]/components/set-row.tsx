@@ -50,7 +50,6 @@ export function SetRow({
           reps: repsNum,
         },
       });
-      // Optimistic cache update
       qc.setQueryData<{ sets: WorkoutSet[] }>(["workout", workoutId], (old) => {
         if (!old) return old;
         return {
@@ -78,7 +77,6 @@ export function SetRow({
     const weightKg = weight ? normalizeDecimal(weight) : null;
     const clientSetId = `${getClientId()}-${set.id}`;
 
-    // Optimistic complete
     setCompleted(true);
     setUndoVisible(true);
     setTimeout(() => setUndoVisible(false), 3000);
@@ -108,7 +106,6 @@ export function SetRow({
         onSetComplete(exerciseName, set.setNumber);
       }
     } catch {
-      // Queue for offline sync
       const clientSetId2 = crypto.randomUUID();
       await enqueue(workoutId, {
         type: "create_set",
@@ -126,14 +123,28 @@ export function SetRow({
     }
   }, [reps, weight, set, workoutId, qc, onPR, onSetComplete]);
 
-  // Completed row: static display with optional undo
+  // Completed row
   if (completed) {
     return (
-      <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-card min-h-14">
-        <span className="text-sm text-muted-foreground tabular-nums w-6 font-display">
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          padding: "10px 14px",
+          borderRadius: 14,
+          background: "rgba(140,100,255,0.08)",
+          border: "1px solid var(--violet-edge)",
+          minHeight: 52,
+        }}
+      >
+        <span
+          className="t-num"
+          style={{ fontSize: 14, color: "var(--ink-soft)", width: 20, flexShrink: 0 }}
+        >
           {set.setNumber}
         </span>
-        <span className="flex-1 text-sm text-muted-foreground tabular-nums font-display">
+        <span className="t-num" style={{ flex: 1, fontSize: 15, color: "var(--ink-mute)" }}>
           {weight || "—"} kg × {reps}
         </span>
         {undoVisible && (
@@ -143,16 +154,37 @@ export function SetRow({
               setCompleted(false);
               setUndoVisible(false);
             }}
-            className="text-xs text-muted-foreground px-3 h-8 border border-border rounded-lg"
+            style={{
+              fontFamily: "K2D, sans-serif",
+              fontSize: 11,
+              color: "var(--ink-soft)",
+              background: "rgba(255,255,255,0.06)",
+              border: "1px solid var(--glass-line)",
+              borderRadius: 8,
+              padding: "4px 10px",
+              cursor: "pointer",
+              flexShrink: 0,
+            }}
           >
             {t("undoAdvance")}
           </button>
         )}
-        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
-          <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true">
+        <div
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: "50%",
+            background: "linear-gradient(135deg, oklch(65% 0.22 280), oklch(60% 0.20 240))",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+          }}
+        >
+          <svg width="12" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true">
             <path
               d="M1 5L5 9L13 1"
-              stroke="black"
+              stroke="white"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -163,10 +195,24 @@ export function SetRow({
     );
   }
 
-  // Active row: editable inputs
+  // Active row
   return (
-    <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-secondary min-h-14">
-      <span className="text-sm text-muted-foreground tabular-nums w-6 shrink-0 font-display">
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        padding: "10px 14px",
+        borderRadius: 14,
+        background: "rgba(255,255,255,0.05)",
+        border: "1px solid var(--glass-line)",
+        minHeight: 56,
+      }}
+    >
+      <span
+        className="t-num"
+        style={{ fontSize: 14, color: "var(--ink-soft)", width: 20, flexShrink: 0 }}
+      >
         {set.setNumber}
       </span>
 
@@ -180,11 +226,23 @@ export function SetRow({
           setWeight(v);
           debouncedSave(v, reps);
         }}
-        className="flex-1 bg-transparent text-center font-display tabular-nums text-lg font-semibold outline-none min-w-0 min-h-14"
+        className="t-num"
+        style={{
+          flex: 1,
+          background: "transparent",
+          border: "none",
+          outline: "none",
+          textAlign: "center",
+          fontSize: 20,
+          fontWeight: 700,
+          color: "var(--ink)",
+          minWidth: 0,
+          minHeight: 56,
+        }}
         aria-label="น้ำหนัก (kg)"
       />
 
-      <span className="text-muted-foreground text-sm shrink-0">×</span>
+      <span style={{ color: "var(--ink-soft)", fontSize: 16, flexShrink: 0 }}>×</span>
 
       <input
         type="text"
@@ -195,21 +253,45 @@ export function SetRow({
           setReps(e.target.value);
           debouncedSave(weight, e.target.value);
         }}
-        className="flex-1 bg-transparent text-center font-display tabular-nums text-lg font-semibold outline-none min-w-0 min-h-14"
+        className="t-num"
+        style={{
+          flex: 1,
+          background: "transparent",
+          border: "none",
+          outline: "none",
+          textAlign: "center",
+          fontSize: 20,
+          fontWeight: 700,
+          color: "var(--ink)",
+          minWidth: 0,
+          minHeight: 56,
+        }}
         aria-label="จำนวนครั้ง"
       />
 
-      {/* Complete Set button — thumb zone, bottom-right, 56px */}
       <button
         type="button"
         onClick={handleComplete}
-        className="w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center shrink-0 active:scale-95 transition-transform"
+        style={{
+          width: 56,
+          height: 56,
+          borderRadius: "50%",
+          background: "linear-gradient(135deg, oklch(65% 0.22 280), oklch(60% 0.20 240))",
+          boxShadow: "0 8px 20px -8px rgba(120,90,255,0.55)",
+          border: "none",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+          transition: "transform 0.1s",
+        }}
         aria-label="เสร็จ"
       >
         <svg width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true">
           <path
             d="M1 7L7 13L17 1"
-            stroke="black"
+            stroke="white"
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"

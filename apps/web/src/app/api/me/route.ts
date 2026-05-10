@@ -1,6 +1,16 @@
 import { auth } from "@/lib/auth";
-import { getDb, users } from "@saifit/db";
-import { eq } from "drizzle-orm";
+import {
+  getDb,
+  personalRecords,
+  reminderLog,
+  streaks,
+  subscriptions,
+  userPrograms,
+  users,
+  workoutSets,
+  workouts,
+} from "@saifit/db";
+import { eq, inArray } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import * as v from "valibot";
 
@@ -94,6 +104,48 @@ export async function PATCH(request: NextRequest) {
     .update(users)
     .set({ ...updateData, updatedAt: new Date() })
     .where(eq(users.betterAuthId, session.user.id));
+
+  return NextResponse.json({ ok: true });
+}
+
+export async function DELETE(request: NextRequest) {
+  const session = await auth.api.getSession({ headers: request.headers });
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const db = getDb();
+  const user = await db.query.users.findFirst({
+    where: eq(users.betterAuthId, session.user.id),
+    columns: { id: true },
+  });
+  if (!user) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  const uid = user.id;
+
+  // Delete in dependency order (tables without ON DELETE CASCADE).
+  // Tables with CASCADE (bodyMeasurements, runningSessions, foodLogs→mealItems)
+  // are cleaned up automatically when the users row is deleted.
+  await db.delete(reminderLog).where(eq(reminderLog.userId, uid));
+  await db.delete(subscriptions).where(eq(subscriptions.userId, uid));
+  await db.delete(personalRecords).where(eq(personalRecords.userId, uid));
+  await db.delete(streaks).where(eq(streaks.userId, uid));
+
+  const userWorkoutIds = await db
+    .select({ id: workouts.id })
+    .from(workouts)
+    .where(eq(workouts.userId, uid));
+
+  if (userWorkoutIds.length > 0) {
+    await db.delete(workoutSets).where(
+      inArray(
+        workoutSets.workoutId,
+        userWorkoutIds.map((w) => w.id),
+      ),
+    );
+  }
+
+  await db.delete(workouts).where(eq(workouts.userId, uid));
+  await db.delete(userPrograms).where(eq(userPrograms.userId, uid));
+  await db.delete(users).where(eq(users.id, uid));
 
   return NextResponse.json({ ok: true });
 }

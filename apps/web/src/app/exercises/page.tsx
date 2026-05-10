@@ -35,13 +35,17 @@ const MUSCLE_FILTERS = [
 
 function ExerciseSkeleton() {
   return (
-    <div>
-      {Array.from({ length: 5 }).map((_, i) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton
-        <div key={i} className="px-4 py-4 border-b border-border animate-pulse">
-          <div className="h-4 bg-border rounded w-2/3 mb-2" />
-          <div className="h-3 bg-border rounded w-1/3" />
-        </div>
+    <div style={{ padding: "14px 24px 0", display: "flex", flexDirection: "column", gap: 10 }}>
+      {(["sk-a", "sk-b", "sk-c", "sk-d", "sk-e"] as const).map((k) => (
+        <div
+          key={k}
+          style={{
+            height: 68,
+            borderRadius: 20,
+            background: "rgba(255,255,255,0.04)",
+            animation: "pulse 1.5s ease-in-out infinite",
+          }}
+        />
       ))}
     </div>
   );
@@ -94,31 +98,67 @@ export default function ExercisesPage() {
   const allExercises = data?.pages.flatMap((p) => p.data) ?? [];
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      {/* Header + search */}
-      <div className="px-4 pt-10 pb-3 border-b border-border">
-        <h1 className="text-xl font-semibold leading-[1.7] mb-3">{t("title")}</h1>
-        <input
-          type="search"
-          placeholder={t("search")}
-          value={rawQ}
-          onChange={(e) => handleSearch(e.target.value)}
-          className="w-full h-12 px-4 bg-secondary border border-border rounded-xl text-sm outline-none focus:ring-1 focus:ring-ring"
-        />
+    <div className="saifit-bg" style={{ minHeight: "100vh", paddingBottom: 110 }}>
+      {/* Header */}
+      <div style={{ padding: "40px 24px 0" }}>
+        <span className="t-label">EXERCISE</span>
+        <h1
+          style={{
+            fontFamily: "K2D, sans-serif",
+            fontWeight: 700,
+            fontSize: 26,
+            color: "var(--ink)",
+            letterSpacing: "-0.01em",
+            lineHeight: 1.15,
+            margin: "6px 0 16px",
+          }}
+        >
+          {t("title")}
+        </h1>
+
+        {/* Search input */}
+        <div className="glass-input">
+          <svg
+            viewBox="0 0 20 20"
+            width={16}
+            height={16}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ color: "var(--ink-soft)", flexShrink: 0 }}
+            aria-hidden="true"
+          >
+            <circle cx="8.5" cy="8.5" r="5.5" />
+            <path d="M15 15l-3-3" />
+          </svg>
+          <input
+            type="search"
+            placeholder={t("search")}
+            value={rawQ}
+            onChange={(e) => handleSearch(e.target.value)}
+          />
+        </div>
       </div>
 
-      {/* Muscle filter chips — horizontal scroll */}
-      <div className="flex gap-2 px-4 py-3 overflow-x-auto scrollbar-none border-b border-border">
+      {/* Muscle filter pills */}
+      <div
+        style={{
+          display: "flex",
+          gap: 8,
+          padding: "16px 24px 0",
+          overflowX: "auto",
+          flexWrap: "nowrap",
+          WebkitOverflowScrolling: "touch",
+        }}
+      >
         {MUSCLE_FILTERS.map((f) => (
           <button
             key={f.value}
             type="button"
             onClick={() => setSelectedMuscle(f.value)}
-            className={`shrink-0 h-8 px-3 rounded-full text-xs font-medium transition-colors ${
-              selectedMuscle === f.value
-                ? "bg-primary text-primary-foreground"
-                : "bg-secondary text-muted-foreground"
-            }`}
+            className={`pill${selectedMuscle === f.value ? " is-active" : ""}`}
           >
             {t(f.labelKey)}
           </button>
@@ -129,8 +169,16 @@ export default function ExercisesPage() {
       {isLoading ? (
         <ExerciseSkeleton />
       ) : allExercises.length === 0 ? (
-        <div className="px-4 py-12">
-          <p className="text-foreground font-medium leading-[1.7] mb-2">{t("noResults")}</p>
+        <div style={{ padding: "64px 24px", textAlign: "center" }}>
+          <p
+            style={{
+              fontFamily: "K2D, sans-serif",
+              fontSize: 15,
+              color: "var(--ink-mute)",
+            }}
+          >
+            {t("noResults")}
+          </p>
           {(q || selectedMuscle) && (
             <button
               type="button"
@@ -139,45 +187,112 @@ export default function ExercisesPage() {
                 setQ("");
                 setSelectedMuscle("");
               }}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              style={{
+                fontFamily: "K2D, sans-serif",
+                fontSize: 13,
+                color: "var(--ink-soft)",
+                marginTop: 12,
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+              }}
             >
               {t("clearFilters")}
             </button>
           )}
         </div>
       ) : (
-        <div>
+        <div style={{ padding: "14px 24px 0", display: "flex", flexDirection: "column", gap: 8 }}>
           {allExercises.map((ex) => (
             <Link
               key={ex.id}
               href={`/exercises/${ex.slug}`}
-              className="block border-b border-border last:border-b-0"
+              className="glass"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "14px 18px",
+                textDecoration: "none",
+              }}
             >
-              <div className="px-4 py-4 min-h-14 hover:bg-card/50 transition-colors">
-                <p className="text-sm font-medium text-foreground leading-[1.7]">{ex.nameTh}</p>
-                <div className="flex flex-wrap gap-1 mt-1">
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p
+                  style={{
+                    fontFamily: "K2D, sans-serif",
+                    fontSize: 15,
+                    fontWeight: 500,
+                    color: "var(--ink)",
+                    lineHeight: 1.3,
+                  }}
+                >
+                  {ex.nameTh}
+                </p>
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 4,
+                    marginTop: 6,
+                  }}
+                >
                   {ex.muscleGroups.map((mg) => (
                     <span
                       key={mg}
-                      className="bg-secondary text-muted-foreground rounded-full px-2 py-0.5 text-xs leading-[1.7]"
+                      className="tag-violet"
+                      style={{ fontSize: 10, padding: "2px 8px" }}
                     >
                       {mg}
                     </span>
                   ))}
-                  <span className="bg-secondary text-muted-foreground rounded-full px-2 py-0.5 text-xs leading-[1.7]">
+                  <span
+                    style={{
+                      fontFamily: "system-ui, sans-serif",
+                      fontSize: 10,
+                      letterSpacing: "0.08em",
+                      color: "var(--ink-soft)",
+                      textTransform: "uppercase",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
                     {ex.equipment}
                   </span>
                 </div>
               </div>
+              <svg
+                viewBox="0 0 20 20"
+                width={16}
+                height={16}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ color: "var(--ink-mute)", flexShrink: 0, marginLeft: 12 }}
+                aria-hidden="true"
+              >
+                <path d="M4 10h12M10 4l6 6-6 6" />
+              </svg>
             </Link>
           ))}
         </div>
       )}
 
       {/* Infinite scroll sentinel */}
-      <div ref={observerRef} className="h-4" />
+      <div ref={observerRef} style={{ height: 16 }} />
       {isFetchingNextPage && (
-        <div className="py-4 text-center text-sm text-muted-foreground">{t("search")}...</div>
+        <div
+          style={{
+            padding: "16px 0",
+            textAlign: "center",
+            fontFamily: "K2D, sans-serif",
+            fontSize: 13,
+            color: "var(--ink-mute)",
+          }}
+        >
+          ...
+        </div>
       )}
     </div>
   );

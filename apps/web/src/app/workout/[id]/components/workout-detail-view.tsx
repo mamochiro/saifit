@@ -62,11 +62,12 @@ function DeleteWorkoutButton({ workoutId }: { workoutId: string }) {
 
   if (confirming) {
     return (
-      <div className="flex gap-3">
+      <div style={{ display: "flex", gap: 12 }}>
         <button
           type="button"
           onClick={() => setConfirming(false)}
-          className="flex-1 h-14 border border-border rounded-xl text-sm text-muted-foreground"
+          className="btn-glass"
+          style={{ flex: 1, height: 52 }}
         >
           ยกเลิก
         </button>
@@ -74,7 +75,19 @@ function DeleteWorkoutButton({ workoutId }: { workoutId: string }) {
           type="button"
           onClick={handleDelete}
           disabled={loading}
-          className="flex-1 h-14 bg-destructive text-white font-semibold rounded-xl text-sm disabled:opacity-50"
+          style={{
+            flex: 1,
+            height: 52,
+            borderRadius: 14,
+            background: "var(--danger)",
+            color: "white",
+            fontFamily: "K2D, sans-serif",
+            fontWeight: 700,
+            fontSize: 15,
+            border: "none",
+            cursor: "pointer",
+            opacity: loading ? 0.5 : 1,
+          }}
         >
           {loading ? "..." : t("deleteConfirm")}
         </button>
@@ -86,7 +99,8 @@ function DeleteWorkoutButton({ workoutId }: { workoutId: string }) {
     <button
       type="button"
       onClick={() => setConfirming(true)}
-      className="w-full h-14 border border-border rounded-xl text-sm text-muted-foreground hover:border-destructive hover:text-destructive transition-colors"
+      className="btn-glass"
+      style={{ width: "100%", height: 52 }}
     >
       {t("deleteWorkout")}
     </button>
@@ -99,7 +113,6 @@ export function WorkoutDetailView({ workout }: { workout: WorkoutData }) {
     0,
   );
 
-  // Group sets by exerciseId in insertion order
   const exerciseGroups = (() => {
     const groups: Map<string, { exercise: WorkoutSet["exercise"]; sets: WorkoutSet[] }> = new Map();
     for (const set of workout.sets) {
@@ -114,44 +127,107 @@ export function WorkoutDetailView({ workout }: { workout: WorkoutData }) {
   })();
 
   return (
-    <div className="min-h-screen bg-background pb-32">
-      {/* Header */}
-      <div className="px-4 pt-10 pb-6 border-b border-border">
-        <h1 className="text-xl font-bold leading-[1.7]">{workout.name}</h1>
-        <p className="text-xs text-muted-foreground mt-1 leading-[1.7]">
-          {formatDate(workout.startedAt)}
-          {workout.durationSeconds ? ` · ${formatDuration(workout.durationSeconds)}` : ""}
-        </p>
-        {totalVolume > 0 && (
-          <p className="font-display tabular-nums text-2xl font-bold mt-2">
-            {formatVolume(totalVolume)}{" "}
-            <span className="text-sm font-body font-normal text-muted-foreground">กก. รวม</span>
+    <div className="saifit-bg" style={{ minHeight: "100vh", paddingBottom: 110 }}>
+      {/* Summary card */}
+      <div style={{ padding: "40px 24px 0" }}>
+        <span className="t-label">SUMMARY</span>
+        <div className="glass glass-glow" style={{ padding: "20px 22px", marginTop: 10 }}>
+          <h1
+            style={{
+              fontFamily: "K2D, sans-serif",
+              fontWeight: 700,
+              fontSize: 20,
+              color: "var(--ink)",
+              margin: 0,
+              lineHeight: 1.2,
+            }}
+          >
+            {workout.name}
+          </h1>
+          <p
+            style={{
+              fontFamily: "K2D, sans-serif",
+              fontSize: 12,
+              color: "var(--ink-soft)",
+              marginTop: 4,
+            }}
+          >
+            {formatDate(workout.startedAt)}
+            {workout.durationSeconds ? ` · ${formatDuration(workout.durationSeconds)}` : ""}
           </p>
-        )}
+          {totalVolume > 0 && (
+            <div style={{ marginTop: 12 }}>
+              <span className="t-num" style={{ fontSize: 36, color: "var(--ink)" }}>
+                {formatVolume(totalVolume)}
+              </span>
+              <span
+                style={{
+                  fontFamily: "K2D, sans-serif",
+                  fontSize: 13,
+                  color: "var(--ink-mute)",
+                  marginLeft: 6,
+                }}
+              >
+                กก. รวม
+              </span>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Exercise sections — read-only rows */}
-      <div className="px-4 pt-6 space-y-8">
+      {/* Exercise sections */}
+      <div style={{ padding: "16px 24px 0", display: "flex", flexDirection: "column", gap: 12 }}>
         {exerciseGroups.map(({ exercise, sets }) => (
-          <div key={exercise?.id ?? sets[0]?.exerciseId}>
-            <h2 className="text-base font-semibold leading-[1.7] mb-1">
+          <div
+            key={exercise?.id ?? sets[0]?.exerciseId}
+            className="glass"
+            style={{ padding: "16px 18px" }}
+          >
+            <p
+              style={{
+                fontFamily: "K2D, sans-serif",
+                fontWeight: 600,
+                fontSize: 15,
+                color: "var(--ink)",
+                lineHeight: 1.3,
+                marginBottom: 2,
+              }}
+            >
               {exercise?.nameTh ?? exercise?.nameEn ?? "Exercise"}
-            </h2>
+            </p>
             {exercise?.muscleGroups && exercise.muscleGroups.length > 0 && (
-              <p className="text-xs text-muted-foreground mb-3">
+              <p
+                style={{
+                  fontFamily: "system-ui, sans-serif",
+                  fontSize: 10,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: "var(--ink-soft)",
+                  marginBottom: 12,
+                }}
+              >
                 {exercise.muscleGroups.join(" · ")}
               </p>
             )}
-            <div className="space-y-0 border border-border rounded-xl overflow-hidden">
-              {sets.map((set) => (
+            <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+              {sets.map((set, idx) => (
                 <div
                   key={set.id}
-                  className="flex items-center justify-between px-4 py-3 border-b border-border last:border-b-0"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "10px 0",
+                    borderBottom: idx < sets.length - 1 ? "1px solid var(--glass-line)" : "none",
+                  }}
                 >
-                  <span className="text-sm text-muted-foreground font-display tabular-nums w-6">
+                  <span
+                    className="t-num"
+                    style={{ fontSize: 13, color: "var(--ink-soft)", width: 20 }}
+                  >
                     {set.setNumber}
                   </span>
-                  <span className="flex-1 text-right font-display tabular-nums text-sm">
+                  <span className="t-num" style={{ fontSize: 15, color: "var(--ink)" }}>
                     {set.isBodyweight ? "BW" : (set.weightKg ?? "—")} kg × {set.reps}
                   </span>
                 </div>
@@ -161,8 +237,20 @@ export function WorkoutDetailView({ workout }: { workout: WorkoutData }) {
         ))}
       </div>
 
-      {/* Fixed delete button at bottom */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t border-border">
+      {/* Delete button */}
+      <div
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          padding: "12px 24px",
+          background: "rgba(8, 8, 16, 0.75)",
+          WebkitBackdropFilter: "blur(20px) saturate(140%)",
+          backdropFilter: "blur(20px) saturate(140%)",
+          borderTop: "1px solid var(--glass-line)",
+        }}
+      >
         <DeleteWorkoutButton workoutId={workout.id} />
       </div>
     </div>

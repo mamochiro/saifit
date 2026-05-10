@@ -44,16 +44,43 @@ interface ChartPoint {
 
 function DetailSkeleton() {
   return (
-    <div className="min-h-screen bg-background px-4 pt-10">
-      <div className="animate-pulse space-y-4">
-        <div className="h-5 bg-border rounded w-20 mb-6" />
-        <div className="h-7 bg-border rounded w-3/4" />
-        <div className="h-4 bg-border rounded w-1/2" />
-        <div className="flex gap-2 mt-4">
-          <div className="h-6 bg-border rounded-full w-16" />
-          <div className="h-6 bg-border rounded-full w-20" />
-        </div>
-        <div className="h-48 bg-secondary rounded-xl mt-6" />
+    <div className="saifit-bg" style={{ minHeight: "100vh", padding: "40px 24px 0" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <div
+          style={{
+            height: 18,
+            width: "30%",
+            borderRadius: 6,
+            background: "rgba(255,255,255,0.06)",
+            animation: "pulse 1.5s ease-in-out infinite",
+          }}
+        />
+        <div
+          style={{
+            height: 28,
+            width: "75%",
+            borderRadius: 8,
+            background: "rgba(255,255,255,0.06)",
+            animation: "pulse 1.5s ease-in-out infinite",
+          }}
+        />
+        <div
+          style={{
+            height: 160,
+            borderRadius: 20,
+            background: "rgba(255,255,255,0.04)",
+            animation: "pulse 1.5s ease-in-out infinite",
+            marginTop: 8,
+          }}
+        />
+        <div
+          style={{
+            height: 100,
+            borderRadius: 20,
+            background: "rgba(255,255,255,0.04)",
+            animation: "pulse 1.5s ease-in-out infinite",
+          }}
+        />
       </div>
     </div>
   );
@@ -72,14 +99,11 @@ export default function ExerciseDetailPage() {
     staleTime: 5 * 60_000,
   });
 
-  if (isLoading) {
-    return <DetailSkeleton />;
-  }
+  if (isLoading) return <DetailSkeleton />;
 
   const exercise = data?.data;
   if (!exercise) return null;
 
-  // Build chart data — oldest first for time-series display
   const chartData: ChartPoint[] = (exercise.history ?? [])
     .map((h) => ({
       date: new Date(h.date).toLocaleDateString("th-TH", { month: "short", day: "numeric" }),
@@ -91,135 +115,251 @@ export default function ExerciseDetailPage() {
   const commonMistake = lang === "th" ? exercise.commonMistakeTh : exercise.commonMistakeEn;
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      {/* Back + header */}
-      <div className="px-4 pt-10 pb-4">
+    <div className="saifit-bg" style={{ minHeight: "100vh", paddingBottom: 110 }}>
+      <div style={{ padding: "40px 24px 0" }}>
+        {/* Back */}
         <button
           type="button"
           onClick={() => router.back()}
-          className="text-sm text-muted-foreground hover:text-foreground mb-4 flex items-center gap-1 min-h-10 -ml-1 px-1"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            fontFamily: "K2D, sans-serif",
+            fontSize: 13,
+            color: "var(--ink-soft)",
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            marginBottom: 20,
+            padding: 0,
+            minHeight: 44,
+          }}
         >
-          ← {t("title")}
+          <svg
+            viewBox="0 0 20 20"
+            width={16}
+            height={16}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M12 4l-6 6 6 6" />
+          </svg>
+          {t("title")}
         </button>
 
         {/* Exercise name */}
-        <h1 className="text-xl font-bold leading-[1.7]">{exercise.nameTh}</h1>
-        <p className="text-sm text-muted-foreground leading-[1.7]">{exercise.nameEn}</p>
+        <h1
+          style={{
+            fontFamily: "K2D, sans-serif",
+            fontWeight: 700,
+            fontSize: 24,
+            color: "var(--ink)",
+            lineHeight: 1.2,
+            margin: 0,
+          }}
+        >
+          {exercise.nameTh}
+        </h1>
+        <p
+          style={{
+            fontFamily: "Chakra Petch, monospace",
+            fontSize: 12,
+            letterSpacing: "0.06em",
+            color: "var(--ink-soft)",
+            textTransform: "uppercase",
+            marginTop: 4,
+          }}
+        >
+          {exercise.nameEn}
+        </p>
 
         {/* Muscle + equipment chips */}
-        <div className="flex flex-wrap gap-1.5 mt-3">
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 12 }}>
           {exercise.muscleGroups.map((mg) => (
-            <span
-              key={mg}
-              className="bg-secondary text-muted-foreground rounded-full px-2.5 py-1 text-xs leading-[1.7]"
-            >
+            <span key={mg} className="tag-violet">
               {mg}
             </span>
           ))}
-          <span className="bg-secondary text-muted-foreground rounded-full px-2.5 py-1 text-xs leading-[1.7]">
+          <span
+            style={{
+              fontFamily: "system-ui, sans-serif",
+              fontSize: 10,
+              letterSpacing: "0.1em",
+              color: "var(--ink-soft)",
+              textTransform: "uppercase",
+              display: "flex",
+              alignItems: "center",
+              padding: "4px 10px",
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid var(--glass-line)",
+              borderRadius: 999,
+            }}
+          >
             {exercise.equipment}
           </span>
         </div>
       </div>
 
-      {/* GIF placeholder — no border, bg-secondary, centered text */}
-      <div className="mx-4 mb-6 h-48 bg-secondary rounded-xl flex flex-col items-center justify-center">
-        <p className="text-sm text-muted-foreground leading-[1.7]">{t("gifPlaceholder")}</p>
-        <p className="text-xs text-muted-foreground/60 mt-1">(coming soon)</p>
+      {/* GIF placeholder */}
+      <div
+        className="glass"
+        style={{
+          margin: "20px 24px",
+          height: 160,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <span className="t-label">DEMO</span>
+        <p
+          style={{
+            fontFamily: "K2D, sans-serif",
+            fontSize: 13,
+            color: "var(--ink-soft)",
+            marginTop: 6,
+          }}
+        >
+          {t("gifPlaceholder")}
+        </p>
       </div>
 
-      {/* Thai/English segmented control */}
-      <div className="px-4 mb-6">
-        <div className="flex gap-0 bg-secondary rounded-xl p-1">
-          <button
-            type="button"
-            onClick={() => setLang("th")}
-            className={`flex-1 h-9 rounded-lg text-sm font-medium transition-colors ${
-              lang === "th"
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {t("thai")}
-          </button>
-          <button
-            type="button"
-            onClick={() => setLang("en")}
-            className={`flex-1 h-9 rounded-lg text-sm font-medium transition-colors ${
-              lang === "en"
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {t("english")}
-          </button>
+      {/* Glass segmented Thai/English */}
+      <div style={{ padding: "0 24px" }}>
+        <div className="glass" style={{ display: "flex", padding: 4, gap: 4, borderRadius: 14 }}>
+          {(["th", "en"] as const).map((l) => (
+            <button
+              key={l}
+              type="button"
+              onClick={() => setLang(l)}
+              style={{
+                flex: 1,
+                height: 36,
+                borderRadius: 10,
+                fontFamily: "K2D, sans-serif",
+                fontWeight: 600,
+                fontSize: 13,
+                border: 0,
+                cursor: "pointer",
+                transition: "background 0.15s, color 0.15s",
+                background: lang === l ? "rgba(140,100,255,0.18)" : "transparent",
+                color: lang === l ? "var(--ink)" : "var(--ink-soft)",
+                boxShadow:
+                  lang === l
+                    ? "0 0 0 1px var(--violet-edge), inset 0 1px 0 rgba(255,255,255,0.08)"
+                    : "none",
+              }}
+            >
+              {l === "th" ? t("thai") : t("english")}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Beginner cue */}
-      <div className="px-4 mb-6">
-        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 leading-[1.7]">
-          {t("beginner")}
-        </h2>
-        <p className="text-sm text-foreground leading-[1.7]">{beginnerCue}</p>
-      </div>
+      {/* Cue cards */}
+      <div
+        style={{
+          padding: "16px 24px 0",
+          display: "flex",
+          flexDirection: "column",
+          gap: 12,
+        }}
+      >
+        <div className="glass" style={{ padding: "16px 20px" }}>
+          <span className="t-label" style={{ display: "block", marginBottom: 8 }}>
+            {t("beginner")}
+          </span>
+          <p
+            style={{
+              fontFamily: "K2D, sans-serif",
+              fontSize: 14,
+              color: "var(--ink)",
+              lineHeight: 1.7,
+            }}
+          >
+            {beginnerCue}
+          </p>
+        </div>
 
-      {/* Common mistakes */}
-      <div className="px-4 mb-8 border-t border-border pt-6">
-        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 leading-[1.7]">
-          {t("mistakes")}
-        </h2>
-        <p className="text-sm text-foreground leading-[1.7]">{commonMistake}</p>
-      </div>
+        <div className="glass" style={{ padding: "16px 20px" }}>
+          <span className="t-label" style={{ display: "block", marginBottom: 8 }}>
+            {t("mistakes")}
+          </span>
+          <p
+            style={{
+              fontFamily: "K2D, sans-serif",
+              fontSize: 14,
+              color: "var(--ink)",
+              lineHeight: 1.7,
+            }}
+          >
+            {commonMistake}
+          </p>
+        </div>
 
-      {/* History chart */}
-      <div className="px-4 pb-8 border-t border-border pt-6">
-        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4 leading-[1.7]">
-          {t("history")}
-        </h2>
-        {!exercise.history || exercise.history.length === 0 ? (
-          <p className="text-sm text-muted-foreground leading-[1.7]">{t("noHistory")}</p>
-        ) : (
-          <ResponsiveContainer width="100%" height={180}>
-            <LineChart data={chartData} margin={{ top: 4, right: 4, bottom: 4, left: -16 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="oklch(25% 0.003 90)" />
-              <XAxis
-                dataKey="date"
-                tick={{ fill: "oklch(40% 0.003 90)", fontSize: 11 }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis
-                tick={{
-                  fill: "oklch(40% 0.003 90)",
-                  fontSize: 11,
-                  fontFamily: "var(--font-display)",
-                }}
-                axisLine={false}
-                tickLine={false}
-                unit=" kg"
-              />
-              <Tooltip
-                contentStyle={{
-                  background: "oklch(14% 0.005 90)",
-                  border: "1px solid oklch(25% 0.003 90)",
-                  borderRadius: "8px",
-                  fontSize: 12,
-                }}
-                labelStyle={{ color: "oklch(60% 0.002 90)" }}
-                itemStyle={{ color: "oklch(97% 0.003 90)" }}
-              />
-              <Line
-                type="monotone"
-                dataKey="maxWeight"
-                stroke="oklch(97% 0.003 90)"
-                strokeWidth={2}
-                dot={{ fill: "oklch(97% 0.003 90)", r: 3 }}
-                activeDot={{ r: 5 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        )}
+        {/* History chart */}
+        <div className="glass" style={{ padding: "16px 20px" }}>
+          <span className="t-label" style={{ display: "block", marginBottom: 16 }}>
+            {t("history")}
+          </span>
+          {!exercise.history || exercise.history.length === 0 ? (
+            <p
+              style={{
+                fontFamily: "K2D, sans-serif",
+                fontSize: 14,
+                color: "var(--ink-mute)",
+              }}
+            >
+              {t("noHistory")}
+            </p>
+          ) : (
+            <ResponsiveContainer width="100%" height={160}>
+              <LineChart data={chartData} margin={{ top: 4, right: 4, bottom: 4, left: -16 }}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="oklch(25% 0.003 90)"
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fill: "oklch(40% 0.003 90)", fontSize: 10 }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fill: "oklch(40% 0.003 90)", fontSize: 10 }}
+                  axisLine={false}
+                  tickLine={false}
+                  unit=" kg"
+                />
+                <Tooltip
+                  contentStyle={{
+                    background: "oklch(14% 0.005 90)",
+                    border: "1px solid var(--glass-line)",
+                    borderRadius: "8px",
+                    fontSize: 12,
+                  }}
+                  labelStyle={{ color: "oklch(60% 0.002 90)" }}
+                  itemStyle={{ color: "var(--ink)" }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="maxWeight"
+                  stroke="var(--violet)"
+                  strokeWidth={2}
+                  dot={{ fill: "var(--violet)", r: 3 }}
+                  activeDot={{ r: 5 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+        </div>
       </div>
     </div>
   );

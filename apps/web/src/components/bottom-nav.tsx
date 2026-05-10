@@ -21,25 +21,28 @@ export function BottomNav() {
   if (HIDDEN_PATHS.some((p) => pathname.startsWith(p))) return null;
 
   return (
-    <nav
-      className="fixed bottom-0 left-0 right-0 z-50 flex items-center bg-background border-t border-border"
-      style={{ minHeight: 56 }}
+    <div
+      style={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 50,
+        padding: "0 16px 16px",
+      }}
     >
-      {NAV_ITEMS.map(({ href, icon: Icon, labelKey }) => {
-        const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
-        return (
-          <Link
-            key={href}
-            href={href}
-            className={`flex flex-col items-center justify-center flex-1 gap-1 py-2 min-h-14 transition-colors ${
-              isActive ? "text-foreground" : "text-muted-foreground"
-            }`}
-          >
-            <Icon size={22} strokeWidth={isActive ? 2.5 : 1.75} aria-hidden="true" />
-            <span className="text-[10px] leading-none">{t(labelKey)}</span>
-          </Link>
-        );
-      })}
-    </nav>
+      <nav className="tabbar">
+        {NAV_ITEMS.map(({ href, icon: Icon, labelKey }) => {
+          const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
+          return (
+            <Link key={href} href={href} className={`tab${isActive ? " is-active" : ""}`}>
+              <Icon size={20} strokeWidth={isActive ? 2.5 : 1.75} aria-hidden="true" />
+              <span>{t(labelKey)}</span>
+              <span className="tab-dot" aria-hidden="true" />
+            </Link>
+          );
+        })}
+      </nav>
+    </div>
   );
 }

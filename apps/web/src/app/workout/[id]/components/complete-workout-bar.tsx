@@ -35,19 +35,31 @@ export function CompleteWorkoutBar({
     },
   });
 
-  // Hide when keyboard is open — rest timer takes that space
   if (keyboardOpen) return null;
 
   return (
     <div
-      className="fixed left-0 right-0 z-30 flex justify-end px-4 py-4 bg-background border-t border-border"
-      style={{ bottom: keyboardHeight }}
+      style={{
+        position: "fixed",
+        left: 0,
+        right: 0,
+        bottom: keyboardHeight,
+        zIndex: 30,
+        display: "flex",
+        justifyContent: "flex-end",
+        padding: "12px 24px",
+        background: "rgba(8, 8, 16, 0.75)",
+        WebkitBackdropFilter: "blur(20px) saturate(140%)",
+        backdropFilter: "blur(20px) saturate(140%)",
+        borderTop: "1px solid var(--glass-line)",
+      }}
     >
       <button
         type="button"
         onClick={() => mutation.mutate()}
         disabled={mutation.isPending}
-        className="h-14 px-8 bg-primary text-primary-foreground font-semibold rounded-xl disabled:opacity-50 transition-colors"
+        className="btn-primary"
+        style={{ height: 52, padding: "0 28px", fontSize: 15 }}
       >
         {mutation.isPending ? "..." : t("completeWorkout")}
       </button>

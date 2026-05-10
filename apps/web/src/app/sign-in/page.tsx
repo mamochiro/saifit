@@ -15,6 +15,7 @@ export default function SignInPage() {
   const [error, setError] = useState<string | null>(null);
   const [lineLoading, setLineLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm({
     defaultValues: { email: "", password: "" },
@@ -52,21 +53,109 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-sm space-y-6">
-        <div className="text-center space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight">GymPal</h1>
-          <p className="text-muted-foreground text-sm leading-relaxed">ติดตามการออกกำลังกายของคุณ</p>
+    <div className="saifit-bg relative min-h-screen flex items-center justify-center p-6">
+      {/* Barbell watermark */}
+      <div
+        className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
+        aria-hidden="true"
+      >
+        <svg
+          viewBox="0 0 600 200"
+          style={{ width: "100vmax", opacity: 0.045, transform: "rotate(-12deg)" }}
+          fill="none"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          aria-hidden="true"
+        >
+          {/* bar */}
+          <line x1="30" y1="100" x2="570" y2="100" strokeWidth="8" />
+          {/* collars */}
+          <rect x="118" y="80" width="16" height="40" rx="2" />
+          <rect x="466" y="80" width="16" height="40" rx="2" />
+          {/* left plate — 3 concentric rings */}
+          <ellipse cx="72" cy="100" rx="42" ry="72" />
+          <ellipse cx="72" cy="100" rx="28" ry="48" />
+          <ellipse cx="72" cy="100" rx="14" ry="24" />
+          <circle cx="72" cy="100" r="6" />
+          {/* right plate — mirror */}
+          <ellipse cx="528" cy="100" rx="42" ry="72" />
+          <ellipse cx="528" cy="100" rx="28" ry="48" />
+          <ellipse cx="528" cy="100" rx="14" ry="24" />
+          <circle cx="528" cy="100" r="6" />
+        </svg>
+      </div>
+
+      {/* Glass card */}
+      <div className="glass relative z-10 w-full max-w-sm" style={{ padding: "36px 24px 28px" }}>
+        {/* Brand lockup */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+            <div
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 8,
+                background: "linear-gradient(135deg, oklch(72% 0.20 270), oklch(60% 0.20 240))",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 6px 16px -6px rgba(120,90,255,0.7)",
+                flexShrink: 0,
+              }}
+            >
+              {/* mini barbell */}
+              <svg
+                viewBox="0 0 20 20"
+                width={20}
+                height={20}
+                fill="none"
+                stroke="white"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                aria-hidden="true"
+              >
+                <line x1="2" y1="10" x2="18" y2="10" />
+                <rect x="5.5" y="6.5" width="2" height="7" rx="0.5" />
+                <rect x="12.5" y="6.5" width="2" height="7" rx="0.5" />
+                <ellipse cx="3.5" cy="10" rx="1.5" ry="4" />
+                <ellipse cx="16.5" cy="10" rx="1.5" ry="4" />
+              </svg>
+            </div>
+            <span
+              style={{
+                fontFamily: "Chakra Petch, monospace",
+                fontWeight: 700,
+                fontSize: 26,
+                letterSpacing: "-0.01em",
+                color: "var(--ink)",
+              }}
+            >
+              GymPal
+            </span>
+          </div>
+          <p
+            style={{
+              fontFamily: "K2D, sans-serif",
+              fontSize: 14,
+              color: "var(--ink-mute)",
+              lineHeight: 1.5,
+            }}
+          >
+            ติดตามการออกกำลังกายของคุณ
+          </p>
         </div>
 
-        <div className="space-y-3">
+        {/* OAuth buttons */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 18 }}>
           <button
             type="button"
             onClick={handleLineLogin}
             disabled={lineLoading}
-            className="w-full h-14 bg-[#00B900] hover:bg-[#009E00] active:bg-[#008500] disabled:opacity-50 text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors"
+            className="btn-line"
+            style={{ width: "100%" }}
           >
-            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width={20} height={20} fill="white" aria-hidden="true">
               <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v3.762h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.070 9.436-6.975C23.176 14.393 24 12.458 24 10.314" />
             </svg>
             {lineLoading ? "กำลังเชื่อมต่อ..." : t("lineLogin")}
@@ -76,9 +165,10 @@ export default function SignInPage() {
             type="button"
             onClick={handleGoogleLogin}
             disabled={googleLoading}
-            className="w-full h-14 border border-border hover:bg-secondary active:bg-secondary/80 disabled:opacity-50 text-foreground font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors"
+            className="btn-glass"
+            style={{ width: "100%" }}
           >
-            <svg viewBox="0 0 24 24" className="w-5 h-5" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width={18} height={18} aria-hidden="true">
               <path
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                 fill="#4285F4"
@@ -100,21 +190,18 @@ export default function SignInPage() {
           </button>
         </div>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-border" />
-          </div>
-          <div className="relative flex justify-center">
-            <span className="bg-background px-3 text-xs text-muted-foreground">หรือ</span>
-          </div>
+        {/* Divider */}
+        <div className="divider-text" style={{ margin: "0 0 18px" }}>
+          หรือ
         </div>
 
+        {/* Email + password form */}
         <form
           onSubmit={(e) => {
             e.preventDefault();
             form.handleSubmit();
           }}
-          className="space-y-4"
+          style={{ display: "flex", flexDirection: "column", gap: 10 }}
         >
           <form.Field
             name="email"
@@ -126,34 +213,55 @@ export default function SignInPage() {
               },
             }}
           >
-            {(field) => (
-              <div className="space-y-1">
-                <label htmlFor="email" className="text-sm font-medium">
-                  {t("email")}
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  placeholder="your@email.com"
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  onBlur={field.handleBlur}
-                  className={cn(
-                    "w-full h-14 px-4 bg-secondary border rounded-xl text-sm outline-none focus:ring-2 focus:ring-ring transition-all",
-                    field.state.meta.isTouched && field.state.meta.errors.length > 0
-                      ? "border-destructive"
-                      : "border-border",
+            {(field) => {
+              const hasError = field.state.meta.isTouched && field.state.meta.errors.length > 0;
+              return (
+                <div>
+                  <div className={cn("glass-input", hasError && "error")}>
+                    {/* @ icon */}
+                    <svg
+                      viewBox="0 0 20 20"
+                      width={16}
+                      height={16}
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      style={{ color: "var(--ink-soft)", flexShrink: 0 }}
+                      aria-hidden="true"
+                    >
+                      <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                      <path
+                        d="M10 12v2.5A2.5 2.5 0 0012.5 17h0a2.5 2.5 0 002.5-2.5V10a5 5 0 10-5 5"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <input
+                      id="email"
+                      type="email"
+                      inputMode="email"
+                      autoComplete="email"
+                      placeholder="อีเมล"
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      onBlur={field.handleBlur}
+                    />
+                  </div>
+                  {hasError && (
+                    <p
+                      style={{
+                        fontFamily: "K2D, sans-serif",
+                        fontSize: 12,
+                        color: "var(--danger)",
+                        marginTop: 4,
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      {field.state.meta.errors[0]}
+                    </p>
                   )}
-                />
-                {field.state.meta.isTouched && field.state.meta.errors.length > 0 && (
-                  <p className="text-xs text-red-400 leading-relaxed">
-                    {field.state.meta.errors[0]}
-                  </p>
-                )}
-              </div>
-            )}
+                </div>
+              );
+            }}
           </form.Field>
 
           <form.Field
@@ -162,37 +270,112 @@ export default function SignInPage() {
               onChange: ({ value }) => (!value ? "กรุณากรอกรหัสผ่าน" : undefined),
             }}
           >
-            {(field) => (
-              <div className="space-y-1">
-                <label htmlFor="password" className="text-sm font-medium">
-                  {t("password")}
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  autoComplete="current-password"
-                  placeholder="••••••••"
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  onBlur={field.handleBlur}
-                  className={cn(
-                    "w-full h-14 px-4 bg-secondary border rounded-xl text-sm outline-none focus:ring-2 focus:ring-ring transition-all",
-                    field.state.meta.isTouched && field.state.meta.errors.length > 0
-                      ? "border-destructive"
-                      : "border-border",
+            {(field) => {
+              const hasError = field.state.meta.isTouched && field.state.meta.errors.length > 0;
+              return (
+                <div>
+                  <div className={cn("glass-input", hasError && "error")}>
+                    {/* lock icon */}
+                    <svg
+                      viewBox="0 0 20 20"
+                      width={16}
+                      height={16}
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      style={{ color: "var(--ink-soft)", flexShrink: 0 }}
+                      aria-hidden="true"
+                    >
+                      <rect x="4" y="9" width="12" height="9" rx="2" />
+                      <path d="M7 9V6a3 3 0 016 0v3" strokeLinecap="round" />
+                    </svg>
+                    <input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      autoComplete="current-password"
+                      placeholder="รหัสผ่าน"
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      onBlur={field.handleBlur}
+                    />
+                    {/* eye toggle */}
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((p) => !p)}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        padding: 0,
+                        color: "var(--ink-soft)",
+                        display: "flex",
+                        flexShrink: 0,
+                      }}
+                      aria-label={showPassword ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน"}
+                    >
+                      {showPassword ? (
+                        <svg
+                          viewBox="0 0 20 20"
+                          width={16}
+                          height={16}
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M3.98 8.223A10.477 10.477 0 001.934 10C3.226 13.307 6.362 15.5 10 15.5c1.23 0 2.398-.248 3.47-.694M6.53 6.53A3.5 3.5 0 0110 6.5c1.93 0 3.5 1.567 3.5 3.5 0 .81-.28 1.556-.74 2.144M6.53 6.53L3 3m3.53 3.53l7.94 7.94M13.47 13.47L17 17"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          viewBox="0 0 20 20"
+                          width={16}
+                          height={16}
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          aria-hidden="true"
+                        >
+                          <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
+                  {hasError && (
+                    <p
+                      style={{
+                        fontFamily: "K2D, sans-serif",
+                        fontSize: 12,
+                        color: "var(--danger)",
+                        marginTop: 4,
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      {field.state.meta.errors[0]}
+                    </p>
                   )}
-                />
-                {field.state.meta.isTouched && field.state.meta.errors.length > 0 && (
-                  <p className="text-xs text-red-400 leading-relaxed">
-                    {field.state.meta.errors[0]}
-                  </p>
-                )}
-              </div>
-            )}
+                </div>
+              );
+            }}
           </form.Field>
 
           {error && (
-            <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-xl text-sm text-red-400 leading-relaxed">
+            <div
+              style={{
+                padding: "10px 14px",
+                background: "rgba(200, 50, 50, 0.10)",
+                border: "1px solid oklch(62% 0.20 25 / 30%)",
+                borderRadius: "var(--r-sm)",
+                fontFamily: "K2D, sans-serif",
+                fontSize: 13,
+                color: "var(--danger)",
+                lineHeight: 1.5,
+              }}
+            >
               {error}
             </div>
           )}
@@ -202,17 +385,46 @@ export default function SignInPage() {
               <button
                 type="submit"
                 disabled={!canSubmit || isSubmitting}
-                className="w-full h-14 bg-primary hover:bg-primary/90 active:bg-primary/80 disabled:opacity-50 text-primary-foreground font-semibold rounded-xl transition-colors"
+                className="btn-primary"
+                style={{ width: "100%", marginTop: 4 }}
               >
-                {isSubmitting ? "กำลังเข้าสู่ระบบ..." : t("signIn")}
+                {isSubmitting ? (
+                  "กำลังเข้าสู่ระบบ..."
+                ) : (
+                  <>
+                    {t("signIn")}
+                    <svg
+                      viewBox="0 0 20 20"
+                      width={16}
+                      height={16}
+                      fill="none"
+                      stroke="white"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M4 10h12M10 4l6 6-6 6" />
+                    </svg>
+                  </>
+                )}
               </button>
             )}
           </form.Subscribe>
         </form>
 
-        <p className="text-center text-sm text-muted-foreground leading-relaxed">
+        {/* Sign-up link */}
+        <p
+          style={{
+            textAlign: "center",
+            marginTop: 18,
+            fontFamily: "K2D, sans-serif",
+            fontSize: 13,
+            color: "var(--ink-soft)",
+          }}
+        >
           ยังไม่มีบัญชี?{" "}
-          <Link href="/sign-up" className="text-primary hover:underline font-medium">
+          <Link href="/sign-up" style={{ color: "var(--ink)", fontWeight: 600 }}>
             {t("signUp")}
           </Link>
         </p>

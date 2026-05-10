@@ -6,7 +6,7 @@ import { useViewportStore } from "@/stores/viewport-store";
 import { normalizeDecimal } from "@saifit/shared";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CompleteWorkoutBar } from "./complete-workout-bar";
 import { ExercisePicker, type PickedExercise } from "./exercise-picker";
 import { PRCelebrationOverlay } from "./pr-celebration-overlay";
@@ -103,8 +103,22 @@ function FirstSetRow({
   };
 
   return (
-    <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-secondary min-h-14">
-      <span className="text-sm text-muted-foreground tabular-nums w-6 shrink-0 font-display">
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        padding: "10px 14px",
+        borderRadius: 16,
+        background: "rgba(255,255,255,0.05)",
+        border: "1px solid var(--glass-line)",
+        minHeight: 56,
+      }}
+    >
+      <span
+        className="t-num"
+        style={{ fontSize: 14, color: "var(--ink-soft)", width: 20, flexShrink: 0 }}
+      >
         {setNumber}
       </span>
 
@@ -114,11 +128,23 @@ function FirstSetRow({
         placeholder="0"
         value={weight}
         onChange={(e) => setWeight(normalizeDecimal(e.target.value))}
-        className="flex-1 bg-transparent text-center font-display tabular-nums text-lg font-semibold outline-none min-w-0 min-h-14"
+        className="t-num"
+        style={{
+          flex: 1,
+          background: "transparent",
+          border: "none",
+          outline: "none",
+          textAlign: "center",
+          fontSize: 20,
+          fontWeight: 700,
+          color: "var(--ink)",
+          minWidth: 0,
+          minHeight: 56,
+        }}
         aria-label="น้ำหนัก (kg)"
       />
 
-      <span className="text-muted-foreground text-sm shrink-0">×</span>
+      <span style={{ color: "var(--ink-soft)", fontSize: 14, flexShrink: 0 }}>×</span>
 
       <input
         type="text"
@@ -126,7 +152,19 @@ function FirstSetRow({
         placeholder="0"
         value={reps}
         onChange={(e) => setReps(e.target.value)}
-        className="flex-1 bg-transparent text-center font-display tabular-nums text-lg font-semibold outline-none min-w-0 min-h-14"
+        className="t-num"
+        style={{
+          flex: 1,
+          background: "transparent",
+          border: "none",
+          outline: "none",
+          textAlign: "center",
+          fontSize: 20,
+          fontWeight: 700,
+          color: "var(--ink)",
+          minWidth: 0,
+          minHeight: 56,
+        }}
         aria-label="จำนวนครั้ง"
       />
 
@@ -134,13 +172,27 @@ function FirstSetRow({
         type="button"
         onClick={handleComplete}
         disabled={saving}
-        className="w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center shrink-0 active:scale-95 transition-transform disabled:opacity-50"
+        style={{
+          width: 56,
+          height: 56,
+          borderRadius: "50%",
+          background: "linear-gradient(135deg, oklch(65% 0.22 280), oklch(60% 0.20 240))",
+          boxShadow: "0 8px 20px -8px rgba(120,90,255,0.55)",
+          border: "none",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+          opacity: saving ? 0.5 : 1,
+          transition: "transform 0.1s, opacity 0.15s",
+        }}
         aria-label={t("complete")}
       >
         <svg width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true">
           <path
             d="M1 7L7 13L17 1"
-            stroke="black"
+            stroke="white"
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -187,8 +239,7 @@ export function WorkoutLoggerView({
 
   const workout = data ?? initialData;
 
-  // Group sets by exerciseId to render exercise sections
-  const exerciseGroups = (() => {
+  const exerciseGroups = useMemo(() => {
     const groups: Map<string, { exercise: WorkoutSet["exercise"]; sets: WorkoutSet[] }> = new Map();
     for (const set of workout.sets) {
       const key = set.exerciseId;
@@ -199,15 +250,13 @@ export function WorkoutLoggerView({
       if (group) group.sets.push(set);
     }
     return Array.from(groups.values());
-  })();
+  }, [workout.sets]);
 
-  // Remove pending exercise once it appears in server data
   useEffect(() => {
     const serverIds = new Set(exerciseGroups.map((g) => g.exercise?.id));
     setPendingExercises((prev) => prev.filter((p) => !serverIds.has(p.id)));
   }, [exerciseGroups]);
 
-  // Flush IndexedDB pending ops to server
   const flush = useCallback(async () => {
     if (flushingRef.current || !navigator.onLine) return;
     const pending = await getPending(workoutId);
@@ -244,7 +293,6 @@ export function WorkoutLoggerView({
     }
   }, [workoutId, qc]);
 
-  // Online/offline + visibilitychange listeners
   useEffect(() => {
     const onOnline = () => {
       setIsOnline(true);
@@ -269,7 +317,6 @@ export function WorkoutLoggerView({
     };
   }, [flush, initViewport]);
 
-  // Poll pending count every 3s
   useEffect(() => {
     const iv = setInterval(async () => {
       const count = await getPendingCount(workoutId);
@@ -290,32 +337,114 @@ export function WorkoutLoggerView({
   };
 
   return (
-    <div className="min-h-screen bg-background pb-28">
+    <div className="saifit-bg" style={{ minHeight: "100vh", paddingBottom: 112 }}>
       {/* Header */}
-      <div className="px-4 pt-10 pb-4 flex items-start justify-between">
-        <div>
-          <h1 className="text-xl font-bold leading-[1.7]">{workout.name}</h1>
+      <div style={{ padding: "40px 24px 20px" }}>
+        <span className="t-label">WORKOUT</span>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginTop: 6,
+          }}
+        >
+          <h1
+            style={{
+              fontFamily: "K2D, sans-serif",
+              fontWeight: 700,
+              fontSize: 22,
+              color: "var(--ink)",
+              letterSpacing: "-0.01em",
+              lineHeight: 1.2,
+              margin: 0,
+            }}
+          >
+            {workout.name}
+          </h1>
           {showSavedLocally && (
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <span
+              style={{
+                fontFamily: "K2D, sans-serif",
+                fontSize: 11,
+                color: "var(--ink-soft)",
+                background: "rgba(255,255,255,0.05)",
+                border: "1px solid var(--glass-line)",
+                borderRadius: 999,
+                padding: "3px 10px",
+              }}
+            >
               {isOnline ? t("syncing") : t("savedLocally")}
-            </p>
+            </span>
           )}
         </div>
       </div>
 
+      {/* Exercise progress bar */}
+      {exerciseGroups.length > 0 && (
+        <div style={{ padding: "0 24px 16px", display: "flex", gap: 4 }}>
+          {exerciseGroups.map(({ exercise, sets }) => {
+            const pct = sets.length > 0 ? 100 : 0;
+            return (
+              <div
+                key={exercise?.id ?? sets[0]?.exerciseId}
+                style={{
+                  flex: 1,
+                  height: 3,
+                  borderRadius: 2,
+                  background: "rgba(255,255,255,0.06)",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    height: "100%",
+                    width: `${pct}%`,
+                    background: pct > 0 ? "var(--violet)" : "transparent",
+                    boxShadow: pct > 0 ? "0 0 6px var(--violet)" : "none",
+                  }}
+                />
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       {/* Exercise sections */}
-      <div className="px-4 space-y-8">
+      <div style={{ padding: "0 24px", display: "flex", flexDirection: "column", gap: 16 }}>
         {exerciseGroups.map(({ exercise, sets }) => (
-          <div key={sets[0]?.exerciseId ?? exercise?.id}>
-            <h2 className="text-base font-semibold mb-1 leading-[1.7]">
+          <div
+            key={sets[0]?.exerciseId ?? exercise?.id}
+            className="glass"
+            style={{ padding: "16px 18px" }}
+          >
+            <p
+              style={{
+                fontFamily: "K2D, sans-serif",
+                fontWeight: 600,
+                fontSize: 15,
+                color: "var(--ink)",
+                lineHeight: 1.3,
+                marginBottom: 2,
+              }}
+            >
               {exercise?.nameTh ?? exercise?.nameEn ?? "Exercise"}
-            </h2>
+            </p>
             {exercise?.muscleGroups && exercise.muscleGroups.length > 0 && (
-              <p className="text-xs text-muted-foreground mb-3">
+              <p
+                style={{
+                  fontFamily: "system-ui, sans-serif",
+                  fontSize: 10,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: "var(--ink-soft)",
+                  marginBottom: 12,
+                }}
+              >
                 {exercise.muscleGroups.join(" · ")}
               </p>
             )}
-            <div className="space-y-2">
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {sets.map((set) => (
                 <SetRow
                   key={set.id}
@@ -336,18 +465,36 @@ export function WorkoutLoggerView({
           </div>
         ))}
 
-        {/* Pending exercises (picked but no sets yet) */}
+        {/* Pending exercises */}
         {pendingExercises.map((exercise) => (
-          <div key={exercise.id}>
-            <h2 className="text-base font-semibold mb-1 leading-[1.7]">
+          <div key={exercise.id} className="glass" style={{ padding: "16px 18px" }}>
+            <p
+              style={{
+                fontFamily: "K2D, sans-serif",
+                fontWeight: 600,
+                fontSize: 15,
+                color: "var(--ink)",
+                lineHeight: 1.3,
+                marginBottom: 2,
+              }}
+            >
               {exercise.nameTh || exercise.nameEn}
-            </h2>
+            </p>
             {exercise.muscleGroups.length > 0 && (
-              <p className="text-xs text-muted-foreground mb-3">
+              <p
+                style={{
+                  fontFamily: "system-ui, sans-serif",
+                  fontSize: 10,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: "var(--ink-soft)",
+                  marginBottom: 12,
+                }}
+              >
                 {exercise.muscleGroups.join(" · ")}
               </p>
             )}
-            <div className="space-y-2">
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               <FirstSetRow
                 exercise={exercise}
                 workoutId={workoutId}
@@ -361,23 +508,47 @@ export function WorkoutLoggerView({
           </div>
         ))}
 
-        {/* Add exercise button */}
+        {/* Add exercise */}
         <button
           type="button"
           onClick={() => setPickerOpen(true)}
-          className="w-full h-14 border border-dashed border-border rounded-xl text-sm text-muted-foreground hover:border-foreground/30 transition-colors"
+          style={{
+            width: "100%",
+            height: 56,
+            borderRadius: 20,
+            background: "rgba(255,255,255,0.03)",
+            border: "1px dashed rgba(255,255,255,0.12)",
+            fontFamily: "K2D, sans-serif",
+            fontSize: 14,
+            color: "var(--ink-soft)",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+          }}
         >
-          + {t("addExercise")}
+          <svg
+            viewBox="0 0 20 20"
+            width={16}
+            height={16}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            aria-hidden="true"
+          >
+            <path d="M10 4v12M4 10h12" />
+          </svg>
+          {t("addExercise")}
         </button>
       </div>
 
-      {/* Rest timer — docked above keyboard */}
+      {/* Rest timer */}
       {restActive && restWorkoutId === workoutId && <RestTimer workoutId={workoutId} />}
 
-      {/* Fixed bottom bar */}
       <CompleteWorkoutBar workoutId={workoutId} startedAt={workout.startedAt} />
 
-      {/* Exercise picker sheet */}
       {pickerOpen && (
         <ExercisePicker
           workoutId={workoutId}
@@ -386,7 +557,6 @@ export function WorkoutLoggerView({
         />
       )}
 
-      {/* PR celebration */}
       {prResult && (
         <PRCelebrationOverlay
           exerciseName={prResult.exerciseName}

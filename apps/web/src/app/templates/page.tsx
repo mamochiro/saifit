@@ -1,8 +1,10 @@
 "use client";
 
+import { BarbellIcon, FlameIcon, MovementIcon, StrengthIcon } from "@/components/icons";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import type React from "react";
 import { useState } from "react";
 
 type Goal = "build_muscle" | "lose_fat" | "get_stronger" | "stay_active";
@@ -21,8 +23,15 @@ interface Template {
 const GOAL_LABELS: Record<Goal, string> = {
   build_muscle: "สร้างกล้าม",
   lose_fat: "ลดไขมัน",
-  get_stronger: "แข็งแรง",
+  get_stronger: "แข็งแกร่ง",
   stay_active: "กระฉับกระเฉง",
+};
+
+const GOAL_ICONS: Record<Goal, React.FC<{ size?: number; className?: string }>> = {
+  build_muscle: BarbellIcon,
+  lose_fat: FlameIcon,
+  get_stronger: StrengthIcon,
+  stay_active: MovementIcon,
 };
 
 const DIFFICULTY_LABELS: Record<Difficulty, string> = {
@@ -34,16 +43,12 @@ const DIFFICULTY_LABELS: Record<Difficulty, string> = {
 export default function TemplatesPage() {
   const t = useTranslations("templates");
   const [goal, setGoal] = useState<Goal | "">("");
-  const [difficulty, setDifficulty] = useState<Difficulty | "">("");
-  const [days, setDays] = useState<number | "">("");
 
   const params = new URLSearchParams();
   if (goal) params.set("goal", goal);
-  if (difficulty) params.set("difficulty", difficulty);
-  if (days) params.set("daysPerWeek", String(days));
 
   const { data, isLoading } = useQuery<{ data: Template[] }>({
-    queryKey: ["templates", goal, difficulty, days],
+    queryKey: ["templates", goal],
     queryFn: () => fetch(`/api/templates?${params}`).then((r) => r.json()),
   });
 
@@ -53,128 +58,213 @@ export default function TemplatesPage() {
     { value: "", label: t("filter.all") },
     { value: "build_muscle", label: "สร้างกล้าม" },
     { value: "lose_fat", label: "ลดไขมัน" },
-    { value: "get_stronger", label: "แข็งแรง" },
+    { value: "get_stronger", label: "แข็งแกร่ง" },
     { value: "stay_active", label: "กระฉับกระเฉง" },
   ];
 
-  const difficultyFilters: Array<{ value: Difficulty | ""; label: string }> = [
-    { value: "", label: t("filter.all") },
-    { value: "beginner", label: "มือใหม่" },
-    { value: "intermediate", label: "ระดับกลาง" },
-    { value: "advanced", label: "ขั้นสูง" },
-  ];
-
-  const dayFilters: Array<{ value: number | ""; label: string }> = [
-    { value: "", label: t("filter.all") },
-    { value: 3, label: "3" },
-    { value: 4, label: "4" },
-    { value: 5, label: "5" },
-    { value: 6, label: "6" },
-  ];
-
   return (
-    <div className="min-h-screen bg-background pb-24">
-      <div className="px-4 pt-10 pb-4">
-        <h1 className="text-2xl font-bold leading-[1.7]">{t("title")}</h1>
+    <div className="saifit-bg" style={{ minHeight: "100vh", paddingBottom: 110 }}>
+      {/* Header */}
+      <div style={{ padding: "40px 24px 0" }}>
+        <span className="t-label">LIBRARY</span>
+        <h1
+          style={{
+            fontFamily: "K2D, sans-serif",
+            fontWeight: 700,
+            fontSize: 26,
+            color: "var(--ink)",
+            letterSpacing: "-0.01em",
+            lineHeight: 1.15,
+            margin: "6px 0 4px",
+          }}
+        >
+          {t("title")}
+        </h1>
+        <p
+          style={{
+            fontFamily: "K2D, sans-serif",
+            fontSize: 13,
+            color: "var(--ink-soft)",
+            lineHeight: 1.5,
+          }}
+        >
+          เลือกโปรแกรมที่เหมาะกับเป้าหมายของคุณ
+        </p>
       </div>
 
-      {/* Filter rows */}
-      <div className="space-y-3 px-4 pb-4">
-        {/* Goal filter */}
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {goalFilters.map((f) => (
-            <button
-              key={String(f.value)}
-              type="button"
-              onClick={() => setGoal(f.value)}
-              className={`shrink-0 px-4 h-9 rounded-full text-sm font-medium border transition-colors ${
-                goal === f.value
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-transparent text-muted-foreground border-border hover:border-foreground"
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Difficulty filter */}
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {difficultyFilters.map((f) => (
-            <button
-              key={String(f.value)}
-              type="button"
-              onClick={() => setDifficulty(f.value)}
-              className={`shrink-0 px-4 h-9 rounded-full text-sm font-medium border transition-colors ${
-                difficulty === f.value
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-transparent text-muted-foreground border-border hover:border-foreground"
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Days/week filter */}
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-          <span className="shrink-0 self-center text-xs text-muted-foreground pr-1">
-            {t("filter.days")}:
-          </span>
-          {dayFilters.map((f) => (
-            <button
-              key={String(f.value)}
-              type="button"
-              onClick={() => setDays(f.value)}
-              className={`shrink-0 px-4 h-9 rounded-full text-sm font-medium border transition-colors tabular-nums ${
-                days === f.value
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-transparent text-muted-foreground border-border hover:border-foreground"
-              }`}
-            >
-              {f.value === "" ? f.label : `${f.label} วัน`}
-            </button>
-          ))}
-        </div>
+      {/* Filter pills */}
+      <div
+        style={{
+          display: "flex",
+          gap: 8,
+          padding: "20px 24px 0",
+          overflowX: "auto",
+          flexWrap: "nowrap",
+          WebkitOverflowScrolling: "touch",
+        }}
+      >
+        {goalFilters.map((f) => (
+          <button
+            key={String(f.value)}
+            type="button"
+            onClick={() => setGoal(f.value)}
+            className={`pill${goal === f.value ? " is-active" : ""}`}
+          >
+            {f.label}
+          </button>
+        ))}
       </div>
 
-      {/* Template grid */}
-      <div className="px-4">
+      {/* Template cards */}
+      <div style={{ padding: "14px 24px 0", display: "flex", flexDirection: "column", gap: 12 }}>
         {isLoading ? (
-          <div className="grid grid-cols-1 gap-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: skeleton placeholder
-              <div key={i} className="h-32 rounded-2xl bg-secondary animate-pulse" />
-            ))}
-          </div>
+          (["skel-1", "skel-2", "skel-3", "skel-4"] as const).map((key) => (
+            <div
+              key={key}
+              style={{
+                height: 110,
+                borderRadius: 20,
+                background: "rgba(255,255,255,0.04)",
+                animation: "pulse 1.5s ease-in-out infinite",
+              }}
+            />
+          ))
         ) : templates.length === 0 ? (
-          <div className="py-16 text-center space-y-2">
-            <p className="text-foreground font-medium">{t("empty")}</p>
-            <p className="text-sm text-muted-foreground leading-[1.7]">ลองเปลี่ยนตัวกรองใหม่</p>
+          <div style={{ padding: "64px 0", textAlign: "center" }}>
+            <p style={{ fontFamily: "K2D, sans-serif", fontSize: 15, color: "var(--ink-mute)" }}>
+              {t("empty")}
+            </p>
+            <p
+              style={{
+                fontFamily: "K2D, sans-serif",
+                fontSize: 13,
+                color: "var(--ink-soft)",
+                marginTop: 6,
+                lineHeight: 1.5,
+              }}
+            >
+              ลองเปลี่ยนตัวกรองใหม่
+            </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-3">
-            {templates.map((tmpl) => (
+          templates.map((tmpl) => {
+            const GoalIcon = GOAL_ICONS[tmpl.goal];
+            return (
               <Link
                 key={tmpl.id}
                 href={`/templates/${tmpl.id}`}
-                className="block bg-card border border-border rounded-2xl p-5 hover:border-foreground/30 transition-colors active:scale-[0.99]"
+                className="glass"
+                style={{
+                  display: "block",
+                  padding: "20px 22px",
+                  position: "relative",
+                  textDecoration: "none",
+                }}
               >
-                <div className="flex items-start justify-between gap-3">
-                  <h2 className="font-semibold leading-[1.7] text-foreground">{tmpl.nameTh}</h2>
-                  <span className="shrink-0 text-xs border border-border rounded-full px-2.5 py-0.5 text-muted-foreground">
-                    {DIFFICULTY_LABELS[tmpl.difficulty]}
-                  </span>
-                </div>
-                <div className="mt-3 flex items-center gap-4 text-sm text-muted-foreground">
-                  <span className="tabular-nums">
-                    <span className="font-display">{tmpl.daysPerWeek}</span> วัน/สัปดาห์
-                  </span>
-                  <span>{GOAL_LABELS[tmpl.goal]}</span>
+                {/* Ghost background icon */}
+                {GoalIcon && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      right: -10,
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      color: "white",
+                      opacity: 0.1,
+                      pointerEvents: "none",
+                    }}
+                    aria-hidden="true"
+                  >
+                    <GoalIcon size={120} />
+                  </div>
+                )}
+
+                <div style={{ position: "relative" }}>
+                  {/* Title row */}
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "baseline",
+                      gap: 8,
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontFamily: "Chakra Petch, monospace",
+                        fontWeight: 700,
+                        fontSize: 22,
+                        color: "var(--ink)",
+                        letterSpacing: "-0.01em",
+                      }}
+                    >
+                      {tmpl.nameTh}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: "system-ui, sans-serif",
+                        fontSize: 10,
+                        letterSpacing: "0.12em",
+                        color: "var(--ink-soft)",
+                        textTransform: "uppercase",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontFamily: "Chakra Petch, monospace",
+                          fontWeight: 700,
+                        }}
+                      >
+                        {tmpl.daysPerWeek}
+                      </span>{" "}
+                      วัน/สัปดาห์
+                    </span>
+                  </div>
+
+                  {/* Goal sub-line */}
+                  <p
+                    style={{
+                      fontFamily: "K2D, sans-serif",
+                      fontSize: 14,
+                      color: "var(--ink-mute)",
+                      marginTop: 4,
+                      marginBottom: 14,
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    {GOAL_LABELS[tmpl.goal]}
+                  </p>
+
+                  {/* Footer row */}
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <span className="tag-violet">{DIFFICULTY_LABELS[tmpl.difficulty]}</span>
+                    {/* Arrow */}
+                    <svg
+                      viewBox="0 0 20 20"
+                      width={18}
+                      height={18}
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      style={{ color: "var(--ink-mute)" }}
+                      aria-hidden="true"
+                    >
+                      <path d="M4 10h12M10 4l6 6-6 6" />
+                    </svg>
+                  </div>
                 </div>
               </Link>
-            ))}
-          </div>
+            );
+          })
         )}
       </div>
     </div>

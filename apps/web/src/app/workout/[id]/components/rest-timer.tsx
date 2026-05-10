@@ -37,21 +37,49 @@ export function RestTimer({ workoutId: _workoutId }: { workoutId: string }) {
 
   return (
     <div
-      className="fixed left-0 right-0 z-40 flex flex-col items-center gap-3 px-4 py-4 bg-background border-t border-border"
-      style={{ bottom: keyboardHeight }}
+      style={{
+        position: "fixed",
+        left: 0,
+        right: 0,
+        bottom: keyboardHeight,
+        zIndex: 40,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 12,
+        padding: "16px 24px",
+        background: "rgba(8, 8, 16, 0.85)",
+        WebkitBackdropFilter: "blur(24px) saturate(140%)",
+        backdropFilter: "blur(24px) saturate(140%)",
+        borderTop: "1px solid var(--glass-line)",
+      }}
     >
-      <p className="text-xs text-muted-foreground">{isDone ? t("done") : t("resting")}</p>
+      <p
+        style={{
+          fontFamily: "K2D, sans-serif",
+          fontSize: 11,
+          letterSpacing: "0.14em",
+          textTransform: "uppercase",
+          color: "var(--ink-soft)",
+        }}
+      >
+        {isDone ? t("done") : t("resting")}
+      </p>
 
-      <div className="relative w-28 h-28">
-        <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100" aria-hidden="true">
+      <div style={{ position: "relative", width: 112, height: 112 }}>
+        <svg
+          style={{ width: "100%", height: "100%", transform: "rotate(-90deg)" }}
+          viewBox="0 0 100 100"
+          aria-hidden="true"
+        >
           {/* Track ring */}
           <circle
             cx="50"
             cy="50"
             r={RADIUS}
             fill="none"
-            stroke="oklch(25% 0.003 90)"
-            strokeWidth="6"
+            stroke="rgba(255,255,255,0.06)"
+            strokeWidth="5"
           />
           {/* Progress arc */}
           <circle
@@ -59,38 +87,72 @@ export function RestTimer({ workoutId: _workoutId }: { workoutId: string }) {
             cy="50"
             r={RADIUS}
             fill="none"
-            stroke="oklch(97% 0.003 90)"
-            strokeWidth="6"
+            stroke={isDone ? "var(--violet)" : "var(--violet-bright)"}
+            strokeWidth="5"
             strokeLinecap="round"
             strokeDasharray={CIRCUMFERENCE}
             strokeDashoffset={strokeDashoffset}
             style={{ transition: "stroke-dashoffset 0.1s linear" }}
           />
         </svg>
-        <span className="absolute inset-0 flex items-center justify-center font-display tabular-nums text-2xl font-bold">
+        <span
+          className="t-num"
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 22,
+            color: isDone ? "var(--violet-bright)" : "var(--ink)",
+          }}
+        >
           {isDone ? t("done") : timeStr}
         </span>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <button
           type="button"
           onClick={() => addSeconds(-15)}
-          className="h-10 px-4 border border-border rounded-full text-sm text-muted-foreground hover:border-foreground/30 transition-colors"
+          style={{
+            height: 40,
+            padding: "0 16px",
+            borderRadius: 999,
+            fontFamily: "K2D, sans-serif",
+            fontSize: 13,
+            fontWeight: 600,
+            color: "var(--ink-soft)",
+            background: "rgba(255,255,255,0.06)",
+            border: "1px solid var(--glass-line)",
+            cursor: "pointer",
+          }}
         >
           {t("minus15")}
         </button>
         <button
           type="button"
           onClick={cancel}
-          className="h-10 px-5 bg-primary text-primary-foreground font-semibold rounded-full text-sm"
+          className="btn-primary"
+          style={{ height: 40, padding: "0 20px", fontSize: 13 }}
         >
           {t("skip")}
         </button>
         <button
           type="button"
           onClick={() => addSeconds(15)}
-          className="h-10 px-4 border border-border rounded-full text-sm text-muted-foreground hover:border-foreground/30 transition-colors"
+          style={{
+            height: 40,
+            padding: "0 16px",
+            borderRadius: 999,
+            fontFamily: "K2D, sans-serif",
+            fontSize: 13,
+            fontWeight: 600,
+            color: "var(--ink-soft)",
+            background: "rgba(255,255,255,0.06)",
+            border: "1px solid var(--glass-line)",
+            cursor: "pointer",
+          }}
         >
           {t("add15")}
         </button>

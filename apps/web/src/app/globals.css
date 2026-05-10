@@ -1,26 +1,26 @@
 @import "tailwindcss";
 
 @theme {
-  /* OKLCH color system — barely warm (hue 90) */
-  --color-background: oklch(10.5% 0.005 90);
-  --color-foreground: oklch(92% 0.004 90);
-  --color-card: oklch(14% 0.005 90);
-  --color-card-foreground: oklch(92% 0.004 90);
-  --color-popover: oklch(14% 0.005 90);
-  --color-popover-foreground: oklch(92% 0.004 90);
-  --color-primary: oklch(97% 0.003 90);
-  --color-primary-foreground: oklch(10.5% 0.005 90);
-  --color-secondary: oklch(17% 0.004 90);
-  --color-secondary-foreground: oklch(92% 0.004 90);
-  --color-muted: oklch(14% 0.005 90);
-  --color-muted-foreground: oklch(60% 0.002 90);
-  --color-accent: oklch(17% 0.004 90);
-  --color-accent-foreground: oklch(92% 0.004 90);
+  /* OKLCH color system — cold blue-tinted dark (hue 240–270) */
+  --color-background: oklch(8% 0.005 240);
+  --color-foreground: oklch(95% 0.003 90);
+  --color-card: oklch(11% 0.008 250);
+  --color-card-foreground: oklch(95% 0.003 90);
+  --color-popover: oklch(11% 0.008 250);
+  --color-popover-foreground: oklch(95% 0.003 90);
+  --color-primary: oklch(72% 0.2 270);
+  --color-primary-foreground: oklch(98% 0.002 270);
+  --color-secondary: oklch(17% 0.006 245);
+  --color-secondary-foreground: oklch(95% 0.003 90);
+  --color-muted: oklch(14% 0.007 248);
+  --color-muted-foreground: oklch(55% 0.004 240);
+  --color-accent: oklch(17% 0.006 245);
+  --color-accent-foreground: oklch(95% 0.003 90);
   --color-destructive: oklch(62% 0.2 25);
-  --color-destructive-foreground: oklch(92% 0.004 90);
-  --color-border: oklch(25% 0.003 90);
-  --color-input: oklch(17% 0.004 90);
-  --color-ring: oklch(97% 0.003 90);
+  --color-destructive-foreground: oklch(95% 0.003 90);
+  --color-border: oklch(22% 0.005 248);
+  --color-input: oklch(17% 0.006 245);
+  --color-ring: oklch(72% 0.2 270);
   --radius: 0.5rem;
 
   /* Typography */
@@ -46,4 +46,387 @@ body {
 
 .tabular-nums {
   font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Saifit / GymPal — Dark glassmorphism design system
+   Sourced from design_handoff_saifit/styles.css
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  /* surfaces */
+  --bg: oklch(8% 0.005 240);
+  --bg-2: oklch(11% 0.008 250);
+  --glass: rgba(255, 255, 255, 0.06);
+  --glass-2: rgba(255, 255, 255, 0.09);
+  --glass-line: rgba(255, 255, 255, 0.1);
+  --glass-line-2: rgba(255, 255, 255, 0.16);
+
+  /* ink */
+  --ink: oklch(95% 0.003 90);
+  --ink-mute: oklch(72% 0.004 90);
+  --ink-soft: oklch(55% 0.004 90);
+  --ink-faint: oklch(38% 0.005 250);
+
+  /* accents */
+  --violet: oklch(72% 0.2 270);
+  --violet-deep: oklch(60% 0.2 240);
+  --violet-bright: oklch(78% 0.2 285);
+  --violet-glow: oklch(72% 0.2 270 / 25%);
+  --violet-edge: oklch(72% 0.2 270 / 45%);
+  --danger: oklch(62% 0.2 25);
+  --line-green: #00b900;
+
+  /* radius */
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+}
+
+/* ───────── Reset just enough ───────── */
+.saifit-root,
+.saifit-root * {
+  box-sizing: border-box;
+}
+.saifit-root {
+  font-family: "K2D", system-ui, sans-serif;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ───────── Backdrop ───────── */
+.saifit-bg {
+  background: radial-gradient(140% 70% at 80% -10%, rgba(120, 90, 255, 0.1), transparent 60%),
+    radial-gradient(110% 70% at -10% 110%, rgba(60, 110, 220, 0.08), transparent 55%), var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+.saifit-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+}
+.saifit-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 3px 3px;
+  opacity: 0.18;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* ───────── Glass primitives ───────── */
+.glass {
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid var(--glass-line);
+  border-radius: var(--r-lg);
+  position: relative;
+  overflow: hidden;
+}
+.glass::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+  pointer-events: none;
+}
+.glass-glow {
+  box-shadow: 0 0 0 1px var(--violet-glow), 0 24px 60px -20px rgba(120, 100, 255, 0.3);
+}
+.glass-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(130, 100, 255, 0.1), transparent 60%);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ───────── Buttons ───────── */
+.btn-primary {
+  height: 56px;
+  border-radius: var(--r-md);
+  font-family: "K2D", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: white;
+  border: 0;
+  cursor: pointer;
+  background: linear-gradient(135deg, oklch(65% 0.22 280), oklch(60% 0.2 240));
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.18) inset, 0 -8px 20px rgba(60, 30, 180, 0.35) inset, 0
+    12px 30px -10px rgba(120, 90, 255, 0.55);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+.btn-primary:hover {
+  filter: brightness(1.08);
+}
+.btn-primary:active,
+.btn-primary.is-pressed {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1) inset, 0 -4px 14px rgba(60, 30, 180, 0.45) inset, 0
+    6px 16px -8px rgba(120, 90, 255, 0.55);
+}
+.btn-primary:disabled {
+  opacity: 0.45;
+  cursor: default;
+  filter: none;
+  transform: none;
+}
+
+.btn-glass {
+  height: 56px;
+  border-radius: var(--r-md);
+  background: var(--glass-2);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-line-2);
+  color: var(--ink);
+  font-family: "K2D", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.btn-glass:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.btn-line {
+  height: 56px;
+  border-radius: var(--r-md);
+  background: var(--line-green);
+  color: #fff;
+  border: 0;
+  font-family: "K2D", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 8px 22px -10px rgba(0, 185, 0, 0.55);
+  transition: filter .15s;
+}
+.btn-line:hover {
+  filter: brightness(1.06);
+}
+.btn-line:disabled {
+  opacity: 0.5;
+  cursor: default;
+  filter: none;
+}
+
+/* ───────── Inputs ───────── */
+.glass-input {
+  height: 52px;
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-line);
+  color: var(--ink);
+  font-family: "K2D", system-ui, sans-serif;
+  font-size: 15px;
+  padding: 0 16px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: border-color .15s, box-shadow .15s, background .15s;
+}
+.glass-input.is-focused,
+.glass-input:focus-within {
+  border-color: var(--violet-edge);
+  box-shadow: 0 0 0 4px rgba(140, 100, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+}
+.glass-input.error {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px oklch(62% 0.2 25 / 15%);
+}
+.glass-input input {
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: inherit;
+  font: inherit;
+  flex: 1;
+  min-width: 0;
+}
+.glass-input input::placeholder {
+  color: var(--ink-soft);
+}
+
+/* ───────── Type ───────── */
+.t-num {
+  font-family: "Chakra Petch", monospace;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.t-label {
+  font-family: system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.t-th {
+  font-family: "K2D", system-ui, sans-serif;
+}
+
+/* ───────── Pills / chips ───────── */
+.pill {
+  height: 34px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-line);
+  color: var(--ink-mute);
+  font-family: "K2D", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.pill.is-active {
+  background: rgba(140, 100, 255, 0.12);
+  border-color: var(--violet-edge);
+  color: var(--ink);
+  box-shadow: 0 0 0 1px var(--violet-glow), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.pill-sm {
+  height: 24px;
+  padding: 0 10px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ───────── Bottom nav ───────── */
+.tabbar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  height: 76px;
+  border-radius: 26px;
+  background: rgba(20, 22, 30, 0.55);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  backdrop-filter: blur(28px) saturate(160%);
+  border: 1px solid var(--glass-line);
+  position: relative;
+}
+.tabbar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 12px;
+  right: 12px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+}
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--ink-soft);
+  font-family: "K2D", sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+}
+.tab.is-active {
+  color: var(--ink);
+}
+.tab.is-active .tab-dot {
+  background: var(--violet);
+  box-shadow: 0 0 14px var(--violet);
+}
+.tab-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  margin-top: 2px;
+}
+
+/* ───────── Heatmap ───────── */
+.heatmap {
+  display: grid;
+  grid-template-columns: repeat(13, 1fr);
+  gap: 4px;
+}
+.heatmap-cell {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* ───────── Misc ───────── */
+.divider-text {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-family: "K2D", sans-serif;
+}
+.divider-text::before,
+.divider-text::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--glass-line);
+}
+
+.tag-violet {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(140, 100, 255, 0.14);
+  border: 1px solid var(--violet-edge);
+  color: var(--violet-bright);
+  font-family: "K2D", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* ───────── Watermark utility ───────── */
+.watermark {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.05;
+  color: var(--ink);
 }

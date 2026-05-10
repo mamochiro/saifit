@@ -1,10 +1,12 @@
 "use client";
 
-import { signOut } from "@/lib/auth-client";
+import { signIn, signOut } from "@/lib/auth-client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+
+// ─── Types ───────────────────────────────────────────────────────────────────
 
 interface User {
   id: string;
@@ -14,7 +16,18 @@ interface User {
   locale: "th" | "en";
   reminderEnabled: boolean;
   reminderTime: string;
+  goal: "build_muscle" | "lose_fat" | "get_stronger" | "stay_active" | null;
+  gymType: "commercial" | "home_equipment" | "home_no_equipment" | null;
+  daysPerWeek: number | null;
 }
+
+interface ConnectedAccount {
+  id: string;
+  provider?: string;
+  providerId?: string;
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value);
@@ -33,17 +46,37 @@ async function patchMe(data: Record<string, unknown>): Promise<void> {
   });
 }
 
-function SectionHeader({ title }: { title: string }) {
+// ─── PillRow ─────────────────────────────────────────────────────────────────
+
+function PillRow({
+  options,
+  value,
+  onChange,
+}: {
+  options: { value: string; label: string }[];
+  value: string | number | null;
+  onChange: (v: string) => void;
+}) {
   return (
-    <div className="px-4 pt-6 pb-2">
-      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide leading-[1.7]">
-        {title}
-      </p>
+    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+      {options.map((opt) => (
+        <button
+          key={opt.value}
+          type="button"
+          className={`pill${String(value) === opt.value ? " is-active" : ""}`}
+          style={{ height: 44 }}
+          onClick={() => onChange(opt.value)}
+        >
+          {opt.label}
+        </button>
+      ))}
     </div>
   );
 }
 
-function SegmentedControl({
+// ─── GlassSegmented ──────────────────────────────────────────────────────────
+
+function GlassSegmented({
   options,
   value,
   onChange,
@@ -53,17 +86,32 @@ function SegmentedControl({
   onChange: (v: string) => void;
 }) {
   return (
-    <div className="mx-4 flex gap-0 bg-secondary rounded-xl p-1">
+    <div
+      className="glass"
+      style={{ display: "flex", padding: 4, gap: 4, borderRadius: 14, margin: "0 24px" }}
+    >
       {options.map((opt) => (
         <button
           key={opt.value}
           type="button"
           onClick={() => onChange(opt.value)}
-          className={`flex-1 h-9 rounded-lg text-sm font-medium transition-colors ${
-            value === opt.value
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
+          style={{
+            flex: 1,
+            height: 36,
+            borderRadius: 10,
+            fontFamily: "K2D, sans-serif",
+            fontWeight: 600,
+            fontSize: 13,
+            border: 0,
+            cursor: "pointer",
+            transition: "background 0.15s, color 0.15s",
+            background: value === opt.value ? "rgba(140,100,255,0.18)" : "transparent",
+            color: value === opt.value ? "var(--ink)" : "var(--ink-soft)",
+            boxShadow:
+              value === opt.value
+                ? "0 0 0 1px var(--violet-edge), inset 0 1px 0 rgba(255,255,255,0.08)"
+                : "none",
+          }}
         >
           {opt.label}
         </button>
@@ -72,7 +120,9 @@ function SegmentedControl({
   );
 }
 
-function Toggle({
+// ─── VioletToggle ────────────────────────────────────────────────────────────
+
+function VioletToggle({
   checked,
   onChange,
 }: {
@@ -85,34 +135,80 @@ function Toggle({
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${
-        checked ? "bg-primary" : "bg-secondary border border-border"
-      }`}
+      style={{
+        position: "relative",
+        display: "inline-flex",
+        width: 48,
+        height: 28,
+        alignItems: "center",
+        borderRadius: 999,
+        border: 0,
+        cursor: "pointer",
+        transition: "background 0.2s",
+        background: checked
+          ? "linear-gradient(135deg, oklch(65% 0.22 280), oklch(60% 0.20 240))"
+          : "rgba(255,255,255,0.08)",
+        boxShadow: checked ? "0 0 12px var(--violet-glow)" : "none",
+      }}
     >
       <span
-        className={`inline-block h-5 w-5 rounded-full bg-background shadow-sm transition-transform ${
-          checked ? "translate-x-6" : "translate-x-1"
-        }`}
+        style={{
+          display: "inline-block",
+          width: 20,
+          height: 20,
+          borderRadius: "50%",
+          background: "white",
+          boxShadow: "0 1px 4px rgba(0,0,0,0.3)",
+          transition: "transform 0.2s",
+          transform: checked ? "translateX(24px)" : "translateX(4px)",
+        }}
       />
     </button>
   );
 }
 
+// ─── Skeleton ────────────────────────────────────────────────────────────────
+
 function SettingsSkeleton() {
   return (
-    <div className="min-h-screen bg-background px-4 pt-10">
-      <div className="animate-pulse space-y-6">
-        <div className="h-7 bg-border rounded w-1/3" />
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="space-y-2">
-            <div className="h-3 bg-border rounded w-16" />
-            <div className="h-12 bg-secondary rounded-xl" />
+    <div className="saifit-bg" style={{ minHeight: "100vh", padding: "40px 24px 0" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+        <div
+          style={{
+            height: 28,
+            width: "40%",
+            borderRadius: 8,
+            background: "rgba(255,255,255,0.06)",
+            animation: "pulse 1.5s ease-in-out infinite",
+          }}
+        />
+        {(["s1", "s2", "s3", "s4", "s5", "s6"] as const).map((k) => (
+          <div key={k} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div
+              style={{
+                height: 10,
+                width: 64,
+                borderRadius: 4,
+                background: "rgba(255,255,255,0.04)",
+                animation: "pulse 1.5s ease-in-out infinite",
+              }}
+            />
+            <div
+              style={{
+                height: 52,
+                borderRadius: 14,
+                background: "rgba(255,255,255,0.06)",
+                animation: "pulse 1.5s ease-in-out infinite",
+              }}
+            />
           </div>
         ))}
       </div>
     </div>
   );
 }
+
+// ─── SettingsPage ─────────────────────────────────────────────────────────────
 
 export default function SettingsPage() {
   const t = useTranslations("settings");
@@ -125,6 +221,14 @@ export default function SettingsPage() {
     staleTime: 60_000,
   });
 
+  // Section 3 — connected accounts
+  const { data: accounts, isLoading: accountsLoading } = useQuery<ConnectedAccount[]>({
+    queryKey: ["auth-accounts"],
+    queryFn: () => fetch("/api/auth/list-accounts").then((r) => r.json()),
+    staleTime: 30_000,
+  });
+
+  // Profile display name (debounced auto-save)
   const [displayName, setDisplayName] = useState("");
   const debouncedName = useDebounce(displayName, 300);
   const nameInitialized = useRef(false);
@@ -145,6 +249,21 @@ export default function SettingsPage() {
     patchMe({ displayName: debouncedName });
   }, [debouncedName]);
 
+  // Section 2 — nutrition local state
+  // TODO: Add defaultTargetKcal, defaultTargetProteinG, defaultTargetCarbsG, defaultTargetFatG
+  // columns to the users table (packages/db/src/schema.ts) then wire these to PATCH /api/me.
+  const [kcal, setKcal] = useState(2100);
+  const [protein, setProtein] = useState(150);
+  const [carbs, setCarbs] = useState(220);
+  const [fat, setFat] = useState(70);
+
+  // Section 4 — data actions
+  const [exporting, setExporting] = useState(false);
+  const [deleteConfirming, setDeleteConfirming] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  // ── Handlers ──────────────────────────────────────────────
+
   async function handleUnitChange(units: string) {
     await patchMe({ unitsPreference: units });
     queryClient.setQueryData<User>(["me"], (old) =>
@@ -153,6 +272,7 @@ export default function SettingsPage() {
   }
 
   async function handleLocaleChange(locale: string) {
+    document.cookie = `NEXT_LOCALE=${locale}; path=/; max-age=31536000; SameSite=Lax`;
     await patchMe({ locale });
     queryClient.setQueryData<User>(["me"], (old) =>
       old ? { ...old, locale: locale as "th" | "en" } : old,
@@ -172,42 +292,244 @@ export default function SettingsPage() {
     queryClient.setQueryData<User>(["me"], (old) => (old ? { ...old, reminderTime: time } : old));
   }
 
+  async function handleTrainingField(field: "goal" | "gymType" | "daysPerWeek", value: string) {
+    const payload = field === "daysPerWeek" ? { daysPerWeek: Number(value) } : { [field]: value };
+    await patchMe(payload);
+    queryClient.setQueryData<User>(["me"], (old) => (old ? { ...old, ...payload } : old));
+  }
+
+  async function handleExport() {
+    setExporting(true);
+    try {
+      const res = await fetch("/api/me/export");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "saifit-export.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  async function handleDeleteAccount() {
+    setDeleting(true);
+    try {
+      await fetch("/api/me", { method: "DELETE" });
+      await signOut();
+      router.push("/sign-in");
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   async function handleSignOut() {
     await signOut();
     router.push("/sign-in");
   }
 
+  const isAccountConnected = (provider: string) =>
+    accounts?.some((a) => (a.provider ?? a.providerId) === provider) ?? false;
+
   if (isLoading || !data) return <SettingsSkeleton />;
 
+  const GOAL_OPTIONS = [
+    { value: "build_muscle", label: t("goalBuildMuscle") },
+    { value: "lose_fat", label: t("goalLoseFat") },
+    { value: "get_stronger", label: t("goalGetStronger") },
+    { value: "stay_active", label: t("goalStayActive") },
+  ];
+
+  const GYM_OPTIONS = [
+    { value: "commercial", label: t("gymCommercial") },
+    { value: "home_equipment", label: t("gymHomeEquipment") },
+    { value: "home_no_equipment", label: t("gymHomeNoEquipment") },
+  ];
+
+  const DAY_OPTIONS = Array.from({ length: 7 }, (_, i) => ({
+    value: String(i + 1),
+    label: String(i + 1),
+  }));
+
+  const NUTRITION_FIELDS = [
+    { id: "kcal", label: t("nutritionKcal"), value: kcal, set: setKcal, min: 1000, max: 5000 },
+    {
+      id: "protein",
+      label: t("nutritionProtein"),
+      value: protein,
+      set: setProtein,
+      min: 50,
+      max: 400,
+    },
+    { id: "carbs", label: t("nutritionCarbs"), value: carbs, set: setCarbs, min: 50, max: 600 },
+    { id: "fat", label: t("nutritionFat"), value: fat, set: setFat, min: 20, max: 200 },
+  ] as const;
+
   return (
-    <div className="min-h-screen bg-background pb-28">
-      <div className="px-4 pt-10 pb-4">
-        <h1 className="text-xl font-bold leading-[1.7]">{t("title")}</h1>
+    <div className="saifit-bg" style={{ minHeight: "100vh", paddingBottom: 110 }}>
+      <div style={{ padding: "40px 24px 0" }}>
+        <span className="t-label">ACCOUNT</span>
+        <h1
+          style={{
+            fontFamily: "K2D, sans-serif",
+            fontWeight: 700,
+            fontSize: 26,
+            color: "var(--ink)",
+            letterSpacing: "-0.01em",
+            lineHeight: 1.15,
+            margin: "6px 0 28px",
+          }}
+        >
+          {t("title")}
+        </h1>
       </div>
 
-      {/* Profile */}
-      <SectionHeader title={t("profile")} />
-      <div className="mx-4 bg-secondary rounded-2xl overflow-hidden">
-        <div className="px-4 py-3">
+      {/* ── Profile ──────────────────────────────────────────── */}
+      <div style={{ margin: "0 24px 6px" }}>
+        <span className="t-label" style={{ paddingLeft: 2 }}>
+          {t("profile")}
+        </span>
+      </div>
+      <div className="glass" style={{ margin: "8px 24px", padding: "4px 0" }}>
+        <div style={{ padding: "12px 18px" }}>
           <label
             htmlFor="displayName"
-            className="text-xs text-muted-foreground leading-[1.7] block mb-1"
+            style={{
+              fontFamily: "K2D, sans-serif",
+              fontSize: 12,
+              color: "var(--ink-soft)",
+              display: "block",
+              marginBottom: 6,
+            }}
           >
             {t("displayName")}
           </label>
-          <input
-            id="displayName"
-            type="text"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            className="w-full h-11 px-3 bg-background border border-border rounded-xl text-sm outline-none focus:ring-1 focus:ring-ring leading-[1.7]"
+          <div className="glass-input" style={{ height: 44 }}>
+            <input
+              id="displayName"
+              type="text"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* ── Section 1: Training ──────────────────────────────── */}
+      <div style={{ margin: "20px 24px 6px" }}>
+        <span className="t-label" style={{ paddingLeft: 2 }}>
+          {t("training")}
+        </span>
+      </div>
+      <div className="glass" style={{ margin: "8px 24px", padding: "4px 0" }}>
+        <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--glass-line)" }}>
+          <p
+            style={{
+              fontFamily: "K2D, sans-serif",
+              fontSize: 12,
+              color: "var(--ink-soft)",
+              marginBottom: 10,
+            }}
+          >
+            {t("trainingGoal")}
+          </p>
+          <PillRow
+            options={GOAL_OPTIONS}
+            value={data.goal}
+            onChange={(v) => handleTrainingField("goal", v)}
+          />
+        </div>
+        <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--glass-line)" }}>
+          <p
+            style={{
+              fontFamily: "K2D, sans-serif",
+              fontSize: 12,
+              color: "var(--ink-soft)",
+              marginBottom: 10,
+            }}
+          >
+            {t("trainingGymType")}
+          </p>
+          <PillRow
+            options={GYM_OPTIONS}
+            value={data.gymType}
+            onChange={(v) => handleTrainingField("gymType", v)}
+          />
+        </div>
+        <div style={{ padding: "14px 18px" }}>
+          <p
+            style={{
+              fontFamily: "K2D, sans-serif",
+              fontSize: 12,
+              color: "var(--ink-soft)",
+              marginBottom: 10,
+            }}
+          >
+            {t("trainingDaysPerWeek")}
+          </p>
+          <PillRow
+            options={DAY_OPTIONS}
+            value={data.daysPerWeek}
+            onChange={(v) => handleTrainingField("daysPerWeek", v)}
           />
         </div>
       </div>
 
-      {/* Units */}
-      <SectionHeader title={t("units")} />
-      <SegmentedControl
+      {/* ── Section 2: Nutrition ─────────────────────────────── */}
+      <div style={{ margin: "20px 24px 6px" }}>
+        <span className="t-label" style={{ paddingLeft: 2 }}>
+          {t("nutrition")}
+        </span>
+      </div>
+      <div className="glass" style={{ margin: "8px 24px", padding: "4px 0" }}>
+        {/* TODO: Add defaultTargetKcal, defaultTargetProteinG, defaultTargetCarbsG,
+            defaultTargetFatG columns to users table then wire PATCH /api/me here. */}
+        {NUTRITION_FIELDS.map((field, idx) => (
+          <div
+            key={field.id}
+            style={{
+              padding: "12px 18px",
+              ...(idx < NUTRITION_FIELDS.length - 1
+                ? { borderBottom: "1px solid var(--glass-line)" }
+                : {}),
+            }}
+          >
+            <label
+              htmlFor={`nutrition-${field.id}`}
+              style={{
+                fontFamily: "K2D, sans-serif",
+                fontSize: 12,
+                color: "var(--ink-soft)",
+                display: "block",
+                marginBottom: 6,
+              }}
+            >
+              {field.label}
+            </label>
+            <div className="glass-input" style={{ height: 44 }}>
+              <input
+                id={`nutrition-${field.id}`}
+                type="number"
+                inputMode="numeric"
+                min={field.min}
+                max={field.max}
+                value={field.value}
+                onChange={(e) => field.set(Number(e.target.value) as never)}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Units ────────────────────────────────────────────── */}
+      <div style={{ margin: "20px 24px 6px" }}>
+        <span className="t-label" style={{ paddingLeft: 2 }}>
+          {t("units")}
+        </span>
+      </div>
+      <GlassSegmented
         options={[
           { value: "kg", label: t("kg") },
           { value: "lb", label: t("lb") },
@@ -216,9 +538,13 @@ export default function SettingsPage() {
         onChange={handleUnitChange}
       />
 
-      {/* Language */}
-      <SectionHeader title={t("language")} />
-      <SegmentedControl
+      {/* ── Language ─────────────────────────────────────────── */}
+      <div style={{ margin: "20px 24px 6px" }}>
+        <span className="t-label" style={{ paddingLeft: 2 }}>
+          {t("language")}
+        </span>
+      </div>
+      <GlassSegmented
         options={[
           { value: "th", label: t("thai") },
           { value: "en", label: t("english") },
@@ -227,49 +553,215 @@ export default function SettingsPage() {
         onChange={handleLocaleChange}
       />
 
-      {/* Reminders */}
-      <SectionHeader title={t("reminders")} />
-      <div className="mx-4 bg-secondary rounded-2xl overflow-hidden divide-y divide-border">
-        <div className="px-4 flex items-center justify-between min-h-14">
-          <span className="text-sm leading-[1.7]">{t("reminderEnabled")}</span>
-          <Toggle checked={data.reminderEnabled} onChange={handleReminderEnabled} />
+      {/* ── Reminders ────────────────────────────────────────── */}
+      <div style={{ margin: "20px 24px 6px" }}>
+        <span className="t-label" style={{ paddingLeft: 2 }}>
+          {t("reminders")}
+        </span>
+      </div>
+      <div className="glass" style={{ margin: "8px 24px" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "0 18px",
+            minHeight: 56,
+          }}
+        >
+          <span style={{ fontFamily: "K2D, sans-serif", fontSize: 14, color: "var(--ink)" }}>
+            {t("reminderEnabled")}
+          </span>
+          <VioletToggle checked={data.reminderEnabled} onChange={handleReminderEnabled} />
         </div>
         {data.reminderEnabled && (
-          <div className="px-4 py-3">
+          <div style={{ borderTop: "1px solid var(--glass-line)", padding: "12px 18px" }}>
             <label
               htmlFor="reminderTime"
-              className="text-xs text-muted-foreground leading-[1.7] block mb-1"
+              style={{
+                fontFamily: "K2D, sans-serif",
+                fontSize: 12,
+                color: "var(--ink-soft)",
+                display: "block",
+                marginBottom: 6,
+              }}
             >
               {t("reminderTime")}
             </label>
-            <input
-              id="reminderTime"
-              type="time"
-              value={data.reminderTime}
-              onChange={(e) => handleReminderTime(e.target.value)}
-              className="w-full h-11 px-3 bg-background border border-border rounded-xl text-sm outline-none focus:ring-1 focus:ring-ring"
-            />
+            <div className="glass-input" style={{ height: 44 }}>
+              <input
+                id="reminderTime"
+                type="time"
+                value={data.reminderTime}
+                onChange={(e) => handleReminderTime(e.target.value)}
+                style={{ colorScheme: "dark" }}
+              />
+            </div>
           </div>
         )}
       </div>
 
-      {/* LINE Connection */}
-      <SectionHeader title={t("lineConnected")} />
-      <div className="mx-4 bg-secondary rounded-2xl overflow-hidden">
-        <div className="px-4 flex items-center justify-between min-h-14">
-          <span className="text-sm leading-[1.7]">LINE</span>
-          <span className="text-xs bg-background text-muted-foreground px-2.5 py-1 rounded-full border border-border leading-[1.7]">
-            {t("lineComingSoon")}
-          </span>
+      {/* ── Section 3: Connected Accounts ────────────────────── */}
+      <div style={{ margin: "20px 24px 6px" }}>
+        <span className="t-label" style={{ paddingLeft: 2 }}>
+          {t("accounts")}
+        </span>
+      </div>
+      <div className="glass" style={{ margin: "8px 24px" }}>
+        {accountsLoading ? (
+          <div style={{ padding: "14px 18px", display: "flex", flexDirection: "column", gap: 12 }}>
+            {(["line-sk", "google-sk"] as const).map((k) => (
+              <div
+                key={k}
+                style={{
+                  height: 44,
+                  borderRadius: 12,
+                  background: "rgba(255,255,255,0.04)",
+                  animation: "pulse 1.5s ease-in-out infinite",
+                }}
+              />
+            ))}
+          </div>
+        ) : (
+          [
+            { provider: "line", label: "LINE" },
+            { provider: "google", label: "Google" },
+          ].map((acct, idx, arr) => {
+            const connected = isAccountConnected(acct.provider);
+            return (
+              <div
+                key={acct.provider}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "0 18px",
+                  minHeight: 56,
+                  ...(idx < arr.length - 1 ? { borderBottom: "1px solid var(--glass-line)" } : {}),
+                }}
+              >
+                <span style={{ fontFamily: "K2D, sans-serif", fontSize: 14, color: "var(--ink)" }}>
+                  {acct.label}
+                </span>
+                {connected ? (
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <span
+                      style={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: "50%",
+                        background: "#22c55e",
+                        flexShrink: 0,
+                      }}
+                    />
+                    <span
+                      style={{
+                        fontFamily: "K2D, sans-serif",
+                        fontSize: 12,
+                        color: "var(--ink-soft)",
+                      }}
+                    >
+                      {t("accountConnected")}
+                    </span>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    className="btn-glass"
+                    style={{ height: 36, padding: "0 16px", fontSize: 13 }}
+                    onClick={() =>
+                      signIn.social({
+                        provider: acct.provider as "line" | "google",
+                        callbackURL: "/settings",
+                      })
+                    }
+                  >
+                    {t("accountConnect")}
+                  </button>
+                )}
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* ── Section 4: Data & Account ─────────────────────────── */}
+      <div style={{ margin: "20px 24px 6px" }}>
+        <span className="t-label" style={{ paddingLeft: 2 }}>
+          {t("data")}
+        </span>
+      </div>
+      <div className="glass" style={{ margin: "8px 24px", padding: "4px 0" }}>
+        <div style={{ padding: "12px 18px", borderBottom: "1px solid var(--glass-line)" }}>
+          <button
+            type="button"
+            className="btn-glass"
+            style={{ width: "100%" }}
+            disabled={exporting}
+            onClick={handleExport}
+          >
+            {exporting ? t("exporting") : t("exportData")}
+          </button>
+        </div>
+        <div style={{ padding: "12px 18px" }}>
+          {!deleteConfirming ? (
+            <button
+              type="button"
+              className="btn-glass"
+              style={{
+                width: "100%",
+                color: "var(--danger)",
+                borderColor: "var(--danger)",
+              }}
+              onClick={() => setDeleteConfirming(true)}
+            >
+              {t("deleteAccount")}
+            </button>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <p
+                style={{
+                  fontFamily: "K2D, sans-serif",
+                  fontSize: 14,
+                  color: "var(--ink)",
+                  textAlign: "center",
+                  lineHeight: 1.5,
+                }}
+              >
+                {t("deleteConfirmMsg")}
+              </p>
+              <div style={{ display: "flex", gap: 10 }}>
+                <button
+                  type="button"
+                  className="btn-glass"
+                  style={{ flex: 1, color: "var(--ink-soft)" }}
+                  onClick={() => setDeleteConfirming(false)}
+                  disabled={deleting}
+                >
+                  {t("deleteConfirmNo")}
+                </button>
+                <button
+                  type="button"
+                  className="btn-glass"
+                  style={{ flex: 1, color: "var(--danger)", borderColor: "var(--danger)" }}
+                  onClick={handleDeleteAccount}
+                  disabled={deleting}
+                >
+                  {deleting ? t("deleting") : t("deleteConfirmYes")}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Sign Out */}
-      <div className="px-4 mt-8">
+      {/* ── Sign Out ──────────────────────────────────────────── */}
+      <div style={{ padding: "28px 24px 0" }}>
         <button
           type="button"
           onClick={handleSignOut}
-          className="w-full min-h-14 rounded-2xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors leading-[1.7]"
+          className="btn-glass"
+          style={{ width: "100%" }}
         >
           {t("signOut")}
         </button>
