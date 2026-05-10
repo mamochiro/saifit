@@ -1,12 +1,23 @@
 "use client";
 
+import { PRCelebrationOverlay } from "@/app/workout/[id]/components/pr-celebration-overlay";
 import { FlameIcon } from "@/components/icons";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useId } from "react";
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { useId, useState } from "react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 // ─── Interfaces ──────────────────────────────────────────────────────────────
 
@@ -247,6 +258,165 @@ function Sparkline({ values }: { values: number[] }) {
   );
 }
 
+// ─── OneRMChart ───────────────────────────────────────────────────────────────
+
+function OneRMChart({ records }: { records: PRRecord[] }) {
+  const id = useId();
+  const sorted = [...records]
+    .filter((r) => r.recordType === "estimated_1rm")
+    .sort((a, b) => new Date(a.achievedAt).getTime() - new Date(b.achievedAt).getTime());
+
+  if (sorted.length < 2) return null;
+
+  const data = sorted.map((r) => ({
+    date: new Date(r.achievedAt).toLocaleDateString("th-TH", { month: "short", day: "numeric" }),
+    value: Math.round(r.value * 10) / 10,
+  }));
+
+  return (
+    <div style={{ marginTop: 14 }}>
+      <p
+        style={{
+          fontFamily: "Chakra Petch, monospace",
+          fontSize: 10,
+          letterSpacing: "0.1em",
+          color: "var(--ink-soft)",
+          textTransform: "uppercase",
+          marginBottom: 8,
+        }}
+      >
+        e1RM Trend
+      </p>
+      <ResponsiveContainer width="100%" height={80}>
+        <LineChart data={data} margin={{ top: 4, right: 4, left: -28, bottom: 0 }}>
+          <defs>
+            <linearGradient id={`${id}-line`} x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="var(--violet)" stopOpacity={0.6} />
+              <stop offset="100%" stopColor="var(--violet-bright)" stopOpacity={1} />
+            </linearGradient>
+          </defs>
+          <XAxis
+            dataKey="date"
+            tick={{ fontFamily: "Chakra Petch, monospace", fontSize: 9, fill: "var(--ink-faint)" }}
+            axisLine={false}
+            tickLine={false}
+          />
+          <YAxis
+            tick={{ fontFamily: "Chakra Petch, monospace", fontSize: 9, fill: "var(--ink-faint)" }}
+            axisLine={false}
+            tickLine={false}
+            domain={["auto", "auto"]}
+          />
+          <Tooltip
+            contentStyle={{
+              background: "var(--glass-bg)",
+              border: "1px solid var(--glass-line)",
+              borderRadius: 10,
+              fontFamily: "K2D, sans-serif",
+              fontSize: 12,
+              color: "var(--ink)",
+            }}
+            formatter={(v: number) => [`${v} kg`, "e1RM"]}
+            labelStyle={{ color: "var(--ink-soft)" }}
+          />
+          <Line
+            type="monotone"
+            dataKey="value"
+            stroke={`url(#${id}-line)`}
+            strokeWidth={2}
+            dot={{ fill: "var(--violet-bright)", strokeWidth: 0, r: 3 }}
+            activeDot={{ fill: "var(--violet-bright)", r: 4, strokeWidth: 0 }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+// ─── PRCard ───────────────────────────────────────────────────────────────────
+
+function PRCard({ group }: { group: PRGroup }) {
+  const [showTrend, setShowTrend] = useState(false);
+  const maxW = group.records.find((r) => r.recordType === "max_weight");
+  const est1rm = group.records.find((r) => r.recordType === "estimated_1rm");
+  const sparkValues = group.records
+    .filter((r) => r.recordType === "max_weight")
+    .map((r) => r.value);
+  const trendPoints = group.records.filter((r) => r.recordType === "estimated_1rm");
+
+  return (
+    <div key={group.exerciseId} className="glass" style={{ padding: "16px 20px" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+        }}
+      >
+        <div>
+          <span className="t-label" style={{ display: "block", marginBottom: 6 }}>
+            {group.nameTh}
+          </span>
+          {maxW && (
+            <span className="t-num" style={{ fontSize: 36, color: "var(--ink)" }}>
+              {maxW.value.toFixed(1)}
+              <span
+                style={{
+                  fontFamily: "K2D, sans-serif",
+                  fontSize: 14,
+                  color: "var(--ink-mute)",
+                  marginLeft: 4,
+                }}
+              >
+                kg
+              </span>
+            </span>
+          )}
+          {est1rm && (
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 4 }}>
+              <p
+                style={{
+                  fontFamily: "K2D, sans-serif",
+                  fontSize: 12,
+                  color: "var(--ink-soft)",
+                }}
+              >
+                e1RM{" "}
+                <span className="t-num" style={{ fontSize: 13, color: "var(--ink-mute)" }}>
+                  {est1rm.value.toFixed(1)}
+                </span>{" "}
+                kg
+              </p>
+              {trendPoints.length >= 2 && (
+                <button
+                  type="button"
+                  onClick={() => setShowTrend((v) => !v)}
+                  style={{
+                    fontFamily: "Chakra Petch, monospace",
+                    fontSize: 9,
+                    letterSpacing: "0.08em",
+                    color: showTrend ? "var(--violet-bright)" : "var(--ink-faint)",
+                    background: "none",
+                    border: "1px solid var(--glass-line)",
+                    borderRadius: 6,
+                    padding: "2px 7px",
+                    cursor: "pointer",
+                    transition: "color 0.15s",
+                  }}
+                >
+                  TREND
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+        <Sparkline values={sparkValues} />
+      </div>
+      {showTrend && <OneRMChart records={group.records} />}
+    </div>
+  );
+}
+
 // ─── RecordsTab ───────────────────────────────────────────────────────────────
 
 function RecordsTab({
@@ -259,11 +429,38 @@ function RecordsTab({
   isLoading: boolean;
 }) {
   const t = useTranslations("progress");
+  const [celebration, setCelebration] = useState<{
+    exerciseName: string;
+    value: number;
+    type: string;
+  } | null>(null);
+
+  // Show confetti for PRs achieved in the last 5 minutes
+  const freshPR = prs
+    ?.flatMap((g) =>
+      g.records
+        .filter((r) => Date.now() - new Date(r.achievedAt).getTime() < 5 * 60 * 1000)
+        .map((r) => ({ exerciseName: g.nameTh, value: r.value, type: r.recordType })),
+    )
+    .at(0);
 
   if (isLoading) return <ProgressSkeleton />;
 
   return (
     <div style={{ padding: "20px 24px 0", display: "flex", flexDirection: "column", gap: 16 }}>
+      {(() => {
+        const active = celebration ?? freshPR;
+        if (!active || celebration?.exerciseName.startsWith("__dismissed")) return null;
+        return (
+          <PRCelebrationOverlay
+            exerciseName={active.exerciseName}
+            value={active.value}
+            type={active.type}
+            onDismiss={() => setCelebration({ exerciseName: "__dismissed", value: 0, type: "" })}
+          />
+        );
+      })()}
+
       {/* Streak card */}
       <div className="glass glass-glow" style={{ padding: "20px 22px 18px" }}>
         <div
@@ -309,62 +506,9 @@ function RecordsTab({
           <span className="t-label" style={{ paddingLeft: 2 }}>
             {t("pr.maxWeight")}
           </span>
-          {prs.map((group) => {
-            const maxW = group.records.find((r) => r.recordType === "max_weight");
-            const est1rm = group.records.find((r) => r.recordType === "estimated_1rm");
-            const sparkValues = group.records
-              .filter((r) => r.recordType === "max_weight")
-              .map((r) => r.value);
-            return (
-              <div key={group.exerciseId} className="glass" style={{ padding: "16px 20px" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                  }}
-                >
-                  <div>
-                    <span className="t-label" style={{ display: "block", marginBottom: 6 }}>
-                      {group.nameTh}
-                    </span>
-                    {maxW && (
-                      <span className="t-num" style={{ fontSize: 36, color: "var(--ink)" }}>
-                        {maxW.value.toFixed(1)}
-                        <span
-                          style={{
-                            fontFamily: "K2D, sans-serif",
-                            fontSize: 14,
-                            color: "var(--ink-mute)",
-                            marginLeft: 4,
-                          }}
-                        >
-                          kg
-                        </span>
-                      </span>
-                    )}
-                    {est1rm && (
-                      <p
-                        style={{
-                          fontFamily: "K2D, sans-serif",
-                          fontSize: 12,
-                          color: "var(--ink-soft)",
-                          marginTop: 4,
-                        }}
-                      >
-                        e1RM{" "}
-                        <span className="t-num" style={{ fontSize: 13, color: "var(--ink-mute)" }}>
-                          {est1rm.value.toFixed(1)}
-                        </span>{" "}
-                        kg
-                      </p>
-                    )}
-                  </div>
-                  <Sparkline values={sparkValues} />
-                </div>
-              </div>
-            );
-          })}
+          {prs.map((group) => (
+            <PRCard key={group.exerciseId} group={group} />
+          ))}
         </div>
       ) : (
         !isLoading && (

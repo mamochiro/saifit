@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { exercises, getDb, streaks, users, workoutSets, workouts } from "@saifit/db";
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, count, eq, sum } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import * as v from "valibot";
 
@@ -128,6 +128,38 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
           .where(eq(streaks.userId, user.id));
       }
     }
+  }
+
+  // Send LINE push when completing a workout
+  if (
+    parsed.output.completedAt !== undefined &&
+    user.lineUserId &&
+    process.env.LINE_CHANNEL_ACCESS_TOKEN
+  ) {
+    const setsResult = await db
+      .select({ setCount: count(), totalVolume: sum(workoutSets.weightKg) })
+      .from(workoutSets)
+      .where(eq(workoutSets.workoutId, id));
+
+    const setCount = Number(setsResult[0]?.setCount ?? 0);
+    const totalVol = Math.round(Number(setsResult[0]?.totalVolume ?? 0));
+    const mins = parsed.output.durationSeconds
+      ? Math.round(parsed.output.durationSeconds / 60)
+      : null;
+
+    const text =
+      user.locale === "en"
+        ? `✅ Workout done! ${setCount} sets · ${totalVol.toLocaleString()} kg${mins ? ` · ${mins} min` : ""}\nSee your progress → ${process.env.WEB_APP_URL}/progress`
+        : `✅ ออกกำลังกายเสร็จแล้ว! ${setCount} เซ็ต · ${totalVol.toLocaleString()} กก.${mins ? ` · ${mins} นาที` : ""}\nดูความก้าวหน้าได้ที่ → ${process.env.WEB_APP_URL}/progress`;
+
+    fetch("https://api.line.me/v2/bot/message/push", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.LINE_CHANNEL_ACCESS_TOKEN}`,
+      },
+      body: JSON.stringify({ to: user.lineUserId, messages: [{ type: "text", text }] }),
+    }).catch((err) => console.error("LINE push failed:", err));
   }
 
   return NextResponse.json({ ok: true });
