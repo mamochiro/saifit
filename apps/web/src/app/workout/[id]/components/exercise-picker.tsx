@@ -14,6 +14,18 @@ interface Exercise {
   equipment: string;
 }
 
+const MUSCLE_FILTERS = [
+  { value: "", labelKey: "filterAll" },
+  { value: "chest", labelKey: "muscles.chest" },
+  { value: "back", labelKey: "muscles.back" },
+  { value: "legs", labelKey: "muscles.legs" },
+  { value: "shoulders", labelKey: "muscles.shoulders" },
+  { value: "arms", labelKey: "muscles.arms" },
+  { value: "core", labelKey: "muscles.core" },
+  { value: "cardio", labelKey: "muscles.cardio" },
+  { value: "full_body", labelKey: "muscles.fullBody" },
+] as const;
+
 export function ExercisePicker({
   workoutId: _workoutId,
   onClose,
@@ -27,6 +39,7 @@ export function ExercisePicker({
   const [q, setQ] = useState("");
   const [debouncedQ, setDebouncedQ] = useState("");
   const [timer, setTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
+  const [selectedMuscle, setSelectedMuscle] = useState("");
 
   const handleSearch = (val: string) => {
     setQ(val);
@@ -35,9 +48,14 @@ export function ExercisePicker({
   };
 
   const { data, isLoading } = useQuery<{ data: Exercise[] }>({
-    queryKey: ["exercises", debouncedQ],
-    queryFn: () =>
-      fetch(`/api/exercises?q=${encodeURIComponent(debouncedQ)}&limit=30`).then((r) => r.json()),
+    queryKey: ["exercises", debouncedQ, selectedMuscle],
+    queryFn: () => {
+      const params = new URLSearchParams();
+      if (debouncedQ) params.set("q", debouncedQ);
+      if (selectedMuscle) params.set("muscle", selectedMuscle);
+      params.set("limit", "30");
+      return fetch(`/api/exercises?${params.toString()}`).then((r) => r.json());
+    },
     staleTime: 60_000,
   });
 
@@ -75,6 +93,24 @@ export function ExercisePicker({
             // biome-ignore lint/a11y/noAutofocus: intentional — sheet opens for search
             autoFocus
           />
+        </div>
+
+        {/* Muscle filter chips */}
+        <div className="flex gap-2 px-4 pb-3 overflow-x-auto scrollbar-none">
+          {MUSCLE_FILTERS.map((f) => (
+            <button
+              key={f.value}
+              type="button"
+              onClick={() => setSelectedMuscle(f.value)}
+              className={`shrink-0 h-8 px-3 rounded-full text-xs font-medium transition-colors ${
+                selectedMuscle === f.value
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary text-muted-foreground"
+              }`}
+            >
+              {t(f.labelKey)}
+            </button>
+          ))}
         </div>
 
         <div className="overflow-y-auto flex-1 px-4 pb-6">

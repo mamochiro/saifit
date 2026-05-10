@@ -73,11 +73,32 @@
     "workouts": "Workouts"
   },
   "exercises": {
-    "search": "Search exercises",
+    "title": "Exercises",
+    "search": "Search exercises...",
     "filter": "Filter",
+    "filterAll": "All",
     "muscleGroup": "Muscle group",
     "equipment": "Equipment",
-    "noResults": "No results found"
+    "noResults": "No exercises found",
+    "clearFilters": "Clear filters",
+    "instructions": "Instructions",
+    "beginner": "Beginner tips",
+    "mistakes": "Common mistakes",
+    "history": "Your history",
+    "noHistory": "No history for this exercise yet",
+    "gifPlaceholder": "Demo video",
+    "thai": "ไทย",
+    "english": "English",
+    "muscles": {
+      "chest": "Chest",
+      "back": "Back",
+      "legs": "Legs",
+      "shoulders": "Shoulders",
+      "arms": "Arms",
+      "core": "Core",
+      "cardio": "Cardio",
+      "fullBody": "Full body"
+    }
   },
   "templates": {
     "browse": "Browse templates",

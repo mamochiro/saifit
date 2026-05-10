@@ -238,21 +238,18 @@
 ## Phase 9 — Exercise Library
 **Goal:** Searchable, filterable exercise browser with per-exercise history.
 
-- [ ] `GET /api/exercises` — search + filters
-- [ ] `GET /api/exercises/:slug` — detail + user history
-- [ ] `/exercises` page — search bar + muscle group / equipment filters
-  - [ ] Cards: name (Thai default), muscle tag, equipment tag
-  - [ ] Empty state for no results
-  - [ ] Loading skeleton
-- [ ] `/exercises/[slug]` page:
-  - [ ] Instructions (Thai/English toggle)
-  - [ ] Beginner cue
-  - [ ] Common mistake
-  - [ ] GIF placeholder (note in README to replace)
-  - [ ] User's logged history for that exercise (weight over time)
-  - [ ] Empty state if no history yet
-- [ ] Upgrade exercise picker in logger (Phase 7) to use full library
-- [ ] Verify: search "squat" → results → detail shows seed history
+- [x] `GET /api/exercises` — expanded: q/muscle/equipment/cursor filters, slug-cursor pagination
+- [x] `GET /api/exercises/[slug]` — full exercise + optional user history (last 10 sessions)
+- [x] `/exercises` page — infinite scroll, muscle filter chips, divider rows, skeleton, empty state
+- [x] `/exercises/[slug]` page:
+  - [x] Segmented Thai/English toggle for instructions
+  - [x] Beginner cue + common mistake (bilingual)
+  - [x] GIF placeholder: styled div 'วิดีโอสาธิต (coming soon)'
+  - [x] Recharts LineChart for user history (white line, minimal axes, Chakra Petch numerals)
+  - [x] Empty state if no history yet
+- [x] Exercise picker upgraded with muscle group filter chips
+- [x] i18n: exercises.* + exercises.muscles.* in th+en
+- [x] Verify: search 'squat' → results → detail 200 ✅
 
 **Phase 9 done when:** Search, filter, detail, and history all work ✅
 
@@ -406,7 +403,7 @@
 | 6 | Templates Browser + Program Selection | ✅ |
 | 7 | Workout Logger ⭐ | ✅ |
 | 8 | Workout History | ✅ |
-| 9 | Exercise Library | ⬜ |
+| 9 | Exercise Library | ✅ |
 | 10 | Progress Dashboard | ⬜ |
 | 11 | Settings + PWA | ⬜ |
 | 12 | LINE Bot Setup | ⬜ |

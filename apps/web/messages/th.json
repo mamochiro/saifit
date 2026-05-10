@@ -73,11 +73,32 @@
     "workouts": "การออกกำลังกาย"
   },
   "exercises": {
-    "search": "ค้นหาท่าออกกำลังกาย",
+    "title": "ท่าออกกำลังกาย",
+    "search": "ค้นหาท่า...",
     "filter": "กรอง",
+    "filterAll": "ทั้งหมด",
     "muscleGroup": "กลุ่มกล้ามเนื้อ",
     "equipment": "อุปกรณ์",
-    "noResults": "ไม่พบผลลัพธ์"
+    "noResults": "ไม่พบท่าออกกำลังกาย",
+    "clearFilters": "ล้างตัวกรอง",
+    "instructions": "วิธีเล่น",
+    "beginner": "คำแนะนำสำหรับมือใหม่",
+    "mistakes": "ข้อผิดพลาดที่พบบ่อย",
+    "history": "ประวัติของคุณ",
+    "noHistory": "ยังไม่มีประวัติสำหรับท่านี้",
+    "gifPlaceholder": "วิดีโอสาธิต",
+    "thai": "ไทย",
+    "english": "English",
+    "muscles": {
+      "chest": "หน้าอก",
+      "back": "หลัง",
+      "legs": "ขา",
+      "shoulders": "ไหล่",
+      "arms": "แขน",
+      "core": "คอร์",
+      "cardio": "คาร์ดิโอ",
+      "fullBody": "ทั้งตัว"
+    }
   },
   "templates": {
     "browse": "เลือกโปรแกรม",
