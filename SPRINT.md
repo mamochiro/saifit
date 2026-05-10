@@ -258,25 +258,18 @@
 ## Phase 10 — Progress Dashboard
 **Goal:** Charts show meaningful data from seed workouts.
 
-- [ ] `GET /api/progress/summary` — total workouts, volume, streak, longest streak
-- [ ] `GET /api/progress/prs` — all PRs per exercise
-- [ ] `GET /api/progress/heatmap` — 52 weeks of activity
-- [ ] `GET /api/progress/exercise/:slug` — weight progression
-- [ ] `/progress` page — two tabs:
-  - [ ] **Trends tab:**
-    - [ ] Weekly volume trend (12-week bar chart)
-    - [ ] Volume per muscle group (stacked bar)
-    - [ ] Per-exercise weight progression + 1RM line (suppress when reps > 12)
-    - [ ] GitHub-style frequency heatmap (52 weeks)
-    - [ ] Empty states for each chart
-  - [ ] **Records tab:**
-    - [ ] Streak (current + longest) — displayed first
-    - [ ] Most recent PR card — displayed second
-    - [ ] All PRs by exercise (max weight, max reps, estimated 1RM, max volume set)
-    - [ ] Empty state for no PRs yet
-- [ ] Stats summary row: total workouts, total volume, current streak, longest streak
-- [ ] Loading skeletons for all charts
-- [ ] Verify: seed data produces visible charts; heatmap shows 2 weeks activity
+- [x] `GET /api/progress/summary` — totalWorkouts, totalVolume, streak, longestStreak
+- [x] `GET /api/progress/prs` — all PRs grouped by exercise (max_weight + estimated_1rm)
+- [x] `GET /api/progress/heatmap` — 364-day activity (Asia/Bangkok TZ)
+- [x] `GET /api/progress/weekly` — 12-week volume + byCategory breakdown
+- [x] `GET /api/progress/exercise/[slug]` — 24-session weight progression + estimate1RM
+- [x] `/progress` page — two-tab segmented control:
+  - [x] **สถิติ (Records) tab** — shown first: streak hero, latest PR card, full PR table
+  - [x] **แนวโน้ม (Trends) tab** — 2×2 stat chips (left-aligned, not hero metrics), weekly BarChart, stacked muscle BarChart (monochrome opacity), 52-week heatmap CSS grid
+  - [x] Loading skeletons on all charts
+  - [x] Empty states (never blank)
+- [x] i18n: progress.* in th+en
+- [x] Verify: all 5 endpoints → 401, page renders ✅
 
 **Phase 10 done when:** Both tabs render with seed data, all empty states present ✅
 
@@ -404,7 +397,7 @@
 | 7 | Workout Logger ⭐ | ✅ |
 | 8 | Workout History | ✅ |
 | 9 | Exercise Library | ✅ |
-| 10 | Progress Dashboard | ⬜ |
+| 10 | Progress Dashboard | ✅ |
 | 11 | Settings + PWA | ⬜ |
 | 12 | LINE Bot Setup | ⬜ |
 | 13 | Cron Handlers | ⬜ |

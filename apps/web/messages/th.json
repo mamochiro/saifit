@@ -65,12 +65,26 @@
     "value": "{value} กก."
   },
   "progress": {
-    "trends": "แนวโน้ม",
-    "records": "สถิติ",
-    "streak": "วันติดต่อกัน",
-    "personalRecord": "สถิติส่วนตัว",
-    "volume": "ปริมาณ",
-    "workouts": "การออกกำลังกาย"
+    "title": "ความก้าวหน้า",
+    "tabs": {
+      "records": "สถิติ",
+      "trends": "แนวโน้ม"
+    },
+    "streak": "สายการออกกำลังกาย",
+    "streakUnit": "วัน",
+    "longestStreak": "ยาวที่สุด",
+    "lastWorkout": "ออกกำลังกายล่าสุด",
+    "noPRs": "ยังไม่มีสถิติ",
+    "noData": "ยังไม่มีข้อมูล",
+    "totalWorkouts": "ครั้ง",
+    "totalVolume": "ปริมาณรวม",
+    "weeklyVolume": "ปริมาณรายสัปดาห์",
+    "muscleVolume": "ปริมาณต่อกล้ามเนื้อ",
+    "heatmap": "กิจกรรมตลอดปี",
+    "pr": {
+      "maxWeight": "น้ำหนักสูงสุด",
+      "estimated1rm": "1RM โดยประมาณ"
+    }
   },
   "exercises": {
     "title": "ท่าออกกำลังกาย",

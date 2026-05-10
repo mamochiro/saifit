@@ -65,12 +65,26 @@
     "value": "{value} kg"
   },
   "progress": {
-    "trends": "Trends",
-    "records": "Records",
-    "streak": "day streak",
-    "personalRecord": "Personal record",
-    "volume": "Volume",
-    "workouts": "Workouts"
+    "title": "Progress",
+    "tabs": {
+      "records": "Records",
+      "trends": "Trends"
+    },
+    "streak": "Workout streak",
+    "streakUnit": "days",
+    "longestStreak": "Longest",
+    "lastWorkout": "Last workout",
+    "noPRs": "No records yet — start training to set records!",
+    "noData": "No data yet",
+    "totalWorkouts": "workouts",
+    "totalVolume": "Total volume",
+    "weeklyVolume": "Weekly volume",
+    "muscleVolume": "Volume by muscle",
+    "heatmap": "Year activity",
+    "pr": {
+      "maxWeight": "Max weight",
+      "estimated1rm": "Est. 1RM"
+    }
   },
   "exercises": {
     "title": "Exercises",
