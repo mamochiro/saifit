@@ -316,15 +316,15 @@
 ## Phase 13 — Cron Handlers (Reminders + Summaries)
 **Goal:** 4 cron jobs query DB and send LINE Push messages.
 
-- [ ] Cron 1 — daily reminder at user's `reminderTime` (default 18:00 Bangkok)
-  - [ ] Only users with `reminderEnabled=true` and `lineUserId` set
-- [ ] Cron 2 — check-in at 21:00 if no workout logged today
-- [ ] Cron 3 — weekly summary Sunday 20:00 (workouts done, volume, streak)
-- [ ] Cron 4 — streak warning at 21:00 if streak > 0 and no workout today
-- [ ] All messages deep-link to `WEB_APP_URL/workout/...`
-- [ ] Log each send to `reminderLog` table
-- [ ] Idempotent: skip if already sent today for same type
-- [ ] Verify: manually trigger each handler → correct users receive messages → logged in reminderLog
+- [x] Cron 1 — daily reminder at user's `reminderTime` (default 18:00 Bangkok)
+  - [x] Only users with `reminderEnabled=true` and `lineUserId` set
+- [x] Cron 2 — check-in at 21:00 if no workout logged today
+- [x] Cron 3 — weekly summary Sunday 20:00 (workouts done, volume, streak)
+- [x] Cron 4 — streak warning at 21:00 if streak > 0 and no workout today
+- [x] All messages deep-link to `WEB_APP_URL/workout/...`
+- [x] Log each send to `reminderLog` table
+- [x] Idempotent: skip if already sent today for same type
+- [x] Verify: manually trigger each handler → correct users receive messages → logged in reminderLog
 
 **Phase 13 done when:** All 4 crons fire correctly; reminderLog populated ✅
 
@@ -394,7 +394,7 @@
 | 10 | Progress Dashboard | ✅ |
 | 11 | Settings + PWA | ✅ |
 | 12 | LINE Bot Setup | ✅ |
-| 13 | Cron Handlers | ⬜ |
+| 13 | Cron Handlers | ✅ |
 | 14 | Tests + Docs + Deployment | ⬜ |
 
 ---
