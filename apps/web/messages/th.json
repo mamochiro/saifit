@@ -35,7 +35,34 @@
     "complete": "เสร็จ",
     "rest": "พัก",
     "nextSet": "เซ็ตถัดไป",
-    "savedLocally": "บันทึกในเครื่องแล้ว"
+    "savedLocally": "บันทึกในเครื่องแล้ว",
+    "completeWorkout": "เสร็จแล้ว",
+    "addExercise": "เพิ่มท่า",
+    "addSet": "เพิ่มเซ็ต",
+    "bodyweight": "น้ำหนักตัว",
+    "syncing": "กำลังซิงค์...",
+    "offline": "ออฟไลน์",
+    "setNumber": "เซ็ต {n}",
+    "previousValue": "ครั้งก่อน: {weight} × {reps}",
+    "resumePrompt": "ต้องการต่อจากที่ค้างไว้?",
+    "resume": "ต่อเลย",
+    "discard": "เริ่มใหม่",
+    "undoAdvance": "เลิกทำ"
+  },
+  "restTimer": {
+    "title": "พักก่อน",
+    "resting": "กำลังพัก",
+    "done": "หมดเวลา",
+    "skip": "ข้าม",
+    "add15": "+15",
+    "minus15": "-15",
+    "nextSet": "เซ็ตถัดไป"
+  },
+  "pr": {
+    "newRecord": "สถิติใหม่!",
+    "estimated1rm": "1RM โดยประมาณ",
+    "maxWeight": "น้ำหนักสูงสุด",
+    "value": "{value} กก."
   },
   "progress": {
     "trends": "แนวโน้ม",

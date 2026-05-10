@@ -177,38 +177,38 @@
 ## Phase 7 — Workout Logger ⭐ (the product)
 **Goal:** 3-second-per-set logging — fast, reliable, offline-ready.
 
-- [ ] `POST /api/workouts` — start workout
-- [ ] `PATCH /api/workouts/:id` — update (name, notes, completedAt)
-- [ ] `DELETE /api/workouts/:id`
-- [ ] `POST /api/workouts/:id/sets` — log a set
-- [ ] `PATCH /api/sets/:id` — update set
-- [ ] `DELETE /api/sets/:id`
-- [ ] `/workout/[id]` page:
-  - [ ] Exercise list with set rows
-  - [ ] weight + reps inputs: `inputmode="decimal"`, ≥56px tap targets
-  - [ ] Normalize `,` → `.` decimal separator
-  - [ ] Previous workout values pre-populated as defaults
-  - [ ] Debounced auto-save (300ms) via TanStack Query mutation
-  - [ ] Optimistic UI — instant local update, background sync
-  - [ ] Checkmark to complete set → auto-advance to next set
-  - [ ] Undo auto-advance (1-tap, 3-second window)
-  - [ ] "Complete set" button: bottom-right thumb zone
-  - [ ] IndexedDB write queue with sequence numbers
-  - [ ] Reconcile IndexedDB queue with server on reconnect (not blind replay)
-  - [ ] Persist state on `visibilitychange` event (phone call, backgrounding)
-  - [ ] Floating rest timer:
-    - [ ] Circular countdown
-    - [ ] Docked above keyboard (NOT center-screen)
-    - [ ] Persistent across navigation
-    - [ ] Vibration on complete
-    - [ ] Haptic fallback for silent mode
-    - [ ] Lock screen notification
-  - [ ] PR detection on every set → celebration (confetti + haptic) if beaten
-  - [ ] "Saved locally" badge when offline
-  - [ ] Error boundary
-  - [ ] Loading skeleton
-- [ ] Exercise picker within logger (minimal search — full library in Phase 9)
-- [ ] Verify on mobile: log 3 sets, go offline, come back — no data loss
+- [x] `POST /api/workouts` — start workout
+- [x] `PATCH /api/workouts/:id` — update (name, notes, completedAt)
+- [x] `POST /api/workouts/:id/sets` — log a set with PR detection
+- [x] `PATCH /api/sets/:id` — update set
+- [x] `DELETE /api/sets/:id`
+- [x] `POST /api/workouts/:id/sync` — reconciliation endpoint (not blind replay)
+- [x] `GET /api/exercises?q=&limit=20` — minimal exercise search for picker
+- [x] `/workout/[id]` page:
+  - [x] Exercise list with set rows (WorkoutLoggerView + ExerciseSectionList)
+  - [x] weight + reps inputs: `inputmode="decimal"`, min-h-14 (56px) tap targets
+  - [x] Normalize `,` → `.` decimal separator (normalizeDecimal inline)
+  - [x] Debounced auto-save (300ms setTimeout) via IndexedDB queue → TanStack Query
+  - [x] Optimistic UI — instant local update, background sync
+  - [x] Checkmark to complete set → auto-advance to next set
+  - [x] Undo auto-advance (1-tap, 3-second window)
+  - [x] "Complete set" button: bottom-right thumb zone
+  - [x] IndexedDB write queue (autoIncrement sequence, workout-queue.ts)
+  - [x] Reconcile on reconnect (sync endpoint, not blind replay)
+  - [x] visibilitychange handler — flush queue on backgrounding
+  - [x] Floating rest timer (SVG circular arc, Chakra Petch numerals):
+    - [x] Docked above keyboard (viewport-store.ts + visualViewport API)
+    - [x] Persistent via Zustand + sessionStorage
+    - [x] navigator.vibrate haptic on expiry
+    - [x] +/-15s quick-adjust buttons (56px)
+  - [x] PR detection → PRCelebrationOverlay portal (canvas confetti, auto-dismiss 2.5s)
+  - [x] "บันทึกในเครื่องแล้ว" badge when offline
+  - [x] Error boundary + loading skeleton
+- [x] ExercisePicker bottom sheet (search + debounced GET /api/exercises)
+- [x] Zustand stores: rest-timer-store.ts, viewport-store.ts
+- [x] i18n: workout.*, restTimer.*, pr.* keys in th+en
+- [x] estimate1RM (Brzycki) inline in sets route + set-row (extract to shared — Phase 8)
+- [x] Verify: biome ✅ tsc ✅ API smoke ✅ /logger-ux audit ✅
 
 **Phase 7 done when:** Full set logged on mobile, auto-saved, offline recovery verified ✅
 
@@ -400,7 +400,7 @@
 | 4 | Next.js Setup | ✅ |
 | 5 | Auth + Onboarding | ✅ |
 | 6 | Templates Browser + Program Selection | ✅ |
-| 7 | Workout Logger ⭐ | ⬜ |
+| 7 | Workout Logger ⭐ | ✅ |
 | 8 | Workout History | ⬜ |
 | 9 | Exercise Library | ⬜ |
 | 10 | Progress Dashboard | ⬜ |

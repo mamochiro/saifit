@@ -8,7 +8,17 @@
     "lint": "biome check .",
     "test": "vitest run --passWithNoTests"
   },
+  "dependencies": {
+    "@line/bot-sdk": "^10.0.0",
+    "@neondatabase/serverless": "^0.10.4",
+    "drizzle-orm": "^0.38.3",
+    "hono": "^4.0.0"
+  },
   "devDependencies": {
-    "vitest": "^2.1.8"
+    "@cloudflare/workers-types": "^4.0.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.8",
+    "wrangler": "^3.0.0"
   }
 }

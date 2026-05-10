@@ -35,7 +35,34 @@
     "complete": "Complete",
     "rest": "Rest",
     "nextSet": "Next set",
-    "savedLocally": "Saved locally"
+    "savedLocally": "Saved locally",
+    "completeWorkout": "Finish workout",
+    "addExercise": "Add exercise",
+    "addSet": "Add set",
+    "bodyweight": "Bodyweight",
+    "syncing": "Syncing...",
+    "offline": "Offline",
+    "setNumber": "Set {n}",
+    "previousValue": "Previous: {weight} × {reps}",
+    "resumePrompt": "Continue where you left off?",
+    "resume": "Continue",
+    "discard": "Start fresh",
+    "undoAdvance": "Undo"
+  },
+  "restTimer": {
+    "title": "Rest",
+    "resting": "Resting",
+    "done": "Time's up",
+    "skip": "Skip",
+    "add15": "+15",
+    "minus15": "-15",
+    "nextSet": "Next set"
+  },
+  "pr": {
+    "newRecord": "New record!",
+    "estimated1rm": "Est. 1RM",
+    "maxWeight": "Max weight",
+    "value": "{value} kg"
   },
   "progress": {
     "trends": "Trends",

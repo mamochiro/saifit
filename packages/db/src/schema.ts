@@ -10,6 +10,7 @@ import {
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
@@ -166,10 +167,14 @@ export const workoutSets = pgTable(
     isBodyweight: boolean("is_bodyweight").notNull().default(false),
     rpe: integer("rpe"),
     notes: text("notes"),
+    clientSetId: varchar("client_set_id", { length: 36 }),
     completedAt: timestamp("completed_at").notNull().$type<Date>(),
     createdAt: timestamp("created_at").notNull().defaultNow().$type<Date>(),
   },
-  (t) => [index("idx_workout_sets_workout_id").on(t.workoutId)],
+  (t) => [
+    index("idx_workout_sets_workout_id").on(t.workoutId),
+    uniqueIndex("idx_workout_sets_client_set_id").on(t.workoutId, t.clientSetId),
+  ],
 );
 
 export const personalRecords = pgTable(
