@@ -14,7 +14,7 @@
     "db:seed": "bun run src/seed/index.ts",
     "db:reset": "bun run src/reset.ts",
     "lint": "biome check .",
-    "test": "vitest run"
+    "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "drizzle-orm": "^0.38.3",

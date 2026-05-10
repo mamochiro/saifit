@@ -27,8 +27,7 @@ export const templateSeedData: Omit<TemplateInsert, "id" | "createdAt">[] = [
     nameTh: "ฝึกทั้งตัว 3 วัน/สัปดาห์ สำหรับมือใหม่",
     descriptionEn:
       "A simple 3-day program hitting every muscle group each session. Perfect for beginners building the base.",
-    descriptionTh:
-      "โปรแกรม 3 วันที่ฝึกทุกกลุ่มกล้ามเนื้อในแต่ละครั้ง เหมาะสำหรับมือใหม่ที่ต้องการสร้างพื้นฐาน",
+    descriptionTh: "โปรแกรม 3 วันที่ฝึกทุกกลุ่มกล้ามเนื้อในแต่ละครั้ง เหมาะสำหรับมือใหม่ที่ต้องการสร้างพื้นฐาน",
     goal: "build_muscle",
     difficulty: "beginner",
     daysPerWeek: 3,
@@ -74,8 +73,7 @@ export const templateSeedData: Omit<TemplateInsert, "id" | "createdAt">[] = [
     nameTh: "พุช พูล เลกส์ 6 วัน/สัปดาห์",
     descriptionEn:
       "High-frequency PPL split training each muscle group twice per week. For dedicated intermediate-to-advanced lifters.",
-    descriptionTh:
-      "โปรแกรม PPL ที่ฝึกแต่ละกล้ามเนื้อสองครั้งต่อสัปดาห์ เหมาะกับผู้ที่มีประสบการณ์และมุ่งมั่น",
+    descriptionTh: "โปรแกรม PPL ที่ฝึกแต่ละกล้ามเนื้อสองครั้งต่อสัปดาห์ เหมาะกับผู้ที่มีประสบการณ์และมุ่งมั่น",
     goal: "build_muscle",
     difficulty: "advanced",
     daysPerWeek: 6,
@@ -156,8 +154,7 @@ export const templateSeedData: Omit<TemplateInsert, "id" | "createdAt">[] = [
     nameTh: "บน-ล่าง 4 วัน/สัปดาห์",
     descriptionEn:
       "Classic 4-day upper/lower split with strength focus on the first day and hypertrophy on the second.",
-    descriptionTh:
-      "โปรแกรม 4 วันแบบบน-ล่างที่เน้นความแข็งแรงในวันแรกและ Hypertrophy ในวันที่สอง",
+    descriptionTh: "โปรแกรม 4 วันแบบบน-ล่างที่เน้นความแข็งแรงในวันแรกและ Hypertrophy ในวันที่สอง",
     goal: "build_muscle",
     difficulty: "intermediate",
     daysPerWeek: 4,
@@ -215,8 +212,7 @@ export const templateSeedData: Omit<TemplateInsert, "id" | "createdAt">[] = [
     nameTh: "พุช/พูล 4 วัน/สัปดาห์",
     descriptionEn:
       "4-day push/pull split, each muscle group trained twice per week with varying rep ranges.",
-    descriptionTh:
-      "โปรแกรม 4 วันแบบพุช/พูล ฝึกแต่ละกลุ่มกล้ามเนื้อสองครั้งต่อสัปดาห์ด้วยช่วง rep ที่หลากหลาย",
+    descriptionTh: "โปรแกรม 4 วันแบบพุช/พูล ฝึกแต่ละกลุ่มกล้ามเนื้อสองครั้งต่อสัปดาห์ด้วยช่วง rep ที่หลากหลาย",
     goal: "build_muscle",
     difficulty: "intermediate",
     daysPerWeek: 4,
@@ -272,8 +268,7 @@ export const templateSeedData: Omit<TemplateInsert, "id" | "createdAt">[] = [
     nameTh: "ออกกำลังกายที่บ้าน ไม่มีอุปกรณ์ 3 วัน/สัปดาห์",
     descriptionEn:
       "Zero-equipment home program. Burns fat and builds functional strength using only bodyweight.",
-    descriptionTh:
-      "โปรแกรมที่บ้านไม่ต้องใช้อุปกรณ์ ช่วยเผาผลาญไขมันและสร้างความแข็งแรงด้วยน้ำหนักตัว",
+    descriptionTh: "โปรแกรมที่บ้านไม่ต้องใช้อุปกรณ์ ช่วยเผาผลาญไขมันและสร้างความแข็งแรงด้วยน้ำหนักตัว",
     goal: "stay_active",
     difficulty: "beginner",
     daysPerWeek: 3,
@@ -317,10 +312,8 @@ export const templateSeedData: Omit<TemplateInsert, "id" | "createdAt">[] = [
     slug: "home-dumbbell-3day",
     nameEn: "Home Dumbbell 3×/Week",
     nameTh: "ออกกำลังกายที่บ้านด้วยดัมเบล 3 วัน/สัปดาห์",
-    descriptionEn:
-      "Build muscle at home with just a pair of dumbbells. Full body over 3 sessions.",
-    descriptionTh:
-      "สร้างกล้ามเนื้อที่บ้านด้วยดัมเบลเพียงคู่เดียว ฝึกทั้งตัวใน 3 ครั้ง",
+    descriptionEn: "Build muscle at home with just a pair of dumbbells. Full body over 3 sessions.",
+    descriptionTh: "สร้างกล้ามเนื้อที่บ้านด้วยดัมเบลเพียงคู่เดียว ฝึกทั้งตัวใน 3 ครั้ง",
     goal: "build_muscle",
     difficulty: "beginner",
     daysPerWeek: 3,
@@ -366,8 +359,7 @@ export const templateSeedData: Omit<TemplateInsert, "id" | "createdAt">[] = [
     nameTh: "เพิ่มความแข็งแรง 5×5 สามวัน/สัปดาห์",
     descriptionEn:
       "The classic strength protocol. Squat every session, add weight each week on the big three lifts.",
-    descriptionTh:
-      "โปรแกรมความแข็งแรงคลาสสิก สควอตทุกครั้ง เพิ่มน้ำหนักทุกสัปดาห์ใน 3 ท่าหลัก",
+    descriptionTh: "โปรแกรมความแข็งแรงคลาสสิก สควอตทุกครั้ง เพิ่มน้ำหนักทุกสัปดาห์ใน 3 ท่าหลัก",
     goal: "get_stronger",
     difficulty: "intermediate",
     daysPerWeek: 3,
@@ -377,7 +369,12 @@ export const templateSeedData: Omit<TemplateInsert, "id" | "createdAt">[] = [
         dayLabel: "Workout A",
         exercises: [
           { exerciseSlug: "squat", sets: 5, reps: "5", notes: "Add 2.5kg each session" },
-          { exerciseSlug: "barbell-bench-press", sets: 5, reps: "5", notes: "Add 2.5kg each A workout" },
+          {
+            exerciseSlug: "barbell-bench-press",
+            sets: 5,
+            reps: "5",
+            notes: "Add 2.5kg each A workout",
+          },
           { exerciseSlug: "barbell-row", sets: 5, reps: "5", notes: "Add 2.5kg each session" },
         ],
       },
@@ -393,7 +390,12 @@ export const templateSeedData: Omit<TemplateInsert, "id" | "createdAt">[] = [
         dayLabel: "Workout A (repeat)",
         exercises: [
           { exerciseSlug: "squat", sets: 5, reps: "5", notes: "Add 2.5kg each session" },
-          { exerciseSlug: "barbell-bench-press", sets: 5, reps: "5", notes: "Add 2.5kg each A workout" },
+          {
+            exerciseSlug: "barbell-bench-press",
+            sets: 5,
+            reps: "5",
+            notes: "Add 2.5kg each A workout",
+          },
           { exerciseSlug: "barbell-row", sets: 5, reps: "5", notes: "Add 2.5kg each session" },
         ],
       },
@@ -407,8 +409,7 @@ export const templateSeedData: Omit<TemplateInsert, "id" | "createdAt">[] = [
     nameTh: "โปรแกรม Hypertrophy แบบ Bro Split 5 วัน/สัปดาห์",
     descriptionEn:
       "Dedicated one-muscle-group-per-day split with high volume. Maximise time under tension for each muscle.",
-    descriptionTh:
-      "โปรแกรมที่ฝึกกล้ามเนื้อหนึ่งกลุ่มต่อวัน ปริมาณสูง เพื่อเพิ่ม Time Under Tension สูงสุด",
+    descriptionTh: "โปรแกรมที่ฝึกกล้ามเนื้อหนึ่งกลุ่มต่อวัน ปริมาณสูง เพื่อเพิ่ม Time Under Tension สูงสุด",
     goal: "build_muscle",
     difficulty: "advanced",
     daysPerWeek: 5,
@@ -539,8 +540,7 @@ export const templateSeedData: Omit<TemplateInsert, "id" | "createdAt">[] = [
     nameTh: "ออกกำลังกายขั้นต่ำ 2 วัน/สัปดาห์",
     descriptionEn:
       "The bare minimum for making progress. Two full-body sessions for busy people who still want results.",
-    descriptionTh:
-      "ขั้นต่ำสำหรับการพัฒนา สองครั้งต่อสัปดาห์สำหรับคนยุ่งที่ยังอยากได้ผลลัพธ์",
+    descriptionTh: "ขั้นต่ำสำหรับการพัฒนา สองครั้งต่อสัปดาห์สำหรับคนยุ่งที่ยังอยากได้ผลลัพธ์",
     goal: "stay_active",
     difficulty: "beginner",
     daysPerWeek: 2,
@@ -633,8 +633,7 @@ export const templateSeedData: Omit<TemplateInsert, "id" | "createdAt">[] = [
     nameTh: "คาร์ดิโอและเผาไขมัน 3 วัน/สัปดาห์",
     descriptionEn:
       "3 cardio sessions per week mixing steady-state and HIIT to maximise fat burning.",
-    descriptionTh:
-      "คาร์ดิโอ 3 ครั้งต่อสัปดาห์ ผสมผสาน Steady State และ HIIT เพื่อเผาผลาญไขมันสูงสุด",
+    descriptionTh: "คาร์ดิโอ 3 ครั้งต่อสัปดาห์ ผสมผสาน Steady State และ HIIT เพื่อเผาผลาญไขมันสูงสุด",
     goal: "lose_fat",
     difficulty: "beginner",
     daysPerWeek: 3,
@@ -643,7 +642,12 @@ export const templateSeedData: Omit<TemplateInsert, "id" | "createdAt">[] = [
       {
         dayLabel: "Day A — Steady State",
         exercises: [
-          { exerciseSlug: "treadmill-run", sets: 1, reps: "30-40min", notes: "Moderate pace, conversational" },
+          {
+            exerciseSlug: "treadmill-run",
+            sets: 1,
+            reps: "30-40min",
+            notes: "Moderate pace, conversational",
+          },
           { exerciseSlug: "cycling", sets: 1, reps: "15min", notes: "Cool down" },
           { exerciseSlug: "jump-rope", sets: 3, reps: "2min" },
         ],

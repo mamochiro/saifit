@@ -1,4 +1,4 @@
-import { getDb, users } from "@gympal/db";
+import { getDb, users } from "@saifit/db";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { betterAuthSchema } from "./auth-schema";
@@ -7,6 +7,14 @@ export const auth = betterAuth({
   database: drizzleAdapter(getDb(), { provider: "pg", schema: betterAuthSchema }),
   emailAndPassword: { enabled: true },
   socialProviders: {
+    ...(process.env.LINE_LOGIN_CHANNEL_ID && process.env.LINE_LOGIN_CHANNEL_SECRET
+      ? {
+          line: {
+            clientId: process.env.LINE_LOGIN_CHANNEL_ID,
+            clientSecret: process.env.LINE_LOGIN_CHANNEL_SECRET,
+          },
+        }
+      : {}),
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
       ? {
           google: {

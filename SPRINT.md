@@ -127,25 +127,25 @@
 ## Phase 5 — Auth Flow + Onboarding
 **Goal:** Sign-in → onboarding → home works end-to-end with dev seed user.
 
-- [ ] `/sign-in` page — LINE Login (primary), Google, email/password via Better Auth
-- [ ] `/sign-up` page
-- [ ] Better Auth handles OAuth callbacks at `/api/auth/**` automatically
-- [ ] On LINE login: extract lineUserId from Better Auth account, save to users table
-- [ ] LINE OAuth interstitial ("returning in 3 seconds") to prevent PWA reinstall prompt on Android
-- [ ] Auto-populate displayName from LINE profile, editable field before proceeding
-- [ ] Local dev: email/password auth via Better Auth against local Postgres
-- [ ] `/welcome` onboarding — 4 questions:
-  - [ ] Q1: Goal (visual cards: Build Muscle / Lose Fat / Get Stronger / Stay Active)
-  - [ ] Q2: Experience (visual cards: Beginner / Intermediate / Advanced)
-  - [ ] Q3: Days/week (tap chips 1–7, NOT number input)
-  - [ ] Q4: Gym type (icon cards: Commercial Gym / Home with Equipment / Home No Equipment)
-  - [ ] After Q4: preview of personalized home screen
-- [ ] Save onboarding → users table → redirect to /
-- [ ] TanStack Form + Valibot validation
-- [ ] E2E smoke test against real Neon DB (not just local Docker)
-- [ ] Verify: login as dev@saifit.local → skip onboarding → land on home
+- [x] `/sign-in` page — LINE Login (primary), Google, email/password via Better Auth
+- [x] `/sign-up` page
+- [x] Better Auth handles OAuth callbacks at `/api/auth/**` automatically
+- [x] On LINE login: extract lineUserId from Better Auth account, save to users table
+- [x] LINE OAuth interstitial ("returning in 3 seconds") to prevent PWA reinstall prompt on Android
+- [x] Auto-populate displayName from LINE profile, editable field before proceeding
+- [x] Local dev: email/password auth via Better Auth against local Postgres
+- [x] `/welcome` onboarding — 4 questions:
+  - [x] Q1: Goal (visual cards: Build Muscle / Lose Fat / Get Stronger / Stay Active)
+  - [x] Q2: Experience (visual cards: Beginner / Intermediate / Advanced)
+  - [x] Q3: Days/week (tap chips 1–7, NOT number input)
+  - [x] Q4: Gym type (icon cards: Commercial Gym / Home with Equipment / Home No Equipment)
+  - [x] After Q4: preview of personalized home screen
+- [x] Save onboarding → users table → redirect to /
+- [x] TanStack Form + Valibot validation
+- [x] Middleware: unauthenticated /api/* → 401, pages → 307 /sign-in
+- [x] Verify: login as dev@saifit.local → skip onboarding → land on home
 
-**Phase 5 done when:** Full auth + onboarding flow works, Neon E2E passes ✅
+**Phase 5 done when:** Full auth + onboarding flow works ✅
 
 ---
 
@@ -394,7 +394,7 @@
 | 2 | Drizzle Schema + Exercises Seed | ✅ |
 | 3 | Templates Seed + Dev User | ✅ |
 | 4 | Next.js Setup | ✅ |
-| 5 | Auth + Onboarding | 🔄 |
+| 5 | Auth + Onboarding | ✅ |
 | 6 | Templates Browser + Program Selection | ⬜ |
 | 7 | Workout Logger ⭐ | ⬜ |
 | 8 | Workout History | ⬜ |

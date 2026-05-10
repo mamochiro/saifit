@@ -3,12 +3,14 @@
 import { signUp } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { useForm } from "@tanstack/react-form";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import * as v from "valibot";
 
 export default function SignUpPage() {
+  const t = useTranslations("auth");
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
@@ -94,7 +96,7 @@ export default function SignUpPage() {
             {(field) => (
               <div className="space-y-1">
                 <label htmlFor="email" className="text-sm font-medium">
-                  อีเมล
+                  {t("email")}
                 </label>
                 <input
                   id="email"
@@ -134,7 +136,7 @@ export default function SignUpPage() {
             {(field) => (
               <div className="space-y-1">
                 <label htmlFor="password" className="text-sm font-medium">
-                  รหัสผ่าน
+                  {t("password")}
                 </label>
                 <input
                   id="password"
@@ -173,7 +175,7 @@ export default function SignUpPage() {
                 disabled={!canSubmit || isSubmitting}
                 className="w-full h-14 bg-primary hover:bg-primary/90 active:bg-primary/80 disabled:opacity-50 text-primary-foreground font-semibold rounded-xl transition-colors"
               >
-                {isSubmitting ? "กำลังสมัคร..." : "สมัครสมาชิก"}
+                {isSubmitting ? "กำลังสมัคร..." : t("signUp")}
               </button>
             )}
           </form.Subscribe>
@@ -182,7 +184,7 @@ export default function SignUpPage() {
         <p className="text-center text-sm text-muted-foreground leading-relaxed">
           มีบัญชีแล้ว?{" "}
           <Link href="/sign-in" className="text-primary hover:underline font-medium">
-            เข้าสู่ระบบ
+            {t("signIn")}
           </Link>
         </p>
       </div>

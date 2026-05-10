@@ -16,7 +16,12 @@ export async function middleware(request: NextRequest) {
     headers: { cookie: request.headers.get("cookie") ?? "" },
   });
 
-  if (!session) return NextResponse.redirect(new URL("/sign-in", request.url));
+  if (!session) {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    return NextResponse.redirect(new URL("/sign-in", request.url));
+  }
 
   if (SKIP_ONBOARDING.some((p) => pathname.startsWith(p))) return NextResponse.next();
 

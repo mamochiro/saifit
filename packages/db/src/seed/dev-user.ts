@@ -59,7 +59,8 @@ export async function seedDevUser(db: Db) {
     .where(eq(templates.slug, "beginner-full-body-3day"))
     .limit(1);
 
-  if (!template) throw new Error("beginner-full-body-3day template not found — run template seed first");
+  if (!template)
+    throw new Error("beginner-full-body-3day template not found — run template seed first");
 
   // ── 3. UserProgram ─────────────────────────────────────────────────────────
   await db
@@ -119,75 +120,299 @@ export async function seedDevUser(db: Db) {
       daysBack: 13,
       label: "Full Body A",
       exercises: [
-        { slug: "squat", setsData: [{ reps: 8, weight: 40 }, { reps: 8, weight: 40 }, { reps: 7, weight: 40 }] },
-        { slug: "barbell-bench-press", setsData: [{ reps: 8, weight: 30 }, { reps: 8, weight: 30 }, { reps: 7, weight: 30 }] },
-        { slug: "barbell-row", setsData: [{ reps: 8, weight: 30 }, { reps: 8, weight: 30 }, { reps: 8, weight: 30 }] },
-        { slug: "dumbbell-curl", setsData: [{ reps: 10, weight: 10 }, { reps: 10, weight: 10 }] },
-        { slug: "plank", setsData: [{ reps: 1, weight: null }, { reps: 1, weight: null }, { reps: 1, weight: null }] },
+        {
+          slug: "squat",
+          setsData: [
+            { reps: 8, weight: 40 },
+            { reps: 8, weight: 40 },
+            { reps: 7, weight: 40 },
+          ],
+        },
+        {
+          slug: "barbell-bench-press",
+          setsData: [
+            { reps: 8, weight: 30 },
+            { reps: 8, weight: 30 },
+            { reps: 7, weight: 30 },
+          ],
+        },
+        {
+          slug: "barbell-row",
+          setsData: [
+            { reps: 8, weight: 30 },
+            { reps: 8, weight: 30 },
+            { reps: 8, weight: 30 },
+          ],
+        },
+        {
+          slug: "dumbbell-curl",
+          setsData: [
+            { reps: 10, weight: 10 },
+            { reps: 10, weight: 10 },
+          ],
+        },
+        {
+          slug: "plank",
+          setsData: [
+            { reps: 1, weight: null },
+            { reps: 1, weight: null },
+            { reps: 1, weight: null },
+          ],
+        },
       ],
     },
     {
       daysBack: 11,
       label: "Full Body B",
       exercises: [
-        { slug: "deadlift", setsData: [{ reps: 6, weight: 50 }, { reps: 6, weight: 50 }, { reps: 6, weight: 50 }] },
-        { slug: "overhead-press", setsData: [{ reps: 8, weight: 25 }, { reps: 8, weight: 25 }, { reps: 7, weight: 25 }] },
-        { slug: "lat-pulldown", setsData: [{ reps: 10, weight: 35 }, { reps: 10, weight: 35 }, { reps: 9, weight: 35 }] },
-        { slug: "tricep-pushdown", setsData: [{ reps: 12, weight: 15 }, { reps: 12, weight: 15 }] },
+        {
+          slug: "deadlift",
+          setsData: [
+            { reps: 6, weight: 50 },
+            { reps: 6, weight: 50 },
+            { reps: 6, weight: 50 },
+          ],
+        },
+        {
+          slug: "overhead-press",
+          setsData: [
+            { reps: 8, weight: 25 },
+            { reps: 8, weight: 25 },
+            { reps: 7, weight: 25 },
+          ],
+        },
+        {
+          slug: "lat-pulldown",
+          setsData: [
+            { reps: 10, weight: 35 },
+            { reps: 10, weight: 35 },
+            { reps: 9, weight: 35 },
+          ],
+        },
+        {
+          slug: "tricep-pushdown",
+          setsData: [
+            { reps: 12, weight: 15 },
+            { reps: 12, weight: 15 },
+          ],
+        },
       ],
     },
     {
       daysBack: 9,
       label: "Full Body C",
       exercises: [
-        { slug: "leg-press", setsData: [{ reps: 10, weight: 60 }, { reps: 10, weight: 60 }, { reps: 9, weight: 60 }] },
-        { slug: "incline-bench-press", setsData: [{ reps: 8, weight: 27.5 }, { reps: 8, weight: 27.5 }, { reps: 7, weight: 27.5 }] },
-        { slug: "seated-cable-row", setsData: [{ reps: 10, weight: 35 }, { reps: 10, weight: 35 }, { reps: 10, weight: 35 }] },
-        { slug: "hammer-curl", setsData: [{ reps: 10, weight: 10 }, { reps: 10, weight: 10 }] },
-        { slug: "leg-curl", setsData: [{ reps: 10, weight: 25 }, { reps: 10, weight: 25 }, { reps: 9, weight: 25 }] },
+        {
+          slug: "leg-press",
+          setsData: [
+            { reps: 10, weight: 60 },
+            { reps: 10, weight: 60 },
+            { reps: 9, weight: 60 },
+          ],
+        },
+        {
+          slug: "incline-bench-press",
+          setsData: [
+            { reps: 8, weight: 27.5 },
+            { reps: 8, weight: 27.5 },
+            { reps: 7, weight: 27.5 },
+          ],
+        },
+        {
+          slug: "seated-cable-row",
+          setsData: [
+            { reps: 10, weight: 35 },
+            { reps: 10, weight: 35 },
+            { reps: 10, weight: 35 },
+          ],
+        },
+        {
+          slug: "hammer-curl",
+          setsData: [
+            { reps: 10, weight: 10 },
+            { reps: 10, weight: 10 },
+          ],
+        },
+        {
+          slug: "leg-curl",
+          setsData: [
+            { reps: 10, weight: 25 },
+            { reps: 10, weight: 25 },
+            { reps: 9, weight: 25 },
+          ],
+        },
       ],
     },
     {
       daysBack: 7,
       label: "Full Body A",
       exercises: [
-        { slug: "squat", setsData: [{ reps: 8, weight: 42.5 }, { reps: 8, weight: 42.5 }, { reps: 8, weight: 42.5 }] },
-        { slug: "barbell-bench-press", setsData: [{ reps: 8, weight: 32.5 }, { reps: 8, weight: 32.5 }, { reps: 8, weight: 32.5 }] },
-        { slug: "barbell-row", setsData: [{ reps: 8, weight: 32.5 }, { reps: 8, weight: 32.5 }, { reps: 8, weight: 32.5 }] },
-        { slug: "dumbbell-curl", setsData: [{ reps: 10, weight: 10 }, { reps: 10, weight: 10 }] },
-        { slug: "plank", setsData: [{ reps: 1, weight: null }, { reps: 1, weight: null }, { reps: 1, weight: null }] },
+        {
+          slug: "squat",
+          setsData: [
+            { reps: 8, weight: 42.5 },
+            { reps: 8, weight: 42.5 },
+            { reps: 8, weight: 42.5 },
+          ],
+        },
+        {
+          slug: "barbell-bench-press",
+          setsData: [
+            { reps: 8, weight: 32.5 },
+            { reps: 8, weight: 32.5 },
+            { reps: 8, weight: 32.5 },
+          ],
+        },
+        {
+          slug: "barbell-row",
+          setsData: [
+            { reps: 8, weight: 32.5 },
+            { reps: 8, weight: 32.5 },
+            { reps: 8, weight: 32.5 },
+          ],
+        },
+        {
+          slug: "dumbbell-curl",
+          setsData: [
+            { reps: 10, weight: 10 },
+            { reps: 10, weight: 10 },
+          ],
+        },
+        {
+          slug: "plank",
+          setsData: [
+            { reps: 1, weight: null },
+            { reps: 1, weight: null },
+            { reps: 1, weight: null },
+          ],
+        },
       ],
     },
     {
       daysBack: 5,
       label: "Full Body B",
       exercises: [
-        { slug: "deadlift", setsData: [{ reps: 6, weight: 52.5 }, { reps: 6, weight: 52.5 }, { reps: 5, weight: 52.5 }] },
-        { slug: "overhead-press", setsData: [{ reps: 8, weight: 25 }, { reps: 8, weight: 25 }, { reps: 8, weight: 25 }] },
-        { slug: "lat-pulldown", setsData: [{ reps: 10, weight: 37.5 }, { reps: 10, weight: 37.5 }, { reps: 10, weight: 37.5 }] },
-        { slug: "tricep-pushdown", setsData: [{ reps: 12, weight: 17.5 }, { reps: 12, weight: 17.5 }] },
+        {
+          slug: "deadlift",
+          setsData: [
+            { reps: 6, weight: 52.5 },
+            { reps: 6, weight: 52.5 },
+            { reps: 5, weight: 52.5 },
+          ],
+        },
+        {
+          slug: "overhead-press",
+          setsData: [
+            { reps: 8, weight: 25 },
+            { reps: 8, weight: 25 },
+            { reps: 8, weight: 25 },
+          ],
+        },
+        {
+          slug: "lat-pulldown",
+          setsData: [
+            { reps: 10, weight: 37.5 },
+            { reps: 10, weight: 37.5 },
+            { reps: 10, weight: 37.5 },
+          ],
+        },
+        {
+          slug: "tricep-pushdown",
+          setsData: [
+            { reps: 12, weight: 17.5 },
+            { reps: 12, weight: 17.5 },
+          ],
+        },
       ],
     },
     {
       daysBack: 3,
       label: "Full Body C",
       exercises: [
-        { slug: "leg-press", setsData: [{ reps: 10, weight: 65 }, { reps: 10, weight: 65 }, { reps: 10, weight: 65 }] },
-        { slug: "incline-bench-press", setsData: [{ reps: 8, weight: 30 }, { reps: 8, weight: 30 }, { reps: 8, weight: 30 }] },
-        { slug: "seated-cable-row", setsData: [{ reps: 10, weight: 37.5 }, { reps: 10, weight: 37.5 }, { reps: 10, weight: 37.5 }] },
-        { slug: "hammer-curl", setsData: [{ reps: 10, weight: 12 }, { reps: 10, weight: 12 }] },
-        { slug: "leg-curl", setsData: [{ reps: 10, weight: 27.5 }, { reps: 10, weight: 27.5 }, { reps: 9, weight: 27.5 }] },
+        {
+          slug: "leg-press",
+          setsData: [
+            { reps: 10, weight: 65 },
+            { reps: 10, weight: 65 },
+            { reps: 10, weight: 65 },
+          ],
+        },
+        {
+          slug: "incline-bench-press",
+          setsData: [
+            { reps: 8, weight: 30 },
+            { reps: 8, weight: 30 },
+            { reps: 8, weight: 30 },
+          ],
+        },
+        {
+          slug: "seated-cable-row",
+          setsData: [
+            { reps: 10, weight: 37.5 },
+            { reps: 10, weight: 37.5 },
+            { reps: 10, weight: 37.5 },
+          ],
+        },
+        {
+          slug: "hammer-curl",
+          setsData: [
+            { reps: 10, weight: 12 },
+            { reps: 10, weight: 12 },
+          ],
+        },
+        {
+          slug: "leg-curl",
+          setsData: [
+            { reps: 10, weight: 27.5 },
+            { reps: 10, weight: 27.5 },
+            { reps: 9, weight: 27.5 },
+          ],
+        },
       ],
     },
     {
       daysBack: 1,
       label: "Full Body A",
       exercises: [
-        { slug: "squat", setsData: [{ reps: 8, weight: 45 }, { reps: 8, weight: 45 }, { reps: 7, weight: 45 }] },
-        { slug: "barbell-bench-press", setsData: [{ reps: 8, weight: 35 }, { reps: 8, weight: 35 }, { reps: 7, weight: 35 }] },
-        { slug: "barbell-row", setsData: [{ reps: 8, weight: 35 }, { reps: 8, weight: 35 }, { reps: 8, weight: 35 }] },
-        { slug: "dumbbell-curl", setsData: [{ reps: 10, weight: 12 }, { reps: 10, weight: 12 }] },
-        { slug: "plank", setsData: [{ reps: 1, weight: null }, { reps: 1, weight: null }, { reps: 1, weight: null }] },
+        {
+          slug: "squat",
+          setsData: [
+            { reps: 8, weight: 45 },
+            { reps: 8, weight: 45 },
+            { reps: 7, weight: 45 },
+          ],
+        },
+        {
+          slug: "barbell-bench-press",
+          setsData: [
+            { reps: 8, weight: 35 },
+            { reps: 8, weight: 35 },
+            { reps: 7, weight: 35 },
+          ],
+        },
+        {
+          slug: "barbell-row",
+          setsData: [
+            { reps: 8, weight: 35 },
+            { reps: 8, weight: 35 },
+            { reps: 8, weight: 35 },
+          ],
+        },
+        {
+          slug: "dumbbell-curl",
+          setsData: [
+            { reps: 10, weight: 12 },
+            { reps: 10, weight: 12 },
+          ],
+        },
+        {
+          slug: "plank",
+          setsData: [
+            { reps: 1, weight: null },
+            { reps: 1, weight: null },
+            { reps: 1, weight: null },
+          ],
+        },
       ],
     },
   ];
@@ -227,7 +452,8 @@ export async function seedDevUser(db: Db) {
       if (!exerciseId) continue;
 
       for (let i = 0; i < ex.setsData.length; i++) {
-        const s = ex.setsData[i]!;
+        const s = ex.setsData[i];
+        if (!s) continue;
         const setCompletedAt = new Date(startTime.getTime() + (i + 1) * 4 * 60_000);
 
         const [insertedSet] = await db

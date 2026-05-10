@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import { getDb, users } from "@gympal/db";
+import { getDb, users } from "@saifit/db";
 import { eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import * as v from "valibot";

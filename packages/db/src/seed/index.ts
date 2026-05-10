@@ -1,8 +1,8 @@
 import { getDb } from "../client";
-import { exercises, templates, workouts, personalRecords } from "../schema";
+import { exercises, personalRecords, templates, workouts } from "../schema";
+import { seedDevUser } from "./dev-user";
 import { exerciseSeedData } from "./exercises";
 import { templateSeedData } from "./templates";
-import { seedDevUser } from "./dev-user";
 
 async function seed() {
   const db = getDb();

@@ -15,7 +15,11 @@ importers:
         specifier: ^2.3.3
         version: 2.9.12
 
-  apps/line-bot: {}
+  apps/line-bot:
+    devDependencies:
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@25.6.2)(lightningcss@1.32.0)
 
   apps/web:
     dependencies:

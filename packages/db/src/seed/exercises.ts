@@ -14,7 +14,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "barbell",
     isBodyweight: false,
     difficulty: "intermediate",
-    beginnerCueEn: "Plant feet flat, retract scapula, lower bar to mid-chest, press up in a slight arc.",
+    beginnerCueEn:
+      "Plant feet flat, retract scapula, lower bar to mid-chest, press up in a slight arc.",
     beginnerCueTh: "วางเท้าราบ ดึงสะบักเข้า ลดบาร์ลงกลางอก แล้วดันขึ้นเป็นส่วนโค้งเล็กน้อย",
     commonMistakeEn: "Bouncing the bar off the chest or flaring elbows too wide.",
     commonMistakeTh: "กระดอนบาร์บนอก หรือกางข้อศอกออกมากเกินไป",
@@ -56,7 +57,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "dumbbell",
     isBodyweight: false,
     difficulty: "beginner",
-    beginnerCueEn: "Keep a slight bend in elbows, lower dumbbells in a wide arc until you feel a stretch, squeeze chest to return.",
+    beginnerCueEn:
+      "Keep a slight bend in elbows, lower dumbbells in a wide arc until you feel a stretch, squeeze chest to return.",
     beginnerCueTh: "งอข้อศอกเล็กน้อย ลดดัมเบลเป็นส่วนโค้งกว้างจนรู้สึกยืด แล้วบีบอกเพื่อยกกลับ",
     commonMistakeEn: "Straightening arms completely, stressing the elbow joint.",
     commonMistakeTh: "เหยียดแขนตรงทั้งหมด ทำให้ข้อศอกรับแรงเกินไป",
@@ -70,7 +72,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "cable",
     isBodyweight: false,
     difficulty: "beginner",
-    beginnerCueEn: "Set cables at chest height, step forward, bring handles together in a hugging motion.",
+    beginnerCueEn:
+      "Set cables at chest height, step forward, bring handles together in a hugging motion.",
     beginnerCueTh: "ตั้งสายเคเบิลระดับอก ก้าวไปข้างหน้า ดึงแฮนเดิลเข้าหากันเหมือนกอดรัด",
     commonMistakeEn: "Using momentum and swinging the torso instead of squeezing the chest.",
     commonMistakeTh: "ใช้แรงเหวี่ยงและแกว่งลำตัวแทนที่จะบีบอก",
@@ -84,7 +87,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "bodyweight",
     isBodyweight: true,
     difficulty: "beginner",
-    beginnerCueEn: "Keep body in a straight line, lower chest to floor, push back up keeping core tight.",
+    beginnerCueEn:
+      "Keep body in a straight line, lower chest to floor, push back up keeping core tight.",
     beginnerCueTh: "รักษาลำตัวให้เป็นเส้นตรง ลดอกลงพื้น กดขึ้นพร้อมรักษาแกนกลางให้แน่น",
     commonMistakeEn: "Sagging hips or piking them up, breaking the straight-line position.",
     commonMistakeTh: "ปล่อยสะโพกห้อยหรือยกขึ้นสูง ทำให้ท่าไม่เป็นเส้นตรง",
@@ -98,7 +102,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "bodyweight",
     isBodyweight: true,
     difficulty: "intermediate",
-    beginnerCueEn: "Lean forward slightly, elbows slightly flared, lower until stretch in chest, press up.",
+    beginnerCueEn:
+      "Lean forward slightly, elbows slightly flared, lower until stretch in chest, press up.",
     beginnerCueTh: "เอนตัวไปข้างหน้าเล็กน้อย ข้อศอกแยกออกเล็กน้อย ลดลงจนรู้สึกยืดที่อก แล้วกดขึ้น",
     commonMistakeEn: "Keeping torso too upright, shifting stress to triceps only.",
     commonMistakeTh: "ตั้งลำตัวตรงเกินไปทำให้เน้นแค่ไตรเซ็บส์",
@@ -112,7 +117,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "machine",
     isBodyweight: false,
     difficulty: "beginner",
-    beginnerCueEn: "Adjust seat so handles align with mid-chest, press forward and fully extend without locking elbows.",
+    beginnerCueEn:
+      "Adjust seat so handles align with mid-chest, press forward and fully extend without locking elbows.",
     beginnerCueTh: "ปรับเบาะให้แฮนเดิลอยู่ระดับกลางอก กดไปข้างหน้าเหยียดแขนโดยไม่ล็อคข้อศอก",
     commonMistakeEn: "Arching the lower back and letting shoulders shrug up.",
     commonMistakeTh: "โก่งหลังส่วนล่างและยักไหล่ขึ้นระหว่างกด",
@@ -126,9 +132,11 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "machine",
     isBodyweight: false,
     difficulty: "beginner",
-    beginnerCueEn: "Set elbows at shoulder height, bring pads together squeezing chest, control the return.",
+    beginnerCueEn:
+      "Set elbows at shoulder height, bring pads together squeezing chest, control the return.",
     beginnerCueTh: "ตั้งข้อศอกระดับไหล่ นำแผ่นรองเข้าหากันพร้อมบีบอก ควบคุมการคืนตำแหน่ง",
-    commonMistakeEn: "Allowing the weight to pull arms too far back, overstretching the shoulder joint.",
+    commonMistakeEn:
+      "Allowing the weight to pull arms too far back, overstretching the shoulder joint.",
     commonMistakeTh: "ปล่อยให้น้ำหนักดึงแขนไปข้างหลังมากเกินไป ทำให้ข้อไหล่ยืดเกิน",
   },
   {
@@ -140,7 +148,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "barbell",
     isBodyweight: false,
     difficulty: "intermediate",
-    beginnerCueEn: "Hold end of barbell at shoulder height, press upward and forward in a slight arc.",
+    beginnerCueEn:
+      "Hold end of barbell at shoulder height, press upward and forward in a slight arc.",
     beginnerCueTh: "จับปลายบาร์เบลที่ระดับไหล่ กดขึ้นและไปข้างหน้าเป็นส่วนโค้งเล็กน้อย",
     commonMistakeEn: "Using too much leg drive or rotating the torso during the press.",
     commonMistakeTh: "ใช้แรงขาหรือหมุนลำตัวมากเกินไประหว่างกด",
@@ -154,7 +163,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "other",
     isBodyweight: false,
     difficulty: "beginner",
-    beginnerCueEn: "Squeeze two plates together, press forward and retract, maintain constant inward pressure.",
+    beginnerCueEn:
+      "Squeeze two plates together, press forward and retract, maintain constant inward pressure.",
     beginnerCueTh: "บีบแผ่นน้ำหนักสองแผ่นเข้าหากัน กดออกไปข้างหน้าแล้วดึงกลับ รักษาแรงกดเข้าตลอด",
     commonMistakeEn: "Releasing pressure on the plates during the movement.",
     commonMistakeTh: "คลายแรงกดระหว่างการเคลื่อนไหว",
@@ -268,7 +278,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "cable",
     isBodyweight: false,
     difficulty: "beginner",
-    beginnerCueEn: "Set cable at upper chest height, pull rope to face, elbows flared, externally rotate at end.",
+    beginnerCueEn:
+      "Set cable at upper chest height, pull rope to face, elbows flared, externally rotate at end.",
     beginnerCueTh: "ตั้งเคเบิลระดับอกบน ดึงเชือกมาที่ใบหน้า ข้อศอกกาง หมุนออกที่จุดสุดท้าย",
     commonMistakeEn: "Using too much weight and losing the external rotation at the end.",
     commonMistakeTh: "ใช้น้ำหนักมากเกินไปและเสียการหมุนออกตอนท้าย",
@@ -310,7 +321,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "barbell",
     isBodyweight: false,
     difficulty: "intermediate",
-    beginnerCueEn: "Bar on upper back, hip hinge with soft knee bend, lower until back is near parallel to floor.",
+    beginnerCueEn:
+      "Bar on upper back, hip hinge with soft knee bend, lower until back is near parallel to floor.",
     beginnerCueTh: "บาร์บนหลังส่วนบน พับสะโพกพร้อมงอเข่าเล็กน้อย ลดจนหลังเกือบขนานพื้น",
     commonMistakeEn: "Bending the knees too much, turning it into a squat.",
     commonMistakeTh: "งอเข่ามากเกินไปจนกลายเป็นสควอต",
@@ -326,7 +338,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "barbell",
     isBodyweight: false,
     difficulty: "intermediate",
-    beginnerCueEn: "Bar on upper traps, hip-width stance, squat to parallel, knees track over toes.",
+    beginnerCueEn:
+      "Bar on upper traps, hip-width stance, squat to parallel, knees track over toes.",
     beginnerCueTh: "วางบาร์บนแทรพส์ส่วนบน ยืนกว้างระดับสะโพก สควอตถึงแนวขนาน เข่าชี้ตามแนวนิ้วเท้า",
     commonMistakeEn: "Caving knees inward (valgus) under load.",
     commonMistakeTh: "เข่าพับเข้าด้านใน (วัลกัส) เมื่อน้ำหนักหนัก",
@@ -354,7 +367,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "machine",
     isBodyweight: false,
     difficulty: "beginner",
-    beginnerCueEn: "Feet shoulder-width on platform, press until legs nearly straight, lower under control.",
+    beginnerCueEn:
+      "Feet shoulder-width on platform, press until legs nearly straight, lower under control.",
     beginnerCueTh: "วางเท้ากว้างระดับไหล่บนแท่น กดจนขาเกือบเหยียดตรง ลดลงอย่างควบคุม",
     commonMistakeEn: "Allowing knees to cave in or lifting the lower back off the pad.",
     commonMistakeTh: "ปล่อยให้เข่าพับเข้าหรือยกหลังส่วนล่างออกจากพนัก",
@@ -368,7 +382,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "barbell",
     isBodyweight: false,
     difficulty: "intermediate",
-    beginnerCueEn: "Hold bar at hips, push hips back, lower bar along thighs until hamstrings fully stretched.",
+    beginnerCueEn:
+      "Hold bar at hips, push hips back, lower bar along thighs until hamstrings fully stretched.",
     beginnerCueTh: "ถือบาร์ที่สะโพก ดันสะโพกไปข้างหลัง ลดบาร์ตามต้นขาจนรู้สึกยืดแฮมสตริงเต็มที่",
     commonMistakeEn: "Bending the knees too much, turning it into a standard deadlift.",
     commonMistakeTh: "งอเข่ามากเกินไปจนกลายเป็นเดดลิฟต์ปกติ",
@@ -396,7 +411,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "machine",
     isBodyweight: false,
     difficulty: "beginner",
-    beginnerCueEn: "Sit upright, extend legs to full extension, squeeze quads at top, lower slowly.",
+    beginnerCueEn:
+      "Sit upright, extend legs to full extension, squeeze quads at top, lower slowly.",
     beginnerCueTh: "นั่งตรง เหยียดขาจนสุด บีบควอดส์ที่ด้านบน ลดลงช้าๆ",
     commonMistakeEn: "Swinging or jerking the weight up instead of controlled extension.",
     commonMistakeTh: "แกว่งหรือกระชากน้ำหนักขึ้นแทนการเหยียดอย่างควบคุม",
@@ -410,7 +426,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "machine",
     isBodyweight: false,
     difficulty: "beginner",
-    beginnerCueEn: "Stand on edge of platform, raise heels as high as possible, lower until calf is stretched.",
+    beginnerCueEn:
+      "Stand on edge of platform, raise heels as high as possible, lower until calf is stretched.",
     beginnerCueTh: "ยืนที่ขอบแท่น ยกส้นเท้าขึ้นสูงสุด ลดลงจนรู้สึกยืดน่อง",
     commonMistakeEn: "Bouncing at the bottom instead of getting a full stretch.",
     commonMistakeTh: "กระดอนที่ด้านล่างแทนที่จะยืดเต็มที่",
@@ -438,7 +455,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "dumbbell",
     isBodyweight: false,
     difficulty: "intermediate",
-    beginnerCueEn: "Rear foot on bench, lunge down until front thigh is parallel, drive up through heel.",
+    beginnerCueEn:
+      "Rear foot on bench, lunge down until front thigh is parallel, drive up through heel.",
     beginnerCueTh: "วางเท้าหลังบนม้านั่ง ลดลงจนต้นขาหน้าขนานพื้น ดันขึ้นผ่านส้นเท้า",
     commonMistakeEn: "Placing the front foot too close, causing knee to travel far past toes.",
     commonMistakeTh: "วางเท้าหน้าใกล้เกินไปทำให้เข่าเลยนิ้วเท้าไปมาก",
@@ -452,7 +470,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "dumbbell",
     isBodyweight: false,
     difficulty: "beginner",
-    beginnerCueEn: "Step forward, lower back knee toward floor, drive through front heel to step forward.",
+    beginnerCueEn:
+      "Step forward, lower back knee toward floor, drive through front heel to step forward.",
     beginnerCueTh: "ก้าวไปข้างหน้า ลดเข่าหลังลงพื้น ดันผ่านส้นเท้าหน้าเพื่อก้าวต่อ",
     commonMistakeEn: "Short strides that cause too much forward lean.",
     commonMistakeTh: "ก้าวสั้นเกินไปทำให้เอนตัวไปข้างหน้ามาก",
@@ -466,7 +485,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "dumbbell",
     isBodyweight: false,
     difficulty: "beginner",
-    beginnerCueEn: "Place full foot on box, drive through that heel to step up, bring other foot up.",
+    beginnerCueEn:
+      "Place full foot on box, drive through that heel to step up, bring other foot up.",
     beginnerCueTh: "วางเท้าทั้งหมดบนกล่อง ดันผ่านส้นเท้านั้นเพื่อขึ้นไป นำเท้าอีกข้างขึ้นตาม",
     commonMistakeEn: "Pushing off the back foot instead of working the lead leg.",
     commonMistakeTh: "ผลักจากเท้าหลังแทนที่จะทำงานกับขาหน้า",
@@ -480,7 +500,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "barbell",
     isBodyweight: false,
     difficulty: "beginner",
-    beginnerCueEn: "Upper back on bench, bar over hips, drive hips up until body is straight, squeeze glutes at top.",
+    beginnerCueEn:
+      "Upper back on bench, bar over hips, drive hips up until body is straight, squeeze glutes at top.",
     beginnerCueTh: "วางหลังส่วนบนบนม้านั่ง บาร์อยู่เหนือสะโพก ดันสะโพกขึ้นจนลำตัวตรง บีบก้นที่ด้านบน",
     commonMistakeEn: "Hyperextending the lower back at the top instead of a neutral spine.",
     commonMistakeTh: "โก่งหลังส่วนล่างมากเกินไปที่ด้านบนแทนที่จะรักษากระดูกสันหลังเป็นกลาง",
@@ -494,7 +515,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "barbell",
     isBodyweight: false,
     difficulty: "intermediate",
-    beginnerCueEn: "Wide stance with toes pointed out, grip between feet, keep torso more upright than conventional.",
+    beginnerCueEn:
+      "Wide stance with toes pointed out, grip between feet, keep torso more upright than conventional.",
     beginnerCueTh: "ยืนกว้างโดยให้นิ้วเท้าชี้ออก จับบาร์ระหว่างเท้า รักษาลำตัวให้ตั้งตรงกว่าแบบปกติ",
     commonMistakeEn: "Allowing knees to collapse inward at the start of the pull.",
     commonMistakeTh: "ปล่อยให้เข่าพับเข้าด้านในตอนเริ่มดึง",
@@ -508,7 +530,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "dumbbell",
     isBodyweight: false,
     difficulty: "beginner",
-    beginnerCueEn: "Hold dumbbell vertically at chest, squat with upright torso, elbows inside knees.",
+    beginnerCueEn:
+      "Hold dumbbell vertically at chest, squat with upright torso, elbows inside knees.",
     beginnerCueTh: "ถือดัมเบลแนวตั้งที่อก สควอตพร้อมลำตัวตรง ข้อศอกอยู่ด้านในเข่า",
     commonMistakeEn: "Allowing the dumbbell to pull you forward and rounding the upper back.",
     commonMistakeTh: "ปล่อยให้ดัมเบลดึงตัวไปข้างหน้าและโค้งหลังส่วนบน",
@@ -636,7 +659,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "cable",
     isBodyweight: false,
     difficulty: "beginner",
-    beginnerCueEn: "Cable at foot level, raise arm across body to shoulder height, constant tension throughout.",
+    beginnerCueEn:
+      "Cable at foot level, raise arm across body to shoulder height, constant tension throughout.",
     beginnerCueTh: "เคเบิลอยู่ที่ระดับเท้า ยกแขนข้ามลำตัวขึ้นถึงระดับไหล่ แรงตึงคงที่ตลอด",
     commonMistakeEn: "Pulling the cable with wrist flexion instead of shoulder abduction.",
     commonMistakeTh: "ดึงเคเบิลด้วยการงอข้อมือแทนการกางแขนออกที่ไหล่",
@@ -680,7 +704,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "dumbbell",
     isBodyweight: false,
     difficulty: "beginner",
-    beginnerCueEn: "Neutral grip (thumbs up), curl with palm facing inward throughout the movement.",
+    beginnerCueEn:
+      "Neutral grip (thumbs up), curl with palm facing inward throughout the movement.",
     beginnerCueTh: "จับแนวกลาง (หัวแม่มือชี้ขึ้น) ดึงโดยฝ่ามือหันเข้าตลอดการเคลื่อนไหว",
     commonMistakeEn: "Rotating the wrist to supinate, losing the neutral-grip advantage.",
     commonMistakeTh: "หมุนข้อมือออกจนเสียประโยชน์ของการจับแนวกลาง",
@@ -822,7 +847,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "bodyweight",
     isBodyweight: true,
     difficulty: "intermediate",
-    beginnerCueEn: "Hang from bar, raise legs to parallel (or higher), lower slowly without swinging.",
+    beginnerCueEn:
+      "Hang from bar, raise legs to parallel (or higher), lower slowly without swinging.",
     beginnerCueTh: "แขวนจากบาร์ ยกขาขึ้นถึงแนวขนาน (หรือสูงกว่า) ลดลงช้าๆ โดยไม่แกว่ง",
     commonMistakeEn: "Swinging the body to use momentum instead of ab strength.",
     commonMistakeTh: "แกว่งลำตัวเพื่อใช้แรงเหวี่ยงแทนความแข็งแรงของหน้าท้อง",
@@ -850,7 +876,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "other",
     isBodyweight: true,
     difficulty: "advanced",
-    beginnerCueEn: "Start on knees, roll wheel forward keeping hips low, pull back using abs and lats.",
+    beginnerCueEn:
+      "Start on knees, roll wheel forward keeping hips low, pull back using abs and lats.",
     beginnerCueTh: "เริ่มที่เข่า กลิ้งล้อไปข้างหน้าพร้อมรักษาสะโพกต่ำ ดึงกลับโดยใช้หน้าท้องและแลท",
     commonMistakeEn: "Letting the hips drop too far, straining the lower back.",
     commonMistakeTh: "ปล่อยสะโพกลดต่ำเกินไป ทำให้หลังส่วนล่างรับแรงเกิน",
@@ -892,7 +919,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "bodyweight",
     isBodyweight: true,
     difficulty: "beginner",
-    beginnerCueEn: "Lying on back, arms and knees at 90°, lower opposite arm/leg while pressing low back to floor.",
+    beginnerCueEn:
+      "Lying on back, arms and knees at 90°, lower opposite arm/leg while pressing low back to floor.",
     beginnerCueTh: "นอนหงาย แขนและเข่างอ 90° ลดแขน/ขาตรงข้ามพร้อมกดหลังส่วนล่างลงพื้น",
     commonMistakeEn: "Allowing the lower back to arch up off the floor.",
     commonMistakeTh: "ปล่อยให้หลังส่วนล่างโก่งขึ้นจากพื้น",
@@ -906,7 +934,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "bodyweight",
     isBodyweight: true,
     difficulty: "intermediate",
-    beginnerCueEn: "Lying on back, press low back to floor, raise arms and legs creating a banana shape.",
+    beginnerCueEn:
+      "Lying on back, press low back to floor, raise arms and legs creating a banana shape.",
     beginnerCueTh: "นอนหงาย กดหลังส่วนล่างลงพื้น ยกแขนและขาขึ้นสร้างรูปทรงกล้วย",
     commonMistakeEn: "Letting the lower back come off the floor, losing core tension.",
     commonMistakeTh: "ปล่อยให้หลังส่วนล่างยกขึ้นจากพื้น เสียแรงตึงแกนกลาง",
@@ -922,7 +951,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "machine",
     isBodyweight: true,
     difficulty: "beginner",
-    beginnerCueEn: "Land mid-foot, maintain upright posture, keep a comfortable conversational pace.",
+    beginnerCueEn:
+      "Land mid-foot, maintain upright posture, keep a comfortable conversational pace.",
     beginnerCueTh: "ลงกลางเท้า รักษาท่าตัวตรง รักษาจังหวะที่สบายพอพูดได้",
     commonMistakeEn: "Over-striding and heel striking, increasing injury risk.",
     commonMistakeTh: "ก้าวยาวเกินและลงด้วยส้นเท้า เพิ่มความเสี่ยงการบาดเจ็บ",
@@ -936,7 +966,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "machine",
     isBodyweight: true,
     difficulty: "beginner",
-    beginnerCueEn: "Set seat so knee has slight bend at bottom, pedal smoothly at a cadence of 80–100 rpm.",
+    beginnerCueEn:
+      "Set seat so knee has slight bend at bottom, pedal smoothly at a cadence of 80–100 rpm.",
     beginnerCueTh: "ตั้งเบาะให้เข่างอเล็กน้อยที่ด้านล่าง ปั่นสม่ำเสมอที่ความเร็ว 80–100 รอบ/นาที",
     commonMistakeEn: "Setting resistance too high and grinding slow cadence.",
     commonMistakeTh: "ตั้งแรงต้านสูงเกินไปและปั่นช้า",
@@ -992,7 +1023,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "machine",
     isBodyweight: true,
     difficulty: "beginner",
-    beginnerCueEn: "Keep arms and legs in sync, maintain upright posture, push and pull handles equally.",
+    beginnerCueEn:
+      "Keep arms and legs in sync, maintain upright posture, push and pull handles equally.",
     beginnerCueTh: "รักษาแขนและขาให้สัมพันธ์กัน รักษาท่าตัวตรง ดัน-ดึงแฮนเดิลเท่าๆ กัน",
     commonMistakeEn: "Leaning on the static handles instead of using the moving arms.",
     commonMistakeTh: "พิงแฮนเดิลที่อยู่นิ่งแทนที่จะใช้แฮนเดิลที่เคลื่อนไหว",
@@ -1036,7 +1068,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "cable",
     isBodyweight: false,
     difficulty: "beginner",
-    beginnerCueEn: "Set cables high, step forward and cross handles in front of body, squeeze chest.",
+    beginnerCueEn:
+      "Set cables high, step forward and cross handles in front of body, squeeze chest.",
     beginnerCueTh: "ตั้งเคเบิลสูง ก้าวไปข้างหน้าและไขว้แฮนเดิลด้านหน้าลำตัว บีบอก",
     commonMistakeEn: "Using too much weight and losing control of the range of motion.",
     commonMistakeTh: "ใช้น้ำหนักหนักเกินและเสียการควบคุมช่วงการเคลื่อนไหว",
@@ -1050,7 +1083,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "dumbbell",
     isBodyweight: false,
     difficulty: "beginner",
-    beginnerCueEn: "Set bench to 30°, lower dumbbells in wide arc until slight stretch, squeeze chest back up.",
+    beginnerCueEn:
+      "Set bench to 30°, lower dumbbells in wide arc until slight stretch, squeeze chest back up.",
     beginnerCueTh: "ตั้งม้านั่ง 30° ลดดัมเบลเป็นส่วนโค้งกว้างจนรู้สึกยืดเล็กน้อย บีบอกขึ้น",
     commonMistakeEn: "Setting incline too steep which recruits front delts instead of upper chest.",
     commonMistakeTh: "ตั้งชันเกินไปทำให้เดลต์ด้านหน้าทำงานแทนอกบน",
@@ -1180,7 +1214,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "dumbbell",
     isBodyweight: false,
     difficulty: "beginner",
-    beginnerCueEn: "Step back and lower rear knee toward floor, front thigh parallel, drive through front heel.",
+    beginnerCueEn:
+      "Step back and lower rear knee toward floor, front thigh parallel, drive through front heel.",
     beginnerCueTh: "ก้าวไปข้างหลังและลดเข่าหลังลงพื้น ต้นขาหน้าขนาน ดันผ่านส้นเท้าหน้า",
     commonMistakeEn: "Letting the front knee cave inward as you push back up.",
     commonMistakeTh: "ปล่อยให้เข่าหน้าพับเข้าด้านในขณะดันขึ้น",
@@ -1298,7 +1333,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "bodyweight",
     isBodyweight: true,
     difficulty: "advanced",
-    beginnerCueEn: "Lying on back, legs at 90° in air, lower legs side to side without touching floor.",
+    beginnerCueEn:
+      "Lying on back, legs at 90° in air, lower legs side to side without touching floor.",
     beginnerCueTh: "นอนหงาย ขางอ 90° ลอยอยู่ในอากาศ ลดขาไปด้านข้างโดยไม่สัมผัสพื้น",
     commonMistakeEn: "Letting legs drop too fast using gravity, not oblique control.",
     commonMistakeTh: "ปล่อยให้ขาตกเร็วโดยใช้แรงโน้มถ่วงแทนการควบคุมด้วยกล้ามเนื้อข้าง",
@@ -1358,7 +1394,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "kettlebell",
     isBodyweight: false,
     difficulty: "intermediate",
-    beginnerCueEn: "Hip hinge back, hike bell between legs, drive hips forward explosively to shoulder height.",
+    beginnerCueEn:
+      "Hip hinge back, hike bell between legs, drive hips forward explosively to shoulder height.",
     beginnerCueTh: "พับสะโพกไปข้างหลัง แกว่งเคทเทิลเบลระหว่างขา ดันสะโพกไปข้างหน้าอย่างระเบิดขึ้นถึงระดับไหล่",
     commonMistakeEn: "Squatting the movement instead of hinging at the hip.",
     commonMistakeTh: "ทำสควอตแทนการพับสะโพก",
@@ -1388,8 +1425,10 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "bodyweight",
     isBodyweight: true,
     difficulty: "intermediate",
-    beginnerCueEn: "Squat down, jump feet back to plank, push-up, jump feet forward, jump up with hands overhead.",
-    beginnerCueTh: "นั่งสควอต กระโดดเท้าไปข้างหลังในท่าแพลงก์ ดันพื้น กระโดดเท้ามาข้างหน้า กระโดดขึ้นพร้อมยกมือเหนือหัว",
+    beginnerCueEn:
+      "Squat down, jump feet back to plank, push-up, jump feet forward, jump up with hands overhead.",
+    beginnerCueTh:
+      "นั่งสควอต กระโดดเท้าไปข้างหลังในท่าแพลงก์ ดันพื้น กระโดดเท้ามาข้างหน้า กระโดดขึ้นพร้อมยกมือเหนือหัว",
     commonMistakeEn: "Sagging the hips in the plank portion or skipping the push-up.",
     commonMistakeTh: "ปล่อยสะโพกห้อยในท่าแพลงก์หรือข้ามการวิดพื้น",
   },
@@ -1416,7 +1455,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "kettlebell",
     isBodyweight: false,
     difficulty: "advanced",
-    beginnerCueEn: "Arm with weight points straight up throughout, move through each position deliberately.",
+    beginnerCueEn:
+      "Arm with weight points straight up throughout, move through each position deliberately.",
     beginnerCueTh: "แขนที่ถือน้ำหนักชี้ตรงขึ้นตลอด เคลื่อนผ่านแต่ละท่าอย่างตั้งใจ",
     commonMistakeEn: "Rushing through positions and losing the locked-out arm overhead.",
     commonMistakeTh: "รีบผ่านท่าต่างๆ และเสียตำแหน่งล็อคแขนเหนือหัว",
@@ -1430,7 +1470,8 @@ export const exerciseSeedData: Omit<ExerciseInsert, "id" | "createdAt">[] = [
     equipment: "barbell",
     isBodyweight: false,
     difficulty: "advanced",
-    beginnerCueEn: "Front squat into overhead press in one fluid motion, use leg drive to power the press.",
+    beginnerCueEn:
+      "Front squat into overhead press in one fluid motion, use leg drive to power the press.",
     beginnerCueTh: "ฟรอนต์สควอตต่อเนื่องเป็นโอเวอร์เฮดเพรสในท่าเดียว ใช้แรงขาในการกด",
     commonMistakeEn: "Pausing between the squat and press, losing the momentum.",
     commonMistakeTh: "หยุดระหว่างสควอตและกด ทำให้เสียแรงเหวี่ยง",

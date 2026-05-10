@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -15,25 +16,6 @@ interface OnboardingState {
   daysPerWeek: number | null;
   gymType: GymType | null;
 }
-
-const GOALS: { value: Goal; label: string; emoji: string }[] = [
-  { value: "build_muscle", label: "เพิ่มกล้ามเนื้อ", emoji: "💪" },
-  { value: "lose_fat", label: "ลดไขมัน", emoji: "🔥" },
-  { value: "get_stronger", label: "เพิ่มแรง", emoji: "🏋️" },
-  { value: "stay_active", label: "ออกกำลังกายสม่ำเสมอ", emoji: "🏃" },
-];
-
-const EXPERIENCE: { value: ExperienceLevel; label: string; sub: string }[] = [
-  { value: "beginner", label: "มือใหม่", sub: "< 1 ปี" },
-  { value: "intermediate", label: "ระดับกลาง", sub: "1–3 ปี" },
-  { value: "advanced", label: "ขั้นสูง", sub: "> 3 ปี" },
-];
-
-const GYM_TYPES: { value: GymType; label: string; emoji: string; sub: string }[] = [
-  { value: "commercial", label: "ฟิตเนสทั่วไป", emoji: "🏢", sub: "Commercial Gym" },
-  { value: "home_equipment", label: "ที่บ้าน (มีอุปกรณ์)", emoji: "🏠", sub: "Home + Equipment" },
-  { value: "home_no_equipment", label: "ที่บ้าน (ไม่มีอุปกรณ์)", emoji: "🧘", sub: "No Equipment" },
-];
 
 function ProgressDots({ step }: { step: Step }) {
   return (
@@ -56,8 +38,28 @@ function ProgressDots({ step }: { step: Step }) {
 }
 
 export default function WelcomePage() {
+  const t = useTranslations("onboarding");
   const router = useRouter();
   const [step, setStep] = useState<Step>(1);
+
+  const GOALS: { value: Goal; label: string; emoji: string }[] = [
+    { value: "build_muscle", label: t("buildMuscle"), emoji: "💪" },
+    { value: "lose_fat", label: t("loseFat"), emoji: "🔥" },
+    { value: "get_stronger", label: t("getStronger"), emoji: "🏋️" },
+    { value: "stay_active", label: t("stayActive"), emoji: "🏃" },
+  ];
+
+  const EXPERIENCE: { value: ExperienceLevel; label: string; sub: string }[] = [
+    { value: "beginner", label: t("beginner"), sub: "< 1 ปี" },
+    { value: "intermediate", label: t("intermediate"), sub: "1–3 ปี" },
+    { value: "advanced", label: t("advanced"), sub: "> 3 ปี" },
+  ];
+
+  const GYM_TYPES: { value: GymType; label: string; emoji: string; sub: string }[] = [
+    { value: "commercial", label: t("commercial"), emoji: "🏢", sub: "Commercial Gym" },
+    { value: "home_equipment", label: t("homeEquipment"), emoji: "🏠", sub: "Home + Equipment" },
+    { value: "home_no_equipment", label: t("homeNoEquipment"), emoji: "🧘", sub: "No Equipment" },
+  ];
   const [state, setState] = useState<OnboardingState>({
     goal: null,
     experienceLevel: null,
@@ -108,7 +110,7 @@ export default function WelcomePage() {
         {step === 1 && (
           <div className="flex-1 flex flex-col">
             <div className="mb-8 space-y-1">
-              <h2 className="text-2xl font-bold">เป้าหมายของคุณ</h2>
+              <h2 className="text-2xl font-bold">{t("goal")}</h2>
               <p className="text-muted-foreground text-sm leading-relaxed">
                 เราจะแนะนำโปรแกรมที่เหมาะกับคุณ
               </p>
@@ -140,7 +142,7 @@ export default function WelcomePage() {
         {step === 2 && (
           <div className="flex-1 flex flex-col">
             <div className="mb-8 space-y-1">
-              <h2 className="text-2xl font-bold">ระดับประสบการณ์</h2>
+              <h2 className="text-2xl font-bold">{t("experience")}</h2>
               <p className="text-muted-foreground text-sm leading-relaxed">
                 คุณออกกำลังกายมานานแค่ไหนแล้ว?
               </p>
@@ -174,7 +176,7 @@ export default function WelcomePage() {
         {step === 3 && (
           <div className="flex-1 flex flex-col">
             <div className="mb-8 space-y-1">
-              <h2 className="text-2xl font-bold">กี่วันต่อสัปดาห์?</h2>
+              <h2 className="text-2xl font-bold">{t("daysPerWeek")}?</h2>
               <p className="text-muted-foreground text-sm leading-relaxed">คุณวางแผนออกกำลังกายกี่วัน</p>
             </div>
             <div className="flex gap-2 flex-wrap justify-center">
@@ -206,7 +208,7 @@ export default function WelcomePage() {
         {step === 4 && (
           <div className="flex-1 flex flex-col">
             <div className="mb-8 space-y-1">
-              <h2 className="text-2xl font-bold">ประเภทยิม</h2>
+              <h2 className="text-2xl font-bold">{t("gymType")}</h2>
               <p className="text-muted-foreground text-sm leading-relaxed">คุณออกกำลังกายที่ไหน?</p>
             </div>
             <div className="space-y-3 flex-1">

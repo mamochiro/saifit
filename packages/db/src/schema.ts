@@ -1,26 +1,20 @@
 import {
+  boolean,
+  date,
+  index,
+  integer,
+  jsonb,
+  numeric,
+  pgEnum,
   pgTable,
+  text,
+  timestamp,
   uuid,
   varchar,
-  text,
-  integer,
-  boolean,
-  numeric,
-  timestamp,
-  date,
-  jsonb,
-  index,
-  uniqueIndex,
-  pgEnum,
 } from "drizzle-orm/pg-core";
 
 export const localeEnum = pgEnum("locale", ["th", "en"]);
-export const goalEnum = pgEnum("goal", [
-  "build_muscle",
-  "lose_fat",
-  "get_stronger",
-  "stay_active",
-]);
+export const goalEnum = pgEnum("goal", ["build_muscle", "lose_fat", "get_stronger", "stay_active"]);
 export const experienceLevelEnum = pgEnum("experience_level", [
   "beginner",
   "intermediate",
@@ -52,11 +46,7 @@ export const equipmentEnum = pgEnum("equipment", [
   "band",
   "other",
 ]);
-export const difficultyEnum = pgEnum("difficulty", [
-  "beginner",
-  "intermediate",
-  "advanced",
-]);
+export const difficultyEnum = pgEnum("difficulty", ["beginner", "intermediate", "advanced"]);
 export const recordTypeEnum = pgEnum("record_type", [
   "max_weight",
   "max_reps",
