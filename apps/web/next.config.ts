@@ -6,6 +6,7 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 const withSerwist = withSerwistInit({
   swSrc: "src/sw.ts",
   swDest: "public/sw.js",
+  disable: process.env.NODE_ENV !== "production",
 });
 
 export default withNextIntl(withSerwist({}));
