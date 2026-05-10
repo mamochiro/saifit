@@ -1,5 +1,5 @@
 import { and, eq, gt, isNotNull, sql } from "drizzle-orm";
-import { getDb } from "./client";
+import type { getDb } from "./client";
 import { streaks, templates, userPrograms, users, workoutSets, workouts } from "./schema";
 
 type Db = ReturnType<typeof getDb>;
@@ -10,9 +10,7 @@ type Db = ReturnType<typeof getDb>;
  * Returns the user's active program with its template nested, or null if none exists.
  * Uses an INNER JOIN so the result is only returned when a template is linked.
  */
-export async function getUserActiveProgram(userId: string) {
-  const db = getDb();
-
+export async function getUserActiveProgram(db: Db, userId: string) {
   const [row] = await db
     .select({
       id: userPrograms.id,

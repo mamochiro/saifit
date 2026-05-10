@@ -14,6 +14,8 @@ interface Exercise {
   equipment: string;
 }
 
+export type PickedExercise = Pick<Exercise, "id" | "nameTh" | "nameEn" | "muscleGroups">;
+
 const MUSCLE_FILTERS = [
   { value: "", labelKey: "filterAll" },
   { value: "chest", labelKey: "muscles.chest" },
@@ -33,7 +35,7 @@ export function ExercisePicker({
 }: {
   workoutId: string;
   onClose: () => void;
-  onSelect: (exerciseId: string) => void;
+  onSelect: (exercise: PickedExercise) => void;
 }) {
   const t = useTranslations("exercises");
   const [q, setQ] = useState("");
@@ -124,7 +126,14 @@ export function ExercisePicker({
                 <button
                   key={ex.id}
                   type="button"
-                  onClick={() => onSelect(ex.id)}
+                  onClick={() =>
+                    onSelect({
+                      id: ex.id,
+                      nameTh: ex.nameTh,
+                      nameEn: ex.nameEn,
+                      muscleGroups: ex.muscleGroups,
+                    })
+                  }
                   className="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-secondary transition-colors text-left min-h-14"
                 >
                   <div>

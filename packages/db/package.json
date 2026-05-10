@@ -17,9 +17,9 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^0.10.4",
     "drizzle-orm": "^0.38.3",
-    "pg": "^8.13.1",
-    "@neondatabase/serverless": "^0.10.4"
+    "pg": "^8.13.1"
   },
   "devDependencies": {
     "@types/pg": "^8.11.10",

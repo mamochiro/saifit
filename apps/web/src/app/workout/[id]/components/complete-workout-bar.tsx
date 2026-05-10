@@ -5,22 +5,30 @@ import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 
-export function CompleteWorkoutBar({ workoutId }: { workoutId: string }) {
+export function CompleteWorkoutBar({
+  workoutId,
+  startedAt,
+}: {
+  workoutId: string;
+  startedAt: string;
+}) {
   const t = useTranslations("workout");
   const router = useRouter();
   const keyboardHeight = useViewportStore((s) => s.keyboardHeight);
   const keyboardOpen = useViewportStore((s) => s.keyboardOpen);
 
   const mutation = useMutation({
-    mutationFn: () =>
-      fetch(`/api/workouts/${workoutId}`, {
+    mutationFn: () => {
+      const durationSeconds = Math.round((Date.now() - new Date(startedAt).getTime()) / 1000);
+      return fetch(`/api/workouts/${workoutId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           completedAt: new Date().toISOString(),
-          durationSeconds: 0,
+          durationSeconds,
         }),
-      }),
+      });
+    },
     onSuccess: () => {
       router.push("/");
       router.refresh();

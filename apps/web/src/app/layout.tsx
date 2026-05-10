@@ -3,6 +3,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { Chakra_Petch, K2D } from "next/font/google";
 import "./globals.css";
+import { BottomNav } from "@/components/bottom-nav";
 import { PwaInstallPrompt } from "@/components/pwa-install-prompt";
 import { Providers } from "./providers";
 
@@ -45,6 +46,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="font-body">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>{children}</Providers>
+          <BottomNav />
           <PwaInstallPrompt />
         </NextIntlClientProvider>
       </body>

@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import { exercises, getDb, users, workoutSets, workouts } from "@saifit/db";
+import { exercises, getDb, streaks, users, workoutSets, workouts } from "@saifit/db";
 import { and, asc, eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import * as v from "valibot";
@@ -86,6 +86,50 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     updateData.durationSeconds = parsed.output.durationSeconds;
 
   await db.update(workouts).set(updateData).where(eq(workouts.id, id));
+
+  // Update streak when completing a workout
+  if (parsed.output.completedAt !== undefined) {
+    const todayBangkok = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Bangkok" });
+
+    const streak = await db.query.streaks.findFirst({ where: eq(streaks.userId, user.id) });
+
+    const dateToStr = (d: Date | string | null | undefined): string | null => {
+      if (!d) return null;
+      return typeof d === "string" ? d.substring(0, 10) : d.toISOString().substring(0, 10);
+    };
+
+    const lastStr = dateToStr(streak?.lastWorkoutDate ?? null);
+
+    if (lastStr !== todayBangkok) {
+      const yesterday = new Date(`${todayBangkok}T00:00:00Z`);
+      yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+      const yesterdayStr = yesterday.toISOString().substring(0, 10);
+
+      const newCurrent = lastStr === yesterdayStr ? (streak?.currentStreak ?? 0) + 1 : 1;
+      const newLongest = Math.max(streak?.longestStreak ?? 0, newCurrent);
+      const todayDate = new Date(`${todayBangkok}T00:00:00Z`);
+
+      if (!streak) {
+        await db.insert(streaks).values({
+          userId: user.id,
+          currentStreak: newCurrent,
+          longestStreak: newLongest,
+          lastWorkoutDate: todayDate,
+        });
+      } else {
+        await db
+          .update(streaks)
+          .set({
+            currentStreak: newCurrent,
+            longestStreak: newLongest,
+            lastWorkoutDate: todayDate,
+            updatedAt: new Date(),
+          })
+          .where(eq(streaks.userId, user.id));
+      }
+    }
+  }
+
   return NextResponse.json({ ok: true });
 }
 

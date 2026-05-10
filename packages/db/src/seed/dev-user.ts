@@ -1,4 +1,5 @@
-import { eq, inArray } from "drizzle-orm";
+import { randomBytes, scrypt } from "node:crypto";
+import { eq, inArray, sql } from "drizzle-orm";
 import type { getDb } from "../client";
 import {
   exercises,
@@ -14,6 +15,24 @@ import {
 type Db = ReturnType<typeof getDb>;
 
 const DEV_USER_ID = "00000000-0000-0000-0000-000000000001";
+const DEV_BETTER_AUTH_ID = "dev-better-auth-00000000000000001";
+
+async function hashPasswordScrypt(password: string): Promise<string> {
+  const salt = randomBytes(16).toString("hex");
+  const key = await new Promise<Buffer>((resolve, reject) => {
+    scrypt(
+      password.normalize("NFKC"),
+      salt,
+      64,
+      { N: 16384, r: 16, p: 1, maxmem: 128 * 16384 * 16 * 2 },
+      (err, buf) => {
+        if (err) reject(err);
+        else resolve(buf);
+      },
+    );
+  });
+  return `${salt}:${key.toString("hex")}`;
+}
 
 function daysAgo(n: number): Date {
   const d = new Date();
@@ -33,11 +52,34 @@ function workoutEnd(start: Date, durationMinutes: number): Date {
 }
 
 export async function seedDevUser(db: Db) {
-  // ── 1. User ────────────────────────────────────────────────────────────────
+  // ── 1. Better Auth user + credential account ───────────────────────────────
+  const passwordHash = await hashPasswordScrypt("devpassword123");
+
+  await db.execute(sql`
+    INSERT INTO "user" (id, name, email, email_verified, created_at, updated_at)
+    VALUES (${DEV_BETTER_AUTH_ID}, 'Dev User', 'dev@saifit.local', true, now(), now())
+    ON CONFLICT (email) DO UPDATE SET id = EXCLUDED.id, updated_at = now()
+  `);
+
+  await db.execute(sql`
+    INSERT INTO account (id, account_id, provider_id, user_id, password, created_at, updated_at)
+    VALUES (
+      'dev-account-credential-00000001',
+      'dev@saifit.local',
+      'credential',
+      ${DEV_BETTER_AUTH_ID},
+      ${passwordHash},
+      now(), now()
+    )
+    ON CONFLICT (id) DO UPDATE SET password = EXCLUDED.password, updated_at = now()
+  `);
+
+  // ── 2. App user ────────────────────────────────────────────────────────────
   await db
     .insert(users)
     .values({
       id: DEV_USER_ID,
+      betterAuthId: DEV_BETTER_AUTH_ID,
       displayName: "Dev User",
       email: "dev@saifit.local",
       locale: "th",
@@ -51,6 +93,9 @@ export async function seedDevUser(db: Db) {
       timezone: "Asia/Bangkok",
     })
     .onConflictDoNothing();
+
+  // Ensure betterAuthId is set even if user row already existed
+  await db.update(users).set({ betterAuthId: DEV_BETTER_AUTH_ID }).where(eq(users.id, DEV_USER_ID));
 
   // ── 2. Template lookup ─────────────────────────────────────────────────────
   const [template] = await db
@@ -519,6 +564,6 @@ export async function seedDevUser(db: Db) {
     .onConflictDoNothing();
 
   console.log(
-    `  Dev user seeded: ${sessions.length} workouts, ${prSlugs.length} PRs, streak 5 (longest 7)`,
+    `  Dev user seeded: ${sessions.length} workouts, ${prSlugs.length} PRs, streak 5 (longest 7). Login: dev@saifit.local / devpassword123`,
   );
 }
