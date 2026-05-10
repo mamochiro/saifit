@@ -1,5 +1,6 @@
 "use client";
 
+import { Avatar } from "@/components/avatar";
 import { signIn, signOut } from "@/lib/auth-client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
@@ -364,6 +365,8 @@ export default function SettingsPage() {
     { value: "stay_active", label: t("goalStayActive") },
   ];
 
+  const goalLabel = GOAL_OPTIONS.find((o) => o.value === data.goal)?.label ?? "";
+
   const GYM_OPTIONS = [
     { value: "commercial", label: t("gymCommercial") },
     { value: "home_equipment", label: t("gymHomeEquipment") },
@@ -425,31 +428,7 @@ export default function SettingsPage() {
             borderBottom: "1px solid var(--glass-line)",
           }}
         >
-          <div
-            style={{
-              width: 52,
-              height: 52,
-              borderRadius: "50%",
-              background: "linear-gradient(135deg, oklch(65% 0.22 280), oklch(60% 0.20 240))",
-              border: "1px solid rgba(255,255,255,0.18)",
-              boxShadow: "0 6px 14px -4px rgba(120,90,255,0.5)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            <span
-              style={{
-                fontFamily: "Chakra Petch, monospace",
-                fontWeight: 700,
-                fontSize: 20,
-                color: "white",
-              }}
-            >
-              {data.displayName.charAt(0).toUpperCase()}
-            </span>
-          </div>
+          <Avatar name={data.displayName} size={52} />
           <div style={{ flex: 1, minWidth: 0 }}>
             <p
               style={{
@@ -473,7 +452,7 @@ export default function SettingsPage() {
                 marginTop: 2,
               }}
             >
-              {data.goal?.replace(/_/g, " ") ?? ""}
+              {goalLabel}
             </p>
           </div>
         </div>

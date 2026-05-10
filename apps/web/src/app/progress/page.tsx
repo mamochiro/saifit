@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useId } from "react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 // ─── Interfaces ──────────────────────────────────────────────────────────────
@@ -196,6 +197,7 @@ function HeatmapGrid({ cells }: { cells: Array<{ date: string; count: number }> 
 // ─── Sparkline ────────────────────────────────────────────────────────────────
 
 function Sparkline({ values }: { values: number[] }) {
+  const gradId = useId();
   if (values.length < 2) return null;
   const max = Math.max(...values);
   const min = Math.min(...values);
@@ -218,12 +220,12 @@ function Sparkline({ values }: { values: number[] }) {
       aria-hidden="true"
     >
       <defs>
-        <linearGradient id="spark-fill" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="var(--violet)" stopOpacity="0.28" />
           <stop offset="100%" stopColor="var(--violet)" stopOpacity="0" />
         </linearGradient>
       </defs>
-      <polygon points={fillStr} fill="url(#spark-fill)" />
+      <polygon points={fillStr} fill={`url(#${gradId})`} />
       <polyline
         points={lineStr}
         fill="none"

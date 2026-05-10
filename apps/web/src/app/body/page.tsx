@@ -128,6 +128,47 @@ function toNum(s: string): number | null {
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
+function BodySkeleton() {
+  return (
+    <div className="saifit-bg" style={{ minHeight: "100vh", paddingBottom: 110 }}>
+      <div style={{ padding: "40px 24px 16px" }}>
+        <div
+          style={{
+            height: 10,
+            width: 140,
+            borderRadius: 4,
+            background: "rgba(255,255,255,0.04)",
+            animation: "pulse 1.5s ease-in-out infinite",
+          }}
+        />
+        <div
+          style={{
+            height: 28,
+            width: "60%",
+            borderRadius: 8,
+            marginTop: 10,
+            background: "rgba(255,255,255,0.06)",
+            animation: "pulse 1.5s ease-in-out infinite",
+          }}
+        />
+      </div>
+      <div style={{ padding: "0 24px", display: "flex", flexDirection: "column", gap: 12 }}>
+        {(["b-a", "b-b", "b-c"] as const).map((k, i) => (
+          <div
+            key={k}
+            style={{
+              height: i === 0 ? 160 : 100,
+              borderRadius: 20,
+              background: "rgba(255,255,255,0.04)",
+              animation: "pulse 1.5s ease-in-out infinite",
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function BodyPage() {
   const { data: summary, isLoading } = useBodySummary();
   const logMeasurement = useLogMeasurement();
@@ -212,6 +253,8 @@ export default function BodyPage() {
       </div>
     </div>
   );
+
+  if (isLoading) return <BodySkeleton />;
 
   return (
     <div className="saifit-bg" style={{ minHeight: "100vh", paddingBottom: 110 }}>
