@@ -1,11 +1,7 @@
 "use client";
 
 import { ExerciseAnimation } from "@/components/exercise-animation";
-import {
-  ExerciseAnimBySlug,
-  MUSCLE_GROUP_TO_MAP,
-  MuscleMap,
-} from "@/components/exercises";
+import { ExerciseAnimBySlug, MUSCLE_GROUP_TO_MAP, MuscleMap } from "@/components/exercises";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useParams, useRouter } from "next/navigation";
@@ -99,6 +95,7 @@ export default function ExerciseDetailPage() {
   const router = useRouter();
   const slug = params.slug as string;
   const [lang, setLang] = useState<"th" | "en">("th");
+  const [paused, setPaused] = useState(false);
 
   const { data, isLoading } = useQuery<{ data: ExerciseDetail }>({
     queryKey: ["exercise", slug],
@@ -235,19 +232,64 @@ export default function ExerciseDetailPage() {
             justifyContent: "center",
             overflow: "hidden",
             borderRadius: 20,
+            position: "relative",
           }}
         >
           <ExerciseAnimBySlug
             slug={exercise.slug}
             category={exercise.category}
             size="lg"
+            paused={paused}
             fallback={<ExerciseAnimation size="lg" />}
           />
+          <button
+            type="button"
+            aria-label={paused ? "เล่นวิดีโอ" : "หยุดชั่วคราว"}
+            onClick={() => setPaused((p) => !p)}
+            style={{
+              position: "absolute",
+              bottom: 10,
+              right: 10,
+              width: 32,
+              height: 32,
+              borderRadius: 999,
+              background: "rgba(20,20,32,0.65)",
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
+              border: "1px solid var(--glass-line)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              color: "var(--ink-mute)",
+            }}
+          >
+            {paused ? (
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M2.5 1.5l8 4.5-8 4.5V1.5z" />
+              </svg>
+            ) : (
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <rect x="2" y="1.5" width="3" height="9" rx="1" />
+                <rect x="7" y="1.5" width="3" height="9" rx="1" />
+              </svg>
+            )}
+          </button>
         </div>
         {(() => {
-          const primary = exercise.muscleGroups.flatMap(
-            (mg) => MUSCLE_GROUP_TO_MAP[mg] ?? [],
-          );
+          const primary = exercise.muscleGroups.flatMap((mg) => MUSCLE_GROUP_TO_MAP[mg] ?? []);
           if (primary.length === 0) return null;
           return (
             <div

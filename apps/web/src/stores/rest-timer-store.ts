@@ -3,13 +3,16 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 interface RestTimerState {
   isActive: boolean;
-  duration: number; // seconds, configurable per exercise
-  startedAt: number | null; // Date.now() when started
-  pausedAt: number | null; // Date.now() when paused
-  elapsed: number; // seconds elapsed when paused
+  duration: number;
+  startedAt: number | null;
+  pausedAt: number | null;
+  elapsed: number;
   workoutId: string | null;
   exerciseName: string | null;
   setNumber: number | null;
+  nextWeight: string | null;
+  nextReps: string | null;
+  nextSetNumber: number | null;
 }
 
 interface RestTimerActions {
@@ -18,6 +21,9 @@ interface RestTimerActions {
     workoutId: string;
     exerciseName: string;
     setNumber: number;
+    nextWeight?: string | null;
+    nextReps?: string | null;
+    nextSetNumber?: number | null;
   }) => void;
   pause: () => void;
   resume: () => void;
@@ -37,6 +43,9 @@ const initialState: RestTimerState = {
   workoutId: null,
   exerciseName: null,
   setNumber: null,
+  nextWeight: null,
+  nextReps: null,
+  nextSetNumber: null,
 };
 
 export const useRestTimerStore = create<RestTimerState & RestTimerActions>()(
@@ -44,7 +53,15 @@ export const useRestTimerStore = create<RestTimerState & RestTimerActions>()(
     (set, get) => ({
       ...initialState,
 
-      start: ({ duration, workoutId, exerciseName, setNumber }) =>
+      start: ({
+        duration,
+        workoutId,
+        exerciseName,
+        setNumber,
+        nextWeight,
+        nextReps,
+        nextSetNumber,
+      }) =>
         set({
           isActive: true,
           duration,
@@ -54,6 +71,9 @@ export const useRestTimerStore = create<RestTimerState & RestTimerActions>()(
           workoutId,
           exerciseName,
           setNumber,
+          nextWeight: nextWeight ?? null,
+          nextReps: nextReps ?? null,
+          nextSetNumber: nextSetNumber ?? null,
         }),
 
       pause: () => {

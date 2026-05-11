@@ -21,13 +21,15 @@ interface WorkoutSet {
 export function SetRow({
   set,
   workoutId,
+  status = "current",
   onPR,
   onSetComplete,
 }: {
   set: WorkoutSet;
   workoutId: string;
+  status?: "current" | "pending";
   onPR: (exerciseName: string, value: number, type: string) => void;
-  onSetComplete: (exerciseName: string, setNumber: number) => void;
+  onSetComplete: (exerciseName: string, setNumber: number, weight: string, reps: string) => void;
 }) {
   const t = useTranslations("workout");
   const qc = useQueryClient();
@@ -103,7 +105,7 @@ export function SetRow({
         }
         qc.invalidateQueries({ queryKey: ["workout", workoutId] });
         const exerciseName = set.exercise?.nameTh ?? set.exercise?.nameEn ?? "";
-        onSetComplete(exerciseName, set.setNumber);
+        onSetComplete(exerciseName, set.setNumber, weight, reps);
       }
     } catch {
       const clientSetId2 = crypto.randomUUID();
@@ -196,6 +198,7 @@ export function SetRow({
   }
 
   // Active row
+  const isPending = status === "pending";
   return (
     <div
       style={{
@@ -204,17 +207,39 @@ export function SetRow({
         gap: 10,
         padding: "10px 14px",
         borderRadius: 14,
-        background: "rgba(255,255,255,0.05)",
-        border: "1px solid var(--glass-line)",
+        background: isPending ? "rgba(255,255,255,0.025)" : "rgba(255,255,255,0.05)",
+        border: isPending ? "1px solid rgba(255,255,255,0.06)" : "1px solid var(--glass-line)",
         minHeight: 56,
+        opacity: isPending ? 0.6 : 1,
       }}
     >
-      <span
-        className="t-num"
-        style={{ fontSize: 14, color: "var(--ink-soft)", width: 20, flexShrink: 0 }}
+      <div
+        style={{
+          width: 20,
+          height: 20,
+          borderRadius: "50%",
+          flexShrink: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          ...(isPending
+            ? { border: "1px dashed rgba(255,255,255,0.22)" }
+            : {
+                border: "2px solid var(--violet-bright)",
+                boxShadow: "0 0 8px var(--violet)",
+                background: "rgba(140,100,255,0.15)",
+              }),
+        }}
       >
-        {set.setNumber}
-      </span>
+        {!isPending && (
+          <span
+            className="t-num"
+            style={{ fontSize: 11, color: "var(--violet-bright)", lineHeight: 1 }}
+          >
+            {set.setNumber}
+          </span>
+        )}
+      </div>
 
       <input
         type="text"

@@ -1,5 +1,6 @@
 "use client";
 
+import { ExerciseAnimBySlug } from "@/components/exercises/exercise-anim-by-slug";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -40,7 +41,7 @@ function ExerciseSkeleton() {
         <div
           key={k}
           style={{
-            height: 68,
+            height: 76,
             borderRadius: 20,
             background: "rgba(255,255,255,0.04)",
             animation: "pulse 1.5s ease-in-out infinite",
@@ -247,11 +248,28 @@ export default function ExercisesPage() {
               style={{
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "space-between",
-                padding: "14px 18px",
+                padding: "10px 16px 10px 10px",
+                gap: 14,
                 textDecoration: "none",
               }}
             >
+              {/* Pose thumbnail */}
+              <div
+                style={{
+                  width: 56,
+                  height: 56,
+                  borderRadius: 10,
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid var(--glass-line)",
+                  overflow: "hidden",
+                  flexShrink: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <ExerciseAnimBySlug slug={ex.slug} category={ex.category} size="md" paused />
+              </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p
                   style={{

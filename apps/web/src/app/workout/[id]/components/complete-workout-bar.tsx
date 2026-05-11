@@ -32,8 +32,7 @@ export function CompleteWorkoutBar({
       });
     },
     onSuccess: () => {
-      router.push("/");
-      router.refresh();
+      router.push(`/workout/summary/${workoutId}`);
     },
   });
 

@@ -527,23 +527,43 @@ export function WorkoutLoggerView({
                 )}
               </div>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {sets.map((set) => (
-                <SetRow
-                  key={set.id}
-                  set={set}
-                  workoutId={workoutId}
-                  onPR={(exerciseName, value, type) => setPrResult({ exerciseName, value, type })}
-                  onSetComplete={(exerciseName, setNumber) => {
-                    useRestTimerStore.getState().start({
-                      duration: 90,
-                      workoutId,
-                      exerciseName,
-                      setNumber,
-                    });
-                  }}
-                />
-              ))}
+            {(() => {
+              const firstNonCompletedIdx = sets.findIndex(
+                (s) => !(s.completedAt && s.reps > 0),
+              );
+              return (
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {sets.map((set, idx) => {
+                    const isCompleted = !!(set.completedAt && set.reps > 0);
+                    const setStatus =
+                      isCompleted || firstNonCompletedIdx === -1
+                        ? "current"
+                        : idx === firstNonCompletedIdx
+                          ? "current"
+                          : "pending";
+                    return (
+                      <SetRow
+                        key={set.id}
+                        set={set}
+                        workoutId={workoutId}
+                        status={setStatus}
+                        onPR={(exerciseName, value, type) =>
+                          setPrResult({ exerciseName, value, type })
+                        }
+                        onSetComplete={(exerciseName, setNumber, weight, reps) => {
+                          useRestTimerStore.getState().start({
+                            duration: 90,
+                            workoutId,
+                            exerciseName,
+                            setNumber,
+                            nextWeight: weight || null,
+                            nextReps: reps || null,
+                            nextSetNumber: setNumber + 1,
+                          });
+                        }}
+                      />
+                    );
+                  })}
               {/* Add another set */}
               {exercise && addingSetFor.has(exercise.id) ? (
                 <FirstSetRow
@@ -596,6 +616,8 @@ export function WorkoutLoggerView({
                 )
               )}
             </div>
+              );
+            })()}
           </div>
         ))}
 

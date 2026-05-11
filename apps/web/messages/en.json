@@ -50,14 +50,23 @@
     "resume": "Continue",
     "discard": "Start fresh",
     "undoAdvance": "Undo",
-    "offlineCannotComplete": "Offline — reconnect to finish"
+    "offlineCannotComplete": "Offline — reconnect to finish",
+    "summaryKicker": "WORKOUT COMPLETE · เสร็จแล้ว",
+    "summaryTitle": "Great work, {name}",
+    "summaryShareLine": "Share to LINE",
+    "summaryBackHome": "Back to home",
+    "summaryTime": "TIME",
+    "summaryVolume": "VOLUME",
+    "summarySets": "SETS",
+    "summaryExercises": "EXERCISES"
   },
   "restTimer": {
     "title": "Rest",
     "resting": "Resting",
     "done": "Time's up",
-    "skip": "Skip",
+    "skip": "Skip rest",
     "add15": "+15",
+    "add30": "+30",
     "minus15": "-15",
     "nextSet": "Next set"
   },

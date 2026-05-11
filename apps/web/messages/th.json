@@ -50,14 +50,23 @@
     "resume": "ต่อเลย",
     "discard": "เริ่มใหม่",
     "undoAdvance": "เลิกทำ",
-    "offlineCannotComplete": "ออฟไลน์ — ต่อเน็ตก่อนจบการออกกำลังกาย"
+    "offlineCannotComplete": "ออฟไลน์ — ต่อเน็ตก่อนจบการออกกำลังกาย",
+    "summaryKicker": "WORKOUT COMPLETE · เสร็จแล้ว",
+    "summaryTitle": "ทำได้ดีมาก, {name}",
+    "summaryShareLine": "แชร์ไปยัง LINE",
+    "summaryBackHome": "กลับหน้าแรก",
+    "summaryTime": "เวลา",
+    "summaryVolume": "ปริมาณ",
+    "summarySets": "เซ็ต",
+    "summaryExercises": "ท่า"
   },
   "restTimer": {
     "title": "พักก่อน",
     "resting": "กำลังพัก",
     "done": "หมดเวลา",
-    "skip": "ข้าม",
+    "skip": "ข้ามการพัก",
     "add15": "+15",
+    "add30": "+30",
     "minus15": "-15",
     "nextSet": "เซ็ตถัดไป"
   },
@@ -219,7 +228,7 @@
   "nav": {
     "home": "หน้าหลัก",
     "log": "บันทึก",
-    "routines": "รูทีน",
+    "routines": "โปรแกรม",
     "progress": "ความก้าวหน้า",
     "exercises": "ท่า"
   },

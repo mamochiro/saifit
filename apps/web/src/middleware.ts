@@ -6,7 +6,9 @@ const PUBLIC_PATHS = [
   "/sign-in",
   "/sign-up",
   "/offline",
+  "/docs",
   "/api/auth",
+  "/api/docs",
   "/api/templates",
   "/api/exercises",
 ];
