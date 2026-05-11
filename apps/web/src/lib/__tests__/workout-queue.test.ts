@@ -21,9 +21,15 @@ const store: Record<string, string> = {};
 Object.defineProperty(globalThis, "localStorage", {
   value: {
     getItem: (k: string) => store[k] ?? null,
-    setItem: (k: string, v: string) => { store[k] = v; },
-    removeItem: (k: string) => { delete store[k]; },
-    clear: () => { Object.keys(store).forEach((k) => delete store[k]); },
+    setItem: (k: string, v: string) => {
+      store[k] = v;
+    },
+    removeItem: (k: string) => {
+      delete store[k];
+    },
+    clear: () => {
+      for (const k of Object.keys(store)) delete store[k];
+    },
   },
   configurable: true,
 });
@@ -38,11 +44,11 @@ const WORKOUT_ID = "workout-abc-123";
 beforeEach(() => {
   // Fresh in-memory IndexedDB per test
   globalThis.indexedDB = new IDBFactory();
-  store["saifit_client_id"] = "test-client";
+  store.saifit_client_id = "test-client";
 });
 
 afterEach(() => {
-  store["saifit_client_id"] = "test-client";
+  store.saifit_client_id = "test-client";
 });
 
 describe("workout-queue reconciliation", () => {
@@ -63,8 +69,9 @@ describe("workout-queue reconciliation", () => {
 
     const pending = await getPending(WORKOUT_ID);
     expect(pending).toHaveLength(1);
-    expect(pending[0]!.operation.type).toBe("create_set");
-    expect(pending[0]!.syncedAt).toBeNull();
+    const [first] = pending;
+    expect(first?.operation.type).toBe("create_set");
+    expect(first?.syncedAt).toBeNull();
   });
 
   it("multiple operations maintain sequence order", async () => {
@@ -113,9 +120,10 @@ describe("workout-queue reconciliation", () => {
 
     const pending = await getPending(WORKOUT_ID);
     expect(pending).toHaveLength(1);
-    expect(pending[0]!.retryCount).toBe(1);
-    expect(pending[0]!.lastError).toBe("HTTP 503");
-    expect(pending[0]!.syncedAt).toBeNull();
+    const [failed] = pending;
+    expect(failed?.retryCount).toBe(1);
+    expect(failed?.lastError).toBe("HTTP 503");
+    expect(failed?.syncedAt).toBeNull();
   });
 
   it("getPendingCount reflects only unsynced entries", async () => {
@@ -219,7 +227,8 @@ describe("workout-queue reconciliation", () => {
 
     const afterSync = await getPending(WORKOUT_ID);
     expect(afterSync).toHaveLength(1);
-    expect(afterSync[0]!.operation.type).toBe("update_workout");
-    expect(afterSync[0]!.retryCount).toBe(1);
+    const [remaining] = afterSync;
+    expect(remaining?.operation.type).toBe("update_workout");
+    expect(remaining?.retryCount).toBe(1);
   });
 });
