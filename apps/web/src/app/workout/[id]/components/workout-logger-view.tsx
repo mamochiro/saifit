@@ -492,6 +492,7 @@ export function WorkoutLoggerView({
               {exercise?.slug ? (
                 <ExerciseAnimBySlug
                   slug={exercise.slug}
+                  category={exercise.muscleGroups[0]}
                   size="sm"
                   fallback={<ExerciseAnimation size="sm" />}
                 />

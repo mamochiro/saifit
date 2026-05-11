@@ -239,6 +239,7 @@ export default function ExerciseDetailPage() {
         >
           <ExerciseAnimBySlug
             slug={exercise.slug}
+            category={exercise.category}
             size="lg"
             fallback={<ExerciseAnimation size="lg" />}
           />

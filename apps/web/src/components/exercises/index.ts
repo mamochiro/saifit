@@ -1,7 +1,10 @@
 export { AnimBench } from "./anim-bench";
+export { AnimDeadlift } from "./anim-deadlift";
+export { AnimOHP } from "./anim-ohp";
 export { AnimPlank } from "./anim-plank";
 export { AnimPullUp } from "./anim-pullup";
+export { AnimRow } from "./anim-row";
 export { AnimSquat } from "./anim-squat";
 export { ExerciseAnimBySlug } from "./exercise-anim-by-slug";
 export type { AnimSize } from "./exercise-anim-by-slug";
-export { MuscleMap, MUSCLE_GROUP_TO_MAP } from "./muscle-map";
+export { MUSCLE_GROUP_TO_MAP, MuscleMap } from "./muscle-map";
