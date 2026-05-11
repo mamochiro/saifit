@@ -63,8 +63,8 @@ describe("workout-queue reconciliation", () => {
 
     const pending = await getPending(WORKOUT_ID);
     expect(pending).toHaveLength(1);
-    expect(pending[0].operation.type).toBe("create_set");
-    expect(pending[0].syncedAt).toBeNull();
+    expect(pending[0]!.operation.type).toBe("create_set");
+    expect(pending[0]!.syncedAt).toBeNull();
   });
 
   it("multiple operations maintain sequence order", async () => {
@@ -113,9 +113,9 @@ describe("workout-queue reconciliation", () => {
 
     const pending = await getPending(WORKOUT_ID);
     expect(pending).toHaveLength(1);
-    expect(pending[0].retryCount).toBe(1);
-    expect(pending[0].lastError).toBe("HTTP 503");
-    expect(pending[0].syncedAt).toBeNull();
+    expect(pending[0]!.retryCount).toBe(1);
+    expect(pending[0]!.lastError).toBe("HTTP 503");
+    expect(pending[0]!.syncedAt).toBeNull();
   });
 
   it("getPendingCount reflects only unsynced entries", async () => {
@@ -219,7 +219,7 @@ describe("workout-queue reconciliation", () => {
 
     const afterSync = await getPending(WORKOUT_ID);
     expect(afterSync).toHaveLength(1);
-    expect(afterSync[0].operation.type).toBe("update_workout");
-    expect(afterSync[0].retryCount).toBe(1);
+    expect(afterSync[0]!.operation.type).toBe("update_workout");
+    expect(afterSync[0]!.retryCount).toBe(1);
   });
 });

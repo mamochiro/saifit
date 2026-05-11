@@ -40,7 +40,7 @@ function req(url: string, method = "GET", body?: unknown): NextRequest {
   return new NextRequest(`http://localhost${url}`, {
     method,
     headers: { "Content-Type": "application/json" },
-    body: body ? JSON.stringify(body) : undefined,
+    ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
   });
 }
 

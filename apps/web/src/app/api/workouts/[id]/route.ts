@@ -8,6 +8,7 @@ import {
   workoutSets,
   workouts,
 } from "@saifit/db";
+import { computeStreakUpdate } from "@saifit/shared";
 import { and, asc, count, eq, sum } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import * as v from "valibot";
@@ -109,12 +110,15 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     const lastStr = dateToStr(streak?.lastWorkoutDate ?? null);
 
     if (lastStr !== todayBangkok) {
-      const yesterday = new Date(`${todayBangkok}T00:00:00Z`);
-      yesterday.setUTCDate(yesterday.getUTCDate() - 1);
-      const yesterdayStr = yesterday.toISOString().substring(0, 10);
+      const { newCurrent, newLongest } = computeStreakUpdate(
+        {
+          currentStreak: streak?.currentStreak ?? 0,
+          longestStreak: streak?.longestStreak ?? 0,
+          lastWorkoutDate: lastStr,
+        },
+        todayBangkok,
+      );
 
-      const newCurrent = lastStr === yesterdayStr ? (streak?.currentStreak ?? 0) + 1 : 1;
-      const newLongest = Math.max(streak?.longestStreak ?? 0, newCurrent);
       const todayDate = new Date(`${todayBangkok}T00:00:00Z`);
 
       if (!streak) {

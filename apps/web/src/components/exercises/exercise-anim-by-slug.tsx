@@ -37,7 +37,7 @@ const CATEGORY_MAP: Record<string, AnimComponent> = {
 
 interface Props {
   slug: string;
-  category?: string;
+  category?: string | undefined;
   size?: AnimSize;
   paused?: boolean;
   fallback?: React.ReactNode;
