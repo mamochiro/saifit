@@ -2,6 +2,8 @@
   "common": {
     "loading": "Loading...",
     "error": "An error occurred",
+    "loadError": "Failed to load data",
+    "retry": "Retry",
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
@@ -199,7 +201,14 @@
     "deleteConfirmMsg": "Are you sure? This cannot be undone.",
     "deleteConfirmYes": "Confirm",
     "deleteConfirmNo": "Cancel",
-    "deleting": "Deleting..."
+    "deleting": "Deleting...",
+    "pushNotifications": "Push Notifications",
+    "pushLabel": "Push Notification",
+    "pushDenied": "Blocked — enable in browser settings",
+    "pushOff": "Off",
+    "pushOn": "On",
+    "pushTest": "Send test notification",
+    "pushTestSent": "Sent!"
   },
   "pwa": {
     "installTitle": "Install Saifit",
@@ -246,6 +255,12 @@
     "logMeasurement": "Log measurement",
     "logToday": "Log today",
     "noData": "No data yet",
+    "emptyTitle": "Start tracking today",
+    "emptyHint": "Log your weight and measurements to track your progress",
+    "trendDays90": "-90d",
+    "trendDays60": "-60d",
+    "trendDays30": "-30d",
+    "trendToday": "Today",
     "chest": "Chest",
     "waist": "Waist",
     "arm": "Arm",
@@ -277,7 +292,9 @@
     "settingsLabel": "Settings",
     "cancel": "Cancel",
     "saving": "Saving...",
-    "save": "Save"
+    "save": "Save",
+    "emptyTitle": "Start running today",
+    "emptyHint": "Log a run to see your weekly plan and stats"
   },
   "routines": {
     "title": "My Routines",
@@ -325,6 +342,9 @@
     "protein": "PROTEIN · g",
     "carbs": "CARBS · g",
     "fat": "FAT · g",
+    "macroProtein": "P · Protein",
+    "macroCarbs": "C · Carbs",
+    "macroFat": "F · Fat",
     "breakfast": "Breakfast",
     "lunch": "Lunch",
     "dinner": "Dinner",

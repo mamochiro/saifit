@@ -151,9 +151,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       ? Math.round(parsed.output.durationSeconds / 60)
       : null;
 
-    const titleTh = `✅ ออกกำลังกายเสร็จแล้ว!`;
+    const titleTh = "✅ ออกกำลังกายเสร็จแล้ว!";
     const bodyTh = `${setCount} เซ็ต · ${totalVol.toLocaleString()} กก.${mins ? ` · ${mins} นาที` : ""}`;
-    const titleEn = `✅ Workout done!`;
+    const titleEn = "✅ Workout done!";
     const bodyEn = `${setCount} sets · ${totalVol.toLocaleString()} kg${mins ? ` · ${mins} min` : ""}`;
 
     // LINE push

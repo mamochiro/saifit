@@ -1,5 +1,6 @@
 "use client";
 
+import { ExerciseAnimation } from "@/components/exercise-animation";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useParams, useRouter } from "next/navigation";
@@ -217,29 +218,20 @@ export default function ExerciseDetailPage() {
         </div>
       </div>
 
-      {/* GIF placeholder */}
+      {/* Exercise animation */}
       <div
         className="glass"
         style={{
           margin: "20px 24px",
-          height: 160,
+          height: 180,
           display: "flex",
-          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
+          overflow: "hidden",
+          borderRadius: 20,
         }}
       >
-        <span className="t-label">DEMO</span>
-        <p
-          style={{
-            fontFamily: "K2D, sans-serif",
-            fontSize: 13,
-            color: "var(--ink-soft)",
-            marginTop: 6,
-          }}
-        >
-          {t("gifPlaceholder")}
-        </p>
+        <ExerciseAnimation size="lg" />
       </div>
 
       {/* Glass segmented Thai/English */}

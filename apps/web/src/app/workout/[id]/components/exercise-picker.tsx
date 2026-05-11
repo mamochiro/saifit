@@ -1,5 +1,6 @@
 "use client";
 
+import { ExerciseAnimation } from "@/components/exercise-animation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -81,7 +82,8 @@ function CreateExerciseForm({
     },
   });
 
-  const canSubmit = nameTh.trim().length > 0 && category !== "" && equipment !== "" && muscleGroups.length > 0;
+  const canSubmit =
+    nameTh.trim().length > 0 && category !== "" && equipment !== "" && muscleGroups.length > 0;
 
   function toggleMuscle(val: string) {
     setMuscleGroups((prev) =>
@@ -94,10 +96,7 @@ function CreateExerciseForm({
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         {/* Name */}
         <div>
-          <label
-            htmlFor="ex-name"
-            className="text-xs text-muted-foreground block mb-1"
-          >
+          <label htmlFor="ex-name" className="text-xs text-muted-foreground block mb-1">
             ชื่อท่า (ภาษาไทย) *
           </label>
           <input
@@ -173,9 +172,7 @@ function CreateExerciseForm({
           </div>
         </div>
 
-        {error && (
-          <p className="text-xs text-red-400">{(error as Error).message}</p>
-        )}
+        {error && <p className="text-xs text-red-400">{(error as Error).message}</p>}
 
         <div style={{ display: "flex", gap: 10 }}>
           <button
@@ -251,9 +248,12 @@ export function ExercisePicker({
       <div className="relative mt-auto bg-background border-t border-border rounded-t-2xl max-h-[80vh] flex flex-col">
         <div className="px-4 pt-4 pb-2">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-base font-semibold leading-[1.7]">
-              {creating ? "สร้างท่าใหม่" : t("search")}
-            </h2>
+            <div className="flex items-center gap-2">
+              {!creating && <ExerciseAnimation size="sm" />}
+              <h2 className="text-base font-semibold leading-[1.7]">
+                {creating ? "สร้างท่าใหม่" : t("search")}
+              </h2>
+            </div>
             <div className="flex items-center gap-2">
               {!creating && (
                 <button
@@ -349,7 +349,9 @@ export function ExercisePicker({
                     >
                       <div>
                         <p className="text-sm font-medium leading-[1.7]">{ex.nameTh}</p>
-                        <p className="text-xs text-muted-foreground">{ex.muscleGroups.join(" · ")}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {ex.muscleGroups.join(" · ")}
+                        </p>
                       </div>
                     </button>
                   ))}

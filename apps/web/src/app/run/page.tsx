@@ -4,6 +4,47 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useLogRun, useRunSummary } from "./hooks";
 
+function RunSkeleton() {
+  return (
+    <div className="saifit-bg" style={{ minHeight: "100vh", paddingBottom: 110 }}>
+      <div style={{ padding: "40px 24px 16px" }}>
+        <div
+          style={{
+            height: 10,
+            width: 180,
+            borderRadius: 4,
+            background: "rgba(255,255,255,0.04)",
+            animation: "pulse 1.5s ease-in-out infinite",
+          }}
+        />
+        <div
+          style={{
+            height: 28,
+            width: "55%",
+            borderRadius: 8,
+            marginTop: 10,
+            background: "rgba(255,255,255,0.06)",
+            animation: "pulse 1.5s ease-in-out infinite",
+          }}
+        />
+      </div>
+      <div style={{ padding: "0 24px", display: "flex", flexDirection: "column", gap: 12 }}>
+        {(["ra", "rb", "rc", "rd"] as const).map((k, i) => (
+          <div
+            key={k}
+            style={{
+              height: i === 0 ? 160 : i === 3 ? 80 : 100,
+              borderRadius: 20,
+              background: "rgba(255,255,255,0.04)",
+              animation: "pulse 1.5s ease-in-out infinite",
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 type RunKind = "easy" | "tempo" | "interval" | "long" | "race" | "rest";
 
 const KIND_COLOR: Record<RunKind, string> = {
@@ -72,7 +113,8 @@ interface LogFormData {
 
 export default function RunPage() {
   const t = useTranslations("run");
-  const { data: summary, isLoading } = useRunSummary();
+  const tCommon = useTranslations("common");
+  const { data: summary, isLoading, isError, refetch } = useRunSummary();
   const logRun = useLogRun();
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<LogFormData>({
@@ -88,11 +130,14 @@ export default function RunPage() {
   const totalKm = summary?.totalKm ?? 0;
   const latestPace = summary?.latestPace ?? null;
 
+  const distanceNum = Number(form.distanceKm.replace(",", "."));
+  const minsNum = Number(form.durationMin) || 0;
+  const secsNum = Number(form.durationSec) || 0;
+  const canSubmit = distanceNum > 0 && (minsNum > 0 || secsNum > 0);
+
   async function handleLog() {
-    const km = Number(form.distanceKm.replace(",", "."));
-    const mins = Number(form.durationMin) || 0;
-    const secs = Number(form.durationSec) || 0;
-    const totalSec = mins * 60 + secs;
+    const km = distanceNum;
+    const totalSec = minsNum * 60 + secsNum;
     if (!km || !totalSec) return;
 
     await logRun.mutateAsync({
@@ -103,6 +148,45 @@ export default function RunPage() {
     });
     setShowForm(false);
     setForm({ distanceKm: "", durationMin: "", durationSec: "", runType: "easy" });
+  }
+
+  if (isLoading) return <RunSkeleton />;
+
+  if (isError) {
+    return (
+      <div
+        className="saifit-bg"
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "0 24px",
+        }}
+      >
+        <div style={{ textAlign: "center" }}>
+          <div
+            style={{
+              fontFamily: "K2D, sans-serif",
+              fontSize: 15,
+              color: "var(--ink-mute)",
+              lineHeight: 1.6,
+              marginBottom: 16,
+            }}
+          >
+            {tCommon("loadError")}
+          </div>
+          <button
+            type="button"
+            className="btn-glass"
+            style={{ minHeight: 56 }}
+            onClick={() => refetch()}
+          >
+            {tCommon("retry")}
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -194,6 +278,7 @@ export default function RunPage() {
             style={{
               width: "100%",
               marginTop: 16,
+              minHeight: 56,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -496,7 +581,7 @@ export default function RunPage() {
                 className="btn-primary"
                 style={{ flex: 2 }}
                 onClick={handleLog}
-                disabled={logRun.isPending}
+                disabled={!canSubmit || logRun.isPending}
               >
                 {logRun.isPending ? t("saving") : t("save")}
               </button>

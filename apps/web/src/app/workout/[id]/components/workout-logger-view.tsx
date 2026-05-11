@@ -1,5 +1,6 @@
 "use client";
 
+import { ExerciseAnimation } from "@/components/exercise-animation";
 import {
   enqueue,
   gcSynced,
@@ -486,32 +487,36 @@ export function WorkoutLoggerView({
             className="glass"
             style={{ padding: "16px 18px" }}
           >
-            <p
-              style={{
-                fontFamily: "K2D, sans-serif",
-                fontWeight: 600,
-                fontSize: 15,
-                color: "var(--ink)",
-                lineHeight: 1.3,
-                marginBottom: 2,
-              }}
-            >
-              {exercise?.nameTh ?? exercise?.nameEn ?? "Exercise"}
-            </p>
-            {exercise?.muscleGroups && exercise.muscleGroups.length > 0 && (
-              <p
-                style={{
-                  fontFamily: "system-ui, sans-serif",
-                  fontSize: 10,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  color: "var(--ink-soft)",
-                  marginBottom: 12,
-                }}
-              >
-                {exercise.muscleGroups.join(" · ")}
-              </p>
-            )}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 2 }}>
+              <ExerciseAnimation size="sm" />
+              <div style={{ minWidth: 0 }}>
+                <p
+                  style={{
+                    fontFamily: "K2D, sans-serif",
+                    fontWeight: 600,
+                    fontSize: 15,
+                    color: "var(--ink)",
+                    lineHeight: 1.3,
+                  }}
+                >
+                  {exercise?.nameTh ?? exercise?.nameEn ?? "Exercise"}
+                </p>
+                {exercise?.muscleGroups && exercise.muscleGroups.length > 0 && (
+                  <p
+                    style={{
+                      fontFamily: "system-ui, sans-serif",
+                      fontSize: 10,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      color: "var(--ink-soft)",
+                      marginTop: 2,
+                    }}
+                  >
+                    {exercise.muscleGroups.join(" · ")}
+                  </p>
+                )}
+              </div>
+            </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {sets.map((set) => (
                 <SetRow

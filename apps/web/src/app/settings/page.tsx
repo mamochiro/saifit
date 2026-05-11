@@ -284,6 +284,7 @@ export default function SettingsPage() {
     "idle",
   );
   const [pushLoading, setPushLoading] = useState(false);
+  const [pushTestSent, setPushTestSent] = useState(false);
 
   useEffect(() => {
     if (!("PushManager" in window) || !("serviceWorker" in navigator)) {
@@ -341,6 +342,17 @@ export default function SettingsPage() {
         await sub.unsubscribe();
       }
       setPushStatus("idle");
+    } finally {
+      setPushLoading(false);
+    }
+  }
+
+  async function handlePushSendTest() {
+    setPushLoading(true);
+    try {
+      await fetch("/api/push/send-test", { method: "POST" });
+      setPushTestSent(true);
+      setTimeout(() => setPushTestSent(false), 3000);
     } finally {
       setPushLoading(false);
     }
@@ -715,10 +727,10 @@ export default function SettingsPage() {
         <>
           <div style={{ margin: "20px 24px 6px" }}>
             <span className="t-label" style={{ paddingLeft: 2 }}>
-              การแจ้งเตือน
+              {t("pushNotifications")}
             </span>
           </div>
-          <div className="glass" style={{ margin: "8px 24px" }}>
+          <div className="glass" style={{ margin: "8px 24px", padding: "4px 0" }}>
             <div
               style={{
                 display: "flex",
@@ -726,11 +738,12 @@ export default function SettingsPage() {
                 justifyContent: "space-between",
                 padding: "0 18px",
                 minHeight: 56,
+                borderBottom: pushStatus === "subscribed" ? "1px solid var(--glass-line)" : "none",
               }}
             >
               <div>
                 <span style={{ fontFamily: "K2D, sans-serif", fontSize: 14, color: "var(--ink)" }}>
-                  Push Notification
+                  {t("pushLabel")}
                 </span>
                 {pushStatus === "denied" && (
                   <p
@@ -739,9 +752,10 @@ export default function SettingsPage() {
                       fontSize: 11,
                       color: "var(--danger)",
                       marginTop: 2,
+                      lineHeight: "var(--leading-relaxed)",
                     }}
                   >
-                    ถูกบล็อก — เปิดในตั้งค่าเบราว์เซอร์
+                    {t("pushDenied")}
                   </p>
                 )}
               </div>
@@ -753,7 +767,7 @@ export default function SettingsPage() {
                   disabled={pushLoading}
                   onClick={handlePushUnsubscribe}
                 >
-                  ปิด
+                  {t("pushOff")}
                 </button>
               ) : (
                 <button
@@ -769,10 +783,23 @@ export default function SettingsPage() {
                   disabled={pushLoading || pushStatus === "denied"}
                   onClick={handlePushSubscribe}
                 >
-                  {pushLoading ? "..." : "เปิด"}
+                  {pushLoading ? "..." : t("pushOn")}
                 </button>
               )}
             </div>
+            {pushStatus === "subscribed" && (
+              <div style={{ padding: "12px 18px" }}>
+                <button
+                  type="button"
+                  className="btn-glass"
+                  style={{ width: "100%", fontSize: 13 }}
+                  disabled={pushLoading || pushTestSent}
+                  onClick={handlePushSendTest}
+                >
+                  {pushTestSent ? t("pushTestSent") : t("pushTest")}
+                </button>
+              </div>
+            )}
           </div>
         </>
       )}

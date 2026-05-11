@@ -172,7 +172,8 @@ function BodySkeleton() {
 
 export default function BodyPage() {
   const t = useTranslations("body");
-  const { data: summary, isLoading } = useBodySummary();
+  const tCommon = useTranslations("common");
+  const { data: summary, isLoading, isError, refetch } = useBodySummary();
   const logMeasurement = useLogMeasurement();
 
   const [showForm, setShowForm] = useState(false);
@@ -203,7 +204,10 @@ export default function BodyPage() {
     return Math.round((last - first) * 10) / 10;
   })();
 
+  const canSubmit = Object.values(form).some((v) => toNum(v) !== null);
+
   async function handleLog() {
+    if (!canSubmit) return;
     await logMeasurement.mutateAsync({
       recordedAt: todayBkk,
       weightKg: toNum(form.weightKg),
@@ -258,6 +262,43 @@ export default function BodyPage() {
 
   if (isLoading) return <BodySkeleton />;
 
+  if (isError) {
+    return (
+      <div
+        className="saifit-bg"
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "0 24px",
+        }}
+      >
+        <div style={{ textAlign: "center" }}>
+          <div
+            style={{
+              fontFamily: "K2D, sans-serif",
+              fontSize: 15,
+              color: "var(--ink-mute)",
+              lineHeight: 1.6,
+              marginBottom: 16,
+            }}
+          >
+            {tCommon("loadError")}
+          </div>
+          <button
+            type="button"
+            className="btn-glass"
+            style={{ minHeight: 56 }}
+            onClick={() => refetch()}
+          >
+            {tCommon("retry")}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="saifit-bg" style={{ minHeight: "100vh", paddingBottom: 110 }}>
       <div style={{ padding: "40px 24px 0" }}>
@@ -311,7 +352,7 @@ export default function BodyPage() {
                 <span
                   style={{ fontFamily: "K2D, sans-serif", fontSize: 12, color: "var(--ink-mute)" }}
                 >
-                  % body fat
+                  % {t("bodyFat").toLowerCase()}
                 </span>
               </div>
               {deltas?.bodyFatPct != null && <DeltaBadge delta={deltas.bodyFatPct} />}
@@ -491,10 +532,10 @@ export default function BodyPage() {
               letterSpacing: "0.10em",
             }}
           >
-            <span>-90 วัน</span>
-            <span>-60 วัน</span>
-            <span>-30 วัน</span>
-            <span>วันนี้</span>
+            <span>{t("trendDays90")}</span>
+            <span>{t("trendDays60")}</span>
+            <span>{t("trendDays30")}</span>
+            <span>{t("trendToday")}</span>
           </div>
         </div>
       </div>
@@ -554,6 +595,36 @@ export default function BodyPage() {
         </div>
       </div>
 
+      {/* Empty state — no measurements logged yet */}
+      {!latest && !isLoading && (
+        <div style={{ padding: "14px 24px 0" }}>
+          <div className="glass" style={{ padding: "20px 22px", textAlign: "center" }}>
+            <div
+              style={{
+                fontFamily: "K2D, sans-serif",
+                fontSize: 15,
+                color: "var(--ink)",
+                fontWeight: 600,
+                lineHeight: 1.5,
+              }}
+            >
+              {t("emptyTitle")}
+            </div>
+            <div
+              style={{
+                fontFamily: "K2D, sans-serif",
+                fontSize: 13,
+                color: "var(--ink-mute)",
+                lineHeight: 1.6,
+                marginTop: 6,
+              }}
+            >
+              {t("emptyHint")}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Log measurement button / form */}
       <div style={{ padding: "14px 24px 0" }}>
         {!showForm ? (
@@ -562,6 +633,7 @@ export default function BodyPage() {
             className="btn-glass"
             style={{
               width: "100%",
+              minHeight: 56,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -589,12 +661,12 @@ export default function BodyPage() {
               {t("logToday")}
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {field("weightKg", "WEIGHT · kg", "kg")}
-              {field("bodyFatPct", "BODY FAT · %", "%")}
-              {field("chestCm", "CHEST · cm", "cm")}
-              {field("waistCm", "WAIST · cm", "cm")}
-              {field("armCm", "ARM · cm", "cm")}
-              {field("thighCm", "THIGH · cm", "cm")}
+              {field("weightKg", `${t("weight")} · kg`, "kg")}
+              {field("bodyFatPct", `${t("bodyFat")} · %`, "%")}
+              {field("chestCm", `${t("chest")} · cm`, "cm")}
+              {field("waistCm", `${t("waist")} · cm`, "cm")}
+              {field("armCm", `${t("arm")} · cm`, "cm")}
+              {field("thighCm", `${t("thigh")} · cm`, "cm")}
             </div>
             <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
               <button
@@ -610,7 +682,7 @@ export default function BodyPage() {
                 className="btn-primary"
                 style={{ flex: 2 }}
                 onClick={handleLog}
-                disabled={logMeasurement.isPending}
+                disabled={!canSubmit || logMeasurement.isPending}
               >
                 {logMeasurement.isPending ? t("saving") : t("save")}
               </button>

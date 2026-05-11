@@ -1,5 +1,6 @@
 "use client";
 
+import { ExerciseAnimation } from "@/components/exercise-animation";
 import {
   BarbellIcon,
   BodyFrontIcon,
@@ -553,6 +554,7 @@ export default function WelcomePage() {
               gap: 24,
             }}
           >
+            <ExerciseAnimation size="xl" />
             <p
               style={{
                 fontFamily: "Chakra Petch, monospace",

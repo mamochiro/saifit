@@ -140,8 +140,9 @@ interface AddFormData {
 
 export default function FoodPage() {
   const t = useTranslations("food");
+  const tCommon = useTranslations("common");
   const todayBkk = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Bangkok" });
-  const { data, isLoading } = useFoodLog(todayBkk);
+  const { data, isLoading, isError, refetch } = useFoodLog(todayBkk);
   const toggleItem = useToggleMealItem();
   const deleteItem = useDeleteMealItem();
   const addItem = useAddMealItem();
@@ -173,9 +174,11 @@ export default function FoodPage() {
     .toLocaleDateString("th-TH", { weekday: "short" })
     .toUpperCase();
 
+  const canAdd = !!addForm.name.trim() && Number(addForm.kcal) > 0;
+
   async function handleAdd() {
     const kcal = Number(addForm.kcal);
-    if (!addForm.name || !kcal) return;
+    if (!addForm.name.trim() || !kcal) return;
 
     await addItem.mutateAsync({
       date: todayBkk,
@@ -194,6 +197,43 @@ export default function FoodPage() {
     ...mt,
     items: items.filter((i) => i.mealType === mt.key),
   }));
+
+  if (isError) {
+    return (
+      <div
+        className="saifit-bg"
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "0 24px",
+        }}
+      >
+        <div style={{ textAlign: "center" }}>
+          <div
+            style={{
+              fontFamily: "K2D, sans-serif",
+              fontSize: 15,
+              color: "var(--ink-mute)",
+              lineHeight: 1.6,
+              marginBottom: 16,
+            }}
+          >
+            {tCommon("loadError")}
+          </div>
+          <button
+            type="button"
+            className="btn-glass"
+            style={{ minHeight: 56 }}
+            onClick={() => refetch()}
+          >
+            {tCommon("retry")}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="saifit-bg" style={{ minHeight: "100vh", paddingBottom: 110 }}>
@@ -237,18 +277,23 @@ export default function FoodPage() {
             </div>
             <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
               <MacroBar
-                label="P · โปรตีน"
+                label={t("macroProtein")}
                 value={totalProtein}
                 target={targetProtein}
                 color="var(--violet)"
               />
               <MacroBar
-                label="C · คาร์บ"
+                label={t("macroCarbs")}
                 value={totalCarbs}
                 target={targetCarbs}
                 color="var(--cyan)"
               />
-              <MacroBar label="F · ไขมัน" value={totalFat} target={targetFat} color="var(--amber)" />
+              <MacroBar
+                label={t("macroFat")}
+                value={totalFat}
+                target={targetFat}
+                color="var(--amber)"
+              />
             </div>
           </div>
         </div>
@@ -328,6 +373,7 @@ export default function FoodPage() {
             className="btn-glass"
             style={{
               width: "100%",
+              minHeight: 56,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -516,7 +562,7 @@ export default function FoodPage() {
                 className="btn-primary"
                 style={{ flex: 2 }}
                 onClick={handleAdd}
-                disabled={addItem.isPending}
+                disabled={!canAdd || addItem.isPending}
               >
                 {addItem.isPending ? t("adding") : t("add")}
               </button>

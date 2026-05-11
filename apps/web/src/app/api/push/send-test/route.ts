@@ -1,0 +1,57 @@
+import { auth } from "@/lib/auth";
+import { getDb, pushSubscriptions, users } from "@saifit/db";
+import { eq } from "drizzle-orm";
+import { type NextRequest, NextResponse } from "next/server";
+import webpush from "web-push";
+
+const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
+
+if (vapidPublicKey && vapidPrivateKey) {
+  webpush.setVapidDetails("mailto:admin@saifit.app", vapidPublicKey, vapidPrivateKey);
+}
+
+export async function POST(request: NextRequest) {
+  const session = await auth.api.getSession({ headers: request.headers });
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  if (!vapidPublicKey || !vapidPrivateKey) {
+    return NextResponse.json({ error: "Push not configured" }, { status: 503 });
+  }
+
+  const db = getDb();
+  const user = await db.query.users.findFirst({
+    where: eq(users.betterAuthId, session.user.id),
+    columns: { id: true },
+  });
+  if (!user) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  const subs = await db
+    .select()
+    .from(pushSubscriptions)
+    .where(eq(pushSubscriptions.userId, user.id));
+
+  const payload = JSON.stringify({ title: "Saifit", body: "Push working! 💪", url: "/" });
+
+  await Promise.allSettled(
+    subs.map(async (sub) => {
+      try {
+        await webpush.sendNotification(
+          { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+          payload,
+        );
+      } catch (err: unknown) {
+        if (
+          typeof err === "object" &&
+          err !== null &&
+          "statusCode" in err &&
+          err.statusCode === 410
+        ) {
+          await db.delete(pushSubscriptions).where(eq(pushSubscriptions.endpoint, sub.endpoint));
+        }
+      }
+    }),
+  );
+
+  return NextResponse.json({ ok: true });
+}

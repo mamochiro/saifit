@@ -2,6 +2,8 @@
   "common": {
     "loading": "กำลังโหลด...",
     "error": "เกิดข้อผิดพลาด",
+    "loadError": "โหลดข้อมูลไม่ได้",
+    "retry": "ลองอีกครั้ง",
     "save": "บันทึก",
     "cancel": "ยกเลิก",
     "delete": "ลบ",
@@ -199,7 +201,14 @@
     "deleteConfirmMsg": "แน่ใจ? การลบไม่สามารถย้อนกลับได้",
     "deleteConfirmYes": "ยืนยัน",
     "deleteConfirmNo": "ยกเลิก",
-    "deleting": "กำลังลบ..."
+    "deleting": "กำลังลบ...",
+    "pushNotifications": "การแจ้งเตือน",
+    "pushLabel": "Push Notification",
+    "pushDenied": "ถูกบล็อก — เปิดในตั้งค่าเบราว์เซอร์",
+    "pushOff": "ปิด",
+    "pushOn": "เปิด",
+    "pushTest": "ทดสอบการแจ้งเตือน",
+    "pushTestSent": "ส่งแล้ว!"
   },
   "pwa": {
     "installTitle": "ติดตั้งแอป Saifit",
@@ -246,6 +255,12 @@
     "logMeasurement": "บันทึกการวัด",
     "logToday": "บันทึกวันนี้",
     "noData": "ยังไม่มีข้อมูล",
+    "emptyTitle": "เริ่มบันทึกวันนี้",
+    "emptyHint": "บันทึกน้ำหนักและการวัดเพื่อติดตามความก้าวหน้าของคุณ",
+    "trendDays90": "-90 วัน",
+    "trendDays60": "-60 วัน",
+    "trendDays30": "-30 วัน",
+    "trendToday": "วันนี้",
     "chest": "อก",
     "waist": "เอว",
     "arm": "แขน",
@@ -277,7 +292,9 @@
     "settingsLabel": "ตั้งค่า",
     "cancel": "ยกเลิก",
     "saving": "กำลังบันทึก...",
-    "save": "บันทึก"
+    "save": "บันทึก",
+    "emptyTitle": "เริ่มวิ่งวันนี้",
+    "emptyHint": "บันทึกการวิ่งเพื่อดูแผนรายสัปดาห์และสถิติ"
   },
   "routines": {
     "title": "รูทีนของฉัน",
@@ -325,6 +342,9 @@
     "protein": "โปรตีน · g",
     "carbs": "คาร์โบไฮเดรต · g",
     "fat": "ไขมัน · g",
+    "macroProtein": "P · โปรตีน",
+    "macroCarbs": "C · คาร์บ",
+    "macroFat": "F · ไขมัน",
     "breakfast": "มื้อเช้า",
     "lunch": "มื้อกลางวัน",
     "dinner": "มื้อเย็น",
