@@ -27,6 +27,16 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "Saifit",
+    startupImage: [
+      // iPhone SE / 6s / 7 / 8 (750×1334)
+      { url: "/icons/icon-512.png", media: "(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" },
+      // iPhone 14 Pro / 13 Pro / 12 Pro (1170×2532)
+      { url: "/icons/icon-512.png", media: "(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" },
+      // iPhone 14 Pro Max / 13 Pro Max (1290×2796)
+      { url: "/icons/icon-512.png", media: "(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" },
+      // iPad (2048×2732)
+      { url: "/icons/icon-512.png", media: "(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)" },
+    ],
   },
   icons: {
     apple: "/icons/icon-192.png",

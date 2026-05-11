@@ -108,8 +108,8 @@
 - [x] Install TanStack Query v5 + provider in layout
 - [x] Install serwist (NOT next-pwa) — basic offline shell service worker
   - [x] PWA manifest with icons 192/256/384/512px
-  - [ ] Splash screen config
-  - [ ] theme-color meta
+  - [x] Splash screen config
+  - [x] theme-color meta
 - [x] Install Recharts, Lucide React, TanStack Form, Valibot
 - [x] Better Auth setup:
   - [x] `bun add better-auth`

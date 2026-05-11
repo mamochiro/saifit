@@ -3,7 +3,11 @@
 // Copy the output into .env.local and .env.prod
 
 import { createRequire } from "module";
-const require = createRequire("/Users/sarawut/github/gympal/apps/web/package.json");
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const require = createRequire(join(__dirname, "../apps/web/package.json"));
 const webpush = require("web-push");
 
 const keys = webpush.generateVAPIDKeys();
