@@ -244,6 +244,7 @@ export function WorkoutLoggerView({
 
   const [pendingCount, setPendingCount] = useState(0);
   const [isOnline, setIsOnline] = useState(true);
+  const [elapsedSec, setElapsedSec] = useState(0);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pendingExercises, setPendingExercises] = useState<PickedExercise[]>([]);
   const [addingSetFor, setAddingSetFor] = useState<Set<string>>(new Set());
@@ -355,6 +356,13 @@ export function WorkoutLoggerView({
   }, [flush, initViewport]);
 
   useEffect(() => {
+    const startMs = new Date(workout.startedAt).getTime();
+    setElapsedSec(Math.floor((Date.now() - startMs) / 1000));
+    const iv = setInterval(() => setElapsedSec(Math.floor((Date.now() - startMs) / 1000)), 1000);
+    return () => clearInterval(iv);
+  }, [workout.startedAt]);
+
+  useEffect(() => {
     const iv = setInterval(async () => {
       const count = await getPendingCount(workoutId);
       setPendingCount(count);
@@ -399,21 +407,44 @@ export function WorkoutLoggerView({
           >
             {workout.name}
           </h1>
-          {showSavedLocally && (
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span
+              className="t-num"
               style={{
-                fontFamily: "K2D, sans-serif",
-                fontSize: 11,
-                color: "var(--ink-soft)",
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid var(--glass-line)",
+                fontSize: 13,
+                color: "var(--violet-bright)",
+                background: "rgba(140,100,255,0.1)",
+                border: "1px solid var(--violet-edge)",
                 borderRadius: 999,
                 padding: "3px 10px",
+                letterSpacing: "0.04em",
               }}
             >
-              {isOnline ? t("syncing") : t("savedLocally")}
+              {(() => {
+                const h = Math.floor(elapsedSec / 3600);
+                const m = Math.floor((elapsedSec % 3600) / 60);
+                const s = elapsedSec % 60;
+                return h > 0
+                  ? `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
+                  : `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+              })()}
             </span>
-          )}
+            {showSavedLocally && (
+              <span
+                style={{
+                  fontFamily: "K2D, sans-serif",
+                  fontSize: 11,
+                  color: "var(--ink-soft)",
+                  background: "rgba(255,255,255,0.05)",
+                  border: "1px solid var(--glass-line)",
+                  borderRadius: 999,
+                  padding: "3px 10px",
+                }}
+              >
+                {isOnline ? t("syncing") : t("savedLocally")}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 

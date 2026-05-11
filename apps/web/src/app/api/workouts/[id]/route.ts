@@ -1,5 +1,13 @@
 import { auth } from "@/lib/auth";
-import { exercises, getDb, streaks, users, workoutSets, workouts } from "@saifit/db";
+import {
+  exercises,
+  getDb,
+  pushSubscriptions,
+  streaks,
+  users,
+  workoutSets,
+  workouts,
+} from "@saifit/db";
 import { and, asc, count, eq, sum } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import * as v from "valibot";
@@ -130,12 +138,8 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     }
   }
 
-  // Send LINE push when completing a workout
-  if (
-    parsed.output.completedAt !== undefined &&
-    user.lineUserId &&
-    process.env.LINE_CHANNEL_ACCESS_TOKEN
-  ) {
+  // Notify user (LINE + web push) on workout completion
+  if (parsed.output.completedAt !== undefined) {
     const setsResult = await db
       .select({ setCount: count(), totalVolume: sum(workoutSets.weightKg) })
       .from(workoutSets)
@@ -147,19 +151,57 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       ? Math.round(parsed.output.durationSeconds / 60)
       : null;
 
-    const text =
-      user.locale === "en"
-        ? `✅ Workout done! ${setCount} sets · ${totalVol.toLocaleString()} kg${mins ? ` · ${mins} min` : ""}\nSee your progress → ${process.env.WEB_APP_URL}/progress`
-        : `✅ ออกกำลังกายเสร็จแล้ว! ${setCount} เซ็ต · ${totalVol.toLocaleString()} กก.${mins ? ` · ${mins} นาที` : ""}\nดูความก้าวหน้าได้ที่ → ${process.env.WEB_APP_URL}/progress`;
+    const titleTh = `✅ ออกกำลังกายเสร็จแล้ว!`;
+    const bodyTh = `${setCount} เซ็ต · ${totalVol.toLocaleString()} กก.${mins ? ` · ${mins} นาที` : ""}`;
+    const titleEn = `✅ Workout done!`;
+    const bodyEn = `${setCount} sets · ${totalVol.toLocaleString()} kg${mins ? ` · ${mins} min` : ""}`;
 
-    fetch("https://api.line.me/v2/bot/message/push", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.LINE_CHANNEL_ACCESS_TOKEN}`,
-      },
-      body: JSON.stringify({ to: user.lineUserId, messages: [{ type: "text", text }] }),
-    }).catch((err) => console.error("LINE push failed:", err));
+    // LINE push
+    if (user.lineUserId && process.env.LINE_CHANNEL_ACCESS_TOKEN) {
+      const text =
+        user.locale === "en"
+          ? `${titleEn} ${bodyEn}\nSee your progress → ${process.env.WEB_APP_URL}/progress`
+          : `${titleTh} ${bodyTh}\nดูความก้าวหน้าได้ที่ → ${process.env.WEB_APP_URL}/progress`;
+
+      fetch("https://api.line.me/v2/bot/message/push", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.LINE_CHANNEL_ACCESS_TOKEN}`,
+        },
+        body: JSON.stringify({ to: user.lineUserId, messages: [{ type: "text", text }] }),
+      }).catch((err) => console.error("LINE push failed:", err));
+    }
+
+    // Web push to all subscribed PWA devices
+    if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+      const subs = await db
+        .select()
+        .from(pushSubscriptions)
+        .where(eq(pushSubscriptions.userId, user.id));
+
+      if (subs.length > 0) {
+        const webpush = await import("web-push");
+        webpush.setVapidDetails(
+          `mailto:${process.env.VAPID_EMAIL ?? "noreply@saifit.app"}`,
+          process.env.VAPID_PUBLIC_KEY,
+          process.env.VAPID_PRIVATE_KEY,
+        );
+        const payload = JSON.stringify({
+          title: user.locale === "en" ? titleEn : titleTh,
+          body: user.locale === "en" ? bodyEn : bodyTh,
+          url: "/progress",
+        });
+        for (const sub of subs) {
+          webpush
+            .sendNotification(
+              { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+              payload,
+            )
+            .catch(() => {});
+        }
+      }
+    }
   }
 
   return NextResponse.json({ ok: true });

@@ -106,6 +106,7 @@ export const exercises = pgTable("exercises", {
   beginnerCueTh: text("beginner_cue_th").notNull(),
   commonMistakeEn: text("common_mistake_en").notNull(),
   commonMistakeTh: text("common_mistake_th").notNull(),
+  createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at").notNull().defaultNow().$type<Date>(),
 });
 
@@ -295,6 +296,51 @@ export const mealItems = pgTable("meal_items", {
   loggedAt: timestamp("logged_at").defaultNow().notNull().$type<Date>(),
 });
 
+export const pushSubscriptions = pgTable(
+  "push_subscriptions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    endpoint: text("endpoint").notNull(),
+    p256dh: text("p256dh").notNull(),
+    auth: text("auth").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow().$type<Date>(),
+  },
+  (t) => [
+    uniqueIndex("push_subscriptions_endpoint_idx").on(t.endpoint),
+    index("push_subscriptions_user_id_idx").on(t.userId),
+  ],
+);
+
+export const routines = pgTable("routines", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  notes: text("notes"),
+  lastUsedAt: timestamp("last_used_at").$type<Date>(),
+  createdAt: timestamp("created_at").defaultNow().notNull().$type<Date>(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull().$type<Date>(),
+});
+
+export const routineExercises = pgTable("routine_exercises", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  routineId: uuid("routine_id")
+    .notNull()
+    .references(() => routines.id, { onDelete: "cascade" }),
+  exerciseId: uuid("exercise_id")
+    .notNull()
+    .references(() => exercises.id),
+  orderIndex: integer("order_index").notNull(),
+  targetSets: integer("target_sets").notNull().default(3),
+  targetReps: text("target_reps").notNull().default("10"),
+  targetWeightKg: numeric("target_weight_kg", { precision: 6, scale: 2 }),
+  createdAt: timestamp("created_at").defaultNow().notNull().$type<Date>(),
+});
+
 // ─── Relations (TypeScript-only, no migration needed) ─────────────────────────
 
 export const userProgramsRelations = relations(userPrograms, ({ one }) => ({
@@ -314,6 +360,16 @@ export const workoutsRelations = relations(workouts, ({ one, many }) => ({
 export const workoutSetsRelations = relations(workoutSets, ({ one }) => ({
   workout: one(workouts, { fields: [workoutSets.workoutId], references: [workouts.id] }),
   exercise: one(exercises, { fields: [workoutSets.exerciseId], references: [exercises.id] }),
+}));
+
+export const routinesRelations = relations(routines, ({ one, many }) => ({
+  user: one(users, { fields: [routines.userId], references: [users.id] }),
+  exercises: many(routineExercises),
+}));
+
+export const routineExercisesRelations = relations(routineExercises, ({ one }) => ({
+  routine: one(routines, { fields: [routineExercises.routineId], references: [routines.id] }),
+  exercise: one(exercises, { fields: [routineExercises.exerciseId], references: [exercises.id] }),
 }));
 
 export const personalRecordsRelations = relations(personalRecords, ({ one }) => ({

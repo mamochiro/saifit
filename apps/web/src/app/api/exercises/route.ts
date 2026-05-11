@@ -1,5 +1,6 @@
-import { exercises, getDb } from "@saifit/db";
-import { and, gt, ilike, or, sql } from "drizzle-orm";
+import { auth } from "@/lib/auth";
+import { exercises, getDb, users } from "@saifit/db";
+import { and, eq, gt, ilike, or, sql } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import * as v from "valibot";
 
@@ -79,4 +80,81 @@ export async function GET(request: NextRequest) {
   const nextCursor = rows.length === limit ? (rows[rows.length - 1]?.slug ?? null) : null;
 
   return NextResponse.json({ data: rows, nextCursor });
+}
+
+const createSchema = v.object({
+  nameTh: v.pipe(v.string(), v.minLength(1), v.maxLength(128)),
+  nameEn: v.optional(v.pipe(v.string(), v.maxLength(128))),
+  category: v.picklist([
+    "chest",
+    "back",
+    "legs",
+    "shoulders",
+    "arms",
+    "core",
+    "cardio",
+    "full_body",
+  ] as const),
+  muscleGroups: v.pipe(v.array(v.string()), v.minLength(1)),
+  equipment: v.picklist([
+    "barbell",
+    "dumbbell",
+    "machine",
+    "cable",
+    "bodyweight",
+    "kettlebell",
+    "band",
+    "other",
+  ] as const),
+  isBodyweight: v.optional(v.boolean()),
+});
+
+export async function POST(request: NextRequest) {
+  const session = await auth.api.getSession({ headers: request.headers });
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  const result = v.safeParse(createSchema, body);
+  if (!result.success) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+
+  const db = getDb();
+  const user = await db.query.users.findFirst({
+    where: eq(users.betterAuthId, session.user.id),
+    columns: { id: true },
+  });
+  if (!user) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  const { nameTh, nameEn, category, muscleGroups, equipment, isBodyweight } = result.output;
+  const slug = `custom-${nameTh
+    .toLowerCase()
+    .replace(/[^a-z0-9ก-๙]/g, "-")
+    .replace(/-+/g, "-")
+    .slice(0, 60)}-${Math.random().toString(36).slice(2, 7)}`;
+
+  const [created] = await db
+    .insert(exercises)
+    .values({
+      slug,
+      nameTh,
+      nameEn: nameEn ?? nameTh,
+      category,
+      muscleGroups,
+      equipment,
+      isBodyweight: isBodyweight ?? equipment === "bodyweight",
+      difficulty: "beginner",
+      beginnerCueEn: "",
+      beginnerCueTh: "",
+      commonMistakeEn: "",
+      commonMistakeTh: "",
+      createdBy: user.id,
+    })
+    .returning();
+
+  return NextResponse.json(created, { status: 201 });
 }

@@ -1,8 +1,8 @@
 import { Avatar } from "@/components/avatar";
 import { BodyFrontIcon } from "@/components/icons";
 import { auth } from "@/lib/auth";
-import { getDb, streaks, templates, userPrograms, users, workouts } from "@saifit/db";
-import { and, desc, eq, gte, isNull } from "drizzle-orm";
+import { getDb, routines, streaks, templates, userPrograms, users, workouts } from "@saifit/db";
+import { and, count, desc, eq, gte, isNotNull, isNull } from "drizzle-orm";
 import { getTranslations } from "next-intl/server";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -35,7 +35,22 @@ export default async function HomePage() {
 
   const oneDayAgo = new Date(Date.now() - 86_400_000);
 
-  const [streakRow, activeProgramRows, recentWorkouts, inProgressRows] = await Promise.all([
+  // Bangkok week start (Monday)
+  const todayBkk = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Bangkok" });
+  const [tyear, tmonth, tday] = todayBkk.split("-").map(Number) as [number, number, number];
+  const todayLocal = new Date(tyear, tmonth - 1, tday);
+  const dow = todayLocal.getDay();
+  const weekStart = new Date(todayLocal);
+  weekStart.setDate(todayLocal.getDate() - (dow === 0 ? 6 : dow - 1));
+
+  const [
+    streakRow,
+    activeProgramRows,
+    recentWorkouts,
+    inProgressRows,
+    thisWeekRows,
+    routineCountRows,
+  ] = await Promise.all([
     db.query.streaks.findFirst({ where: eq(streaks.userId, user.id) }),
     db
       .select({
@@ -66,11 +81,24 @@ export default async function HomePage() {
       )
       .orderBy(desc(workouts.startedAt))
       .limit(1),
+    db
+      .select({ n: count() })
+      .from(workouts)
+      .where(
+        and(
+          eq(workouts.userId, user.id),
+          isNotNull(workouts.completedAt),
+          gte(workouts.completedAt, weekStart),
+        ),
+      ),
+    db.select({ n: count() }).from(routines).where(eq(routines.userId, user.id)),
   ]);
 
   const inProgressWorkout = inProgressRows[0] ?? null;
-
   const activeProgram = activeProgramRows[0] ?? null;
+  const weeklyCount = thisWeekRows[0]?.n ?? 0;
+  const routineCount = routineCountRows[0]?.n ?? 0;
+  const weeklyGoal = activeProgram?.daysPerWeek ?? 3;
 
   const activeDates = new Set(
     recentWorkouts.map((w) => {
@@ -273,6 +301,49 @@ export default async function HomePage() {
           </Link>
         )}
 
+        {/* Weekly goal widget */}
+        <div
+          className="glass"
+          style={{
+            padding: "14px 18px",
+            marginBottom: 14,
+            display: "flex",
+            alignItems: "center",
+            gap: 16,
+          }}
+        >
+          <div style={{ flex: 1 }}>
+            <span className="t-label">สัปดาห์นี้</span>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 5, marginTop: 3 }}>
+              <span className="t-num" style={{ fontSize: 28, color: "var(--ink)" }}>
+                {weeklyCount}
+              </span>
+              <span
+                style={{ fontFamily: "K2D, sans-serif", fontSize: 13, color: "var(--ink-mute)" }}
+              >
+                / {weeklyGoal} วัน
+              </span>
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 5 }}>
+            {(["d1", "d2", "d3", "d4", "d5", "d6", "d7"] as const)
+              .slice(0, weeklyGoal)
+              .map((key, i) => (
+                <div
+                  key={key}
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: "50%",
+                    background: i < weeklyCount ? "var(--violet)" : "rgba(255,255,255,0.1)",
+                    boxShadow: i < weeklyCount ? "0 0 6px var(--violet)" : "none",
+                    transition: "background 0.2s",
+                  }}
+                />
+              ))}
+          </div>
+        </div>
+
         {/* Streak card */}
         {streakRow && (
           <div className="glass glass-glow" style={{ padding: "20px 22px 18px", marginBottom: 16 }}>
@@ -336,6 +407,85 @@ export default async function HomePage() {
             </div>
           </div>
         )}
+
+        {/* My Routines quick link */}
+        <Link
+          href="/routines"
+          style={{ display: "block", marginBottom: 14, textDecoration: "none" }}
+        >
+          <div
+            className="glass"
+            style={{ padding: "14px 18px", display: "flex", alignItems: "center", gap: 14 }}
+          >
+            <div
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 10,
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid var(--glass-line)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width={16}
+                height={16}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ color: "var(--violet-bright)" }}
+                aria-hidden="true"
+              >
+                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+                <rect x="9" y="3" width="6" height="4" rx="1" />
+                <path d="M9 12h6M9 16h4" />
+              </svg>
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p
+                style={{
+                  fontFamily: "K2D, sans-serif",
+                  fontWeight: 600,
+                  fontSize: 14,
+                  color: "var(--ink)",
+                  margin: 0,
+                }}
+              >
+                {t("routines.title")}
+              </p>
+              <p
+                style={{
+                  fontFamily: "K2D, sans-serif",
+                  fontSize: 12,
+                  color: "var(--ink-soft)",
+                  margin: "2px 0 0",
+                }}
+              >
+                {routineCount > 0 ? t("routines.count", { n: routineCount }) : t("routines.empty")}
+              </p>
+            </div>
+            <svg
+              viewBox="0 0 20 20"
+              width={16}
+              height={16}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ color: "var(--ink-soft)", flexShrink: 0 }}
+              aria-hidden="true"
+            >
+              <path d="M7 4l6 6-6 6" />
+            </svg>
+          </div>
+        </Link>
 
         {/* Today's workout */}
         {activeProgram ? (

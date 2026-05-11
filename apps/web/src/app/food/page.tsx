@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import {
   type MealItem,
@@ -10,13 +11,14 @@ import {
 } from "./hooks";
 
 const MEAL_TYPES = [
-  { key: "breakfast", label: "มื้อเช้า · BREAKFAST" },
-  { key: "lunch", label: "มื้อกลางวัน · LUNCH" },
-  { key: "snack", label: "ของว่าง · SNACK" },
-  { key: "dinner", label: "มื้อเย็น · DINNER" },
+  { key: "breakfast" },
+  { key: "lunch" },
+  { key: "snack" },
+  { key: "dinner" },
 ] as const;
 
 function CalorieRing({ eaten, target }: { eaten: number; target: number }) {
+  const t = useTranslations("food");
   const pct = Math.min(eaten / (target || 1), 1);
   const r = 42;
   const circumference = 2 * Math.PI * r;
@@ -77,7 +79,7 @@ function CalorieRing({ eaten, target }: { eaten: number; target: number }) {
             marginTop: 2,
           }}
         >
-          EATEN
+          {t("eaten")}
         </div>
       </div>
     </div>
@@ -137,6 +139,7 @@ interface AddFormData {
 }
 
 export default function FoodPage() {
+  const t = useTranslations("food");
   const todayBkk = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Bangkok" });
   const { data, isLoading } = useFoodLog(todayBkk);
   const toggleItem = useToggleMealItem();
@@ -195,7 +198,7 @@ export default function FoodPage() {
   return (
     <div className="saifit-bg" style={{ minHeight: "100vh", paddingBottom: 110 }}>
       <div style={{ padding: "40px 24px 0" }}>
-        <span className="t-label">{dayLabel} · FOOD PLAN</span>
+        <span className="t-label">{`${dayLabel} · ${t("pageLabel")}`}</span>
         <h1
           style={{
             fontFamily: "K2D, sans-serif",
@@ -203,11 +206,11 @@ export default function FoodPage() {
             fontSize: 26,
             color: "var(--ink)",
             letterSpacing: "-0.01em",
-            lineHeight: 1.15,
+            lineHeight: 1.3,
             margin: "6px 0 0",
           }}
         >
-          แผนอาหาร
+          {t("title")}
         </h1>
       </div>
 
@@ -220,7 +223,7 @@ export default function FoodPage() {
           <CalorieRing eaten={totalKcal} target={targetKcal} />
           <div style={{ flex: 1 }}>
             <div className="t-label" style={{ marginBottom: 6 }}>
-              วันนี้
+              {t("today")}
             </div>
             <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
               <span className="t-num" style={{ fontSize: 30, color: "var(--ink)" }}>
@@ -277,9 +280,9 @@ export default function FoodPage() {
                 lineHeight: "var(--leading-relaxed)",
               }}
             >
-              ยังไม่มีรายการอาหาร
+              {t("empty")}
               <br />
-              กดปุ่มด้านล่างเพื่อเพิ่ม
+              {t("emptyHint")}
             </div>
           </div>
         ) : (
@@ -297,7 +300,7 @@ export default function FoodPage() {
                       paddingLeft: 2,
                     }}
                   >
-                    {group.label}
+                    {t(group.key)}
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {group.items.map((item) => (
@@ -344,12 +347,12 @@ export default function FoodPage() {
             >
               <path d="M8 3v10M3 8h10" />
             </svg>
-            เพิ่มอาหาร / ADD FOOD
+            {t("addFood")}
           </button>
         ) : (
           <div className="glass" style={{ padding: 18, animation: "slideUp 0.25s ease-out" }}>
             <div className="t-label" style={{ marginBottom: 14 }}>
-              เพิ่มรายการอาหาร
+              {t("addMealTitle")}
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               <div>
@@ -362,7 +365,7 @@ export default function FoodPage() {
                     marginBottom: 6,
                   }}
                 >
-                  MEAL TYPE
+                  {t("mealType")}
                 </div>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                   {MEAL_TYPES.map((mt) => (
@@ -372,7 +375,7 @@ export default function FoodPage() {
                       className={`pill${addForm.mealType === mt.key ? " is-active" : ""}`}
                       onClick={() => setAddForm((f) => ({ ...f, mealType: mt.key }))}
                     >
-                      {mt.key}
+                      {t(mt.key)}
                     </button>
                   ))}
                 </div>
@@ -389,14 +392,14 @@ export default function FoodPage() {
                     marginBottom: 4,
                   }}
                 >
-                  NAME · ชื่ออาหาร
+                  {t("name")}
                 </label>
                 <input
                   id="food-name"
                   className="glass-input"
                   value={addForm.name}
                   onChange={(e) => setAddForm((f) => ({ ...f, name: e.target.value }))}
-                  placeholder="เช่น ข้าวกล้อง + อกไก่"
+                  placeholder={t("namePlaceholder")}
                   style={{ width: "100%" }}
                 />
               </div>
@@ -413,7 +416,7 @@ export default function FoodPage() {
                       marginBottom: 4,
                     }}
                   >
-                    KCAL
+                    {t("kcal")}
                   </label>
                   <input
                     id="food-kcal"
@@ -437,7 +440,7 @@ export default function FoodPage() {
                       marginBottom: 4,
                     }}
                   >
-                    PROTEIN · g
+                    {t("protein")}
                   </label>
                   <input
                     id="food-protein"
@@ -461,7 +464,7 @@ export default function FoodPage() {
                       marginBottom: 4,
                     }}
                   >
-                    CARBS · g
+                    {t("carbs")}
                   </label>
                   <input
                     id="food-carbs"
@@ -485,7 +488,7 @@ export default function FoodPage() {
                       marginBottom: 4,
                     }}
                   >
-                    FAT · g
+                    {t("fat")}
                   </label>
                   <input
                     id="food-fat"
@@ -506,7 +509,7 @@ export default function FoodPage() {
                 style={{ flex: 1 }}
                 onClick={() => setShowAddForm(false)}
               >
-                ยกเลิก
+                {t("cancel")}
               </button>
               <button
                 type="button"
@@ -515,7 +518,7 @@ export default function FoodPage() {
                 onClick={handleAdd}
                 disabled={addItem.isPending}
               >
-                {addItem.isPending ? "กำลังเพิ่ม..." : "เพิ่ม"}
+                {addItem.isPending ? t("adding") : t("add")}
               </button>
             </div>
           </div>
@@ -530,6 +533,8 @@ function MealCard({
   onToggle,
   onDelete,
 }: { item: MealItem; onToggle: () => void; onDelete: () => void }) {
+  const t = useTranslations("food");
+  const tCommon = useTranslations("common");
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   return (
@@ -562,7 +567,7 @@ function MealCard({
               cursor: "pointer",
               flexShrink: 0,
             }}
-            aria-label={item.isDone ? "ยกเลิก" : "เสร็จแล้ว"}
+            aria-label={item.isDone ? t("cancel") : t("add")}
           >
             {item.isDone && (
               <svg
@@ -609,7 +614,7 @@ function MealCard({
                 letterSpacing: "0.10em",
               }}
             >
-              KCAL
+              {t("kcal")}
             </div>
           </div>
           {!confirmDelete ? (
@@ -623,7 +628,7 @@ function MealCard({
                 padding: 4,
                 color: "var(--ink-mute)",
               }}
-              aria-label="ลบ"
+              aria-label={t("deleteConfirm")}
             >
               <svg
                 viewBox="0 0 16 16"
@@ -646,7 +651,7 @@ function MealCard({
                 onClick={() => setConfirmDelete(false)}
                 style={{ fontSize: 10, padding: "2px 8px" }}
               >
-                ไม่
+                {t("cancel")}
               </button>
               <button
                 type="button"
@@ -654,7 +659,7 @@ function MealCard({
                 onClick={onDelete}
                 style={{ fontSize: 10, padding: "2px 8px", background: "var(--danger)" }}
               >
-                ลบ
+                {tCommon("delete")}
               </button>
             </div>
           )}

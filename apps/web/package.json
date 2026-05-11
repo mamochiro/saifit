@@ -30,6 +30,7 @@
     "serwist": "^9.0.0",
     "tailwind-merge": "^2.0.0",
     "valibot": "^1.0.0",
+    "web-push": "^3.6.7",
     "zustand": "^5.0.13"
   },
   "devDependencies": {
@@ -38,6 +39,7 @@
     "@types/pg": "^8.11.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@types/web-push": "^3.6.4",
     "@vitejs/plugin-react": "^4.0.0",
     "postcss": "^8.0.0",
     "sharp": "^0.34.5",

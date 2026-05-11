@@ -40,6 +40,7 @@ interface ExerciseDetail {
 interface ChartPoint {
   date: string;
   maxWeight: number;
+  est1RM: number | null;
 }
 
 function DetailSkeleton() {
@@ -105,10 +106,21 @@ export default function ExerciseDetailPage() {
   if (!exercise) return null;
 
   const chartData: ChartPoint[] = (exercise.history ?? [])
-    .map((h) => ({
-      date: new Date(h.date).toLocaleDateString("th-TH", { month: "short", day: "numeric" }),
-      maxWeight: Math.max(...h.sets.map((s) => Number.parseFloat(s.weightKg ?? "0") || 0)),
-    }))
+    .map((h) => {
+      const maxWeight = Math.max(...h.sets.map((s) => Number.parseFloat(s.weightKg ?? "0") || 0));
+      const best1RM = h.sets.reduce((best, s) => {
+        const w = Number.parseFloat(s.weightKg ?? "0") || 0;
+        const r = s.reps;
+        if (!w || r === 0 || r > 12) return best;
+        const est = r === 1 ? w : w * (36 / (37 - r));
+        return est > best ? est : best;
+      }, 0);
+      return {
+        date: new Date(h.date).toLocaleDateString("th-TH", { month: "short", day: "numeric" }),
+        maxWeight,
+        est1RM: best1RM > 0 ? Math.round(best1RM * 10) / 10 : null,
+      };
+    })
     .reverse();
 
   const beginnerCue = lang === "th" ? exercise.beginnerCueTh : exercise.beginnerCueEn;
@@ -305,9 +317,54 @@ export default function ExerciseDetailPage() {
 
         {/* History chart */}
         <div className="glass" style={{ padding: "16px 20px" }}>
-          <span className="t-label" style={{ display: "block", marginBottom: 16 }}>
-            {t("history")}
-          </span>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: 16,
+            }}
+          >
+            <span className="t-label">{t("history")}</span>
+            <div style={{ display: "flex", gap: 14 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <div
+                  style={{ width: 20, height: 2, background: "var(--violet)", borderRadius: 1 }}
+                />
+                <span
+                  style={{
+                    fontFamily: "system-ui",
+                    fontSize: 9,
+                    color: "var(--ink-soft)",
+                    letterSpacing: "0.1em",
+                  }}
+                >
+                  MAX KG
+                </span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <div
+                  style={{
+                    width: 20,
+                    height: 2,
+                    background: "var(--violet-bright)",
+                    borderRadius: 1,
+                    opacity: 0.7,
+                  }}
+                />
+                <span
+                  style={{
+                    fontFamily: "system-ui",
+                    fontSize: 9,
+                    color: "var(--ink-soft)",
+                    letterSpacing: "0.1em",
+                  }}
+                >
+                  1RM EST
+                </span>
+              </div>
+            </div>
+          </div>
           {!exercise.history || exercise.history.length === 0 ? (
             <p
               style={{
@@ -355,6 +412,18 @@ export default function ExerciseDetailPage() {
                   strokeWidth={2}
                   dot={{ fill: "var(--violet)", r: 3 }}
                   activeDot={{ r: 5 }}
+                  name="Max kg"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="est1RM"
+                  stroke="var(--violet-bright)"
+                  strokeWidth={1.5}
+                  strokeDasharray="4 2"
+                  dot={false}
+                  activeDot={{ r: 4 }}
+                  connectNulls
+                  name="1RM est."
                 />
               </LineChart>
             </ResponsiveContainer>

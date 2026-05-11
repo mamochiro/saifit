@@ -51,6 +51,13 @@ async function patchMe(data: Record<string, unknown>): Promise<void> {
   });
 }
 
+function urlBase64ToUint8Array(base64String: string): Uint8Array {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const rawData = atob(base64);
+  return Uint8Array.from([...rawData].map((c) => c.charCodeAt(0)));
+}
+
 // ─── PillRow ─────────────────────────────────────────────────────────────────
 
 function PillRow({
@@ -255,6 +262,7 @@ export default function SettingsPage() {
   }, [debouncedName]);
 
   // Section 2 — nutrition local state (persisted on blur via PATCH /api/me)
+  const [nutritionSaved, setNutritionSaved] = useState(false);
   const [kcal, setKcal] = useState(2100);
   const [protein, setProtein] = useState(150);
   const [carbs, setCarbs] = useState(220);
@@ -270,6 +278,73 @@ export default function SettingsPage() {
       nutritionInitialized.current = true;
     }
   }, [data]);
+
+  // Push notifications
+  const [pushStatus, setPushStatus] = useState<"idle" | "subscribed" | "denied" | "unsupported">(
+    "idle",
+  );
+  const [pushLoading, setPushLoading] = useState(false);
+
+  useEffect(() => {
+    if (!("PushManager" in window) || !("serviceWorker" in navigator)) {
+      setPushStatus("unsupported");
+      return;
+    }
+    navigator.serviceWorker.ready.then((reg) => {
+      reg.pushManager.getSubscription().then((sub) => {
+        setPushStatus(sub ? "subscribed" : "idle");
+      });
+    });
+  }, []);
+
+  async function handlePushSubscribe() {
+    const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+    if (!vapidKey) return;
+    setPushLoading(true);
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const permission = await Notification.requestPermission();
+      if (permission === "denied") {
+        setPushStatus("denied");
+        return;
+      }
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(vapidKey).buffer as ArrayBuffer,
+      });
+      const { endpoint, keys: subKeys } = sub.toJSON() as {
+        endpoint: string;
+        keys: { p256dh: string; auth: string };
+      };
+      await fetch("/api/push/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ endpoint, p256dh: subKeys.p256dh, auth: subKeys.auth }),
+      });
+      setPushStatus("subscribed");
+    } finally {
+      setPushLoading(false);
+    }
+  }
+
+  async function handlePushUnsubscribe() {
+    setPushLoading(true);
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
+      if (sub) {
+        await fetch("/api/push/subscribe", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ endpoint: sub.endpoint }),
+        });
+        await sub.unsubscribe();
+      }
+      setPushStatus("idle");
+    } finally {
+      setPushLoading(false);
+    }
+  }
 
   // Section 4 — data actions
   const [exporting, setExporting] = useState(false);
@@ -307,12 +382,20 @@ export default function SettingsPage() {
   }
 
   async function handleNutritionBlur() {
-    await patchMe({
-      defaultTargetKcal: kcal,
-      defaultTargetProteinG: protein,
-      defaultTargetCarbsG: carbs,
-      defaultTargetFatG: fat,
+    const res = await fetch("/api/me", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        defaultTargetKcal: kcal,
+        defaultTargetProteinG: protein,
+        defaultTargetCarbsG: carbs,
+        defaultTargetFatG: fat,
+      }),
     });
+    if (res.ok) {
+      setNutritionSaved(true);
+      setTimeout(() => setNutritionSaved(false), 2000);
+    }
   }
 
   async function handleTrainingField(field: "goal" | "gymType" | "daysPerWeek", value: string) {
@@ -541,10 +624,22 @@ export default function SettingsPage() {
       </div>
 
       {/* ── Section 2: Nutrition ─────────────────────────────── */}
-      <div style={{ margin: "20px 24px 6px" }}>
+      <div style={{ margin: "20px 24px 6px", display: "flex", alignItems: "center", gap: 8 }}>
         <span className="t-label" style={{ paddingLeft: 2 }}>
           {t("nutrition")}
         </span>
+        {nutritionSaved && (
+          <span
+            style={{
+              fontFamily: "K2D, sans-serif",
+              fontSize: 11,
+              color: "var(--success)",
+              transition: "opacity 0.3s",
+            }}
+          >
+            {t("saveSuccess")}
+          </span>
+        )}
       </div>
       <div className="glass" style={{ margin: "8px 24px", padding: "4px 0" }}>
         {NUTRITION_FIELDS.map((field, idx) => (
@@ -614,6 +709,73 @@ export default function SettingsPage() {
         value={data.locale}
         onChange={handleLocaleChange}
       />
+
+      {/* ── Push Notifications ───────────────────────────────── */}
+      {pushStatus !== "unsupported" && (
+        <>
+          <div style={{ margin: "20px 24px 6px" }}>
+            <span className="t-label" style={{ paddingLeft: 2 }}>
+              การแจ้งเตือน
+            </span>
+          </div>
+          <div className="glass" style={{ margin: "8px 24px" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "0 18px",
+                minHeight: 56,
+              }}
+            >
+              <div>
+                <span style={{ fontFamily: "K2D, sans-serif", fontSize: 14, color: "var(--ink)" }}>
+                  Push Notification
+                </span>
+                {pushStatus === "denied" && (
+                  <p
+                    style={{
+                      fontFamily: "K2D, sans-serif",
+                      fontSize: 11,
+                      color: "var(--danger)",
+                      marginTop: 2,
+                    }}
+                  >
+                    ถูกบล็อก — เปิดในตั้งค่าเบราว์เซอร์
+                  </p>
+                )}
+              </div>
+              {pushStatus === "subscribed" ? (
+                <button
+                  type="button"
+                  className="btn-glass"
+                  style={{ height: 36, padding: "0 14px", fontSize: 12 }}
+                  disabled={pushLoading}
+                  onClick={handlePushUnsubscribe}
+                >
+                  ปิด
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="btn-glass"
+                  style={{
+                    height: 36,
+                    padding: "0 14px",
+                    fontSize: 12,
+                    background: "rgba(140,100,255,0.12)",
+                    borderColor: "var(--violet-edge)",
+                  }}
+                  disabled={pushLoading || pushStatus === "denied"}
+                  onClick={handlePushSubscribe}
+                >
+                  {pushLoading ? "..." : "เปิด"}
+                </button>
+              )}
+            </div>
+          </div>
+        </>
+      )}
 
       {/* ── Reminders ────────────────────────────────────────── */}
       <div style={{ margin: "20px 24px 6px" }}>

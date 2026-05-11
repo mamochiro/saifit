@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useBodySummary, useLogMeasurement } from "./hooks";
 
@@ -15,8 +16,8 @@ type MuscleId =
 
 function MuscleMap({ primary, secondary }: { primary: MuscleId[]; secondary: MuscleId[] }) {
   const color = (id: MuscleId) => {
-    if (primary.includes(id)) return "oklch(72% 0.20 270 / 70%)";
-    if (secondary.includes(id)) return "oklch(72% 0.20 270 / 30%)";
+    if (primary.includes(id)) return "rgba(140,100,255,0.70)";
+    if (secondary.includes(id)) return "rgba(140,100,255,0.30)";
     return "rgba(255,255,255,0.10)";
   };
 
@@ -170,6 +171,7 @@ function BodySkeleton() {
 }
 
 export default function BodyPage() {
+  const t = useTranslations("body");
   const { data: summary, isLoading } = useBodySummary();
   const logMeasurement = useLogMeasurement();
 
@@ -259,7 +261,7 @@ export default function BodyPage() {
   return (
     <div className="saifit-bg" style={{ minHeight: "100vh", paddingBottom: 110 }}>
       <div style={{ padding: "40px 24px 0" }}>
-        <span className="t-label">MAY 10 · 4-WEEK TREND</span>
+        <span className="t-label">{t("trendLabel")}</span>
         <h1
           style={{
             fontFamily: "K2D, sans-serif",
@@ -267,11 +269,11 @@ export default function BodyPage() {
             fontSize: 26,
             color: "var(--ink)",
             letterSpacing: "-0.01em",
-            lineHeight: 1.15,
+            lineHeight: 1.3,
             margin: "6px 0 0",
           }}
         >
-          วิเคราะห์ร่างกาย
+          {t("title")}
         </h1>
       </div>
 
@@ -297,7 +299,7 @@ export default function BodyPage() {
           </div>
           <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
             <div>
-              <div className="t-label">BODY FAT</div>
+              <div className="t-label">{t("bodyFat")}</div>
               <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginTop: 4 }}>
                 <span className="t-num" style={{ fontSize: 32, color: "var(--ink)" }}>
                   {isLoading
@@ -326,9 +328,9 @@ export default function BodyPage() {
                   marginBottom: 4,
                 }}
               >
-                <span>ESSENTIAL · 6%</span>
-                <span>HEALTHY 14–24%</span>
-                <span>· 30%+</span>
+                <span>{t("fatEssential")}</span>
+                <span>{t("fatHealthy")}</span>
+                <span>{t("fatHigh")}</span>
               </div>
               <div
                 style={{
@@ -337,7 +339,7 @@ export default function BodyPage() {
                   borderRadius: 5,
                   overflow: "hidden",
                   background:
-                    "linear-gradient(90deg, oklch(60% 0.20 240), oklch(72% 0.20 270 / 60%) 25%, oklch(72% 0.20 270 / 60%) 75%, oklch(62% 0.20 25))",
+                    "linear-gradient(90deg, var(--success), rgba(140,100,255,0.60) 25%, rgba(140,100,255,0.60) 75%, var(--danger))",
                 }}
               >
                 {latest?.bodyFatPct != null && (
@@ -367,25 +369,25 @@ export default function BodyPage() {
       >
         {[
           {
-            key: "WEIGHT",
+            key: t("weight"),
             val: latest?.weightKg != null ? Number(latest.weightKg).toFixed(1) : "—",
             unit: "kg",
             delta: deltas?.weightKg ?? null,
           },
           {
-            key: "BODY FAT",
+            key: t("bodyFat"),
             val: latest?.bodyFatPct != null ? Number(latest.bodyFatPct).toFixed(1) : "—",
             unit: "%",
             delta: deltas?.bodyFatPct ?? null,
           },
           {
-            key: "CHEST · อก",
+            key: `CHEST · ${t("chest")}`,
             val: latest?.chestCm != null ? Number(latest.chestCm).toFixed(0) : "—",
             unit: "cm",
             delta: deltas?.chestCm ?? null,
           },
           {
-            key: "WAIST · เอว",
+            key: `WAIST · ${t("waist")}`,
             val: latest?.waistCm != null ? Number(latest.waistCm).toFixed(0) : "—",
             unit: "cm",
             delta: deltas?.waistCm ?? null,
@@ -419,13 +421,13 @@ export default function BodyPage() {
               marginBottom: 12,
             }}
           >
-            <div className="t-label">WEIGHT TREND · 90 DAYS</div>
+            <div className="t-label">{t("weightTrend")}</div>
             {weightDelta90 != null && (
               <span
                 className="t-num"
                 style={{
                   fontSize: 12,
-                  color: weightDelta90 < 0 ? "oklch(70% 0.16 150)" : "var(--danger)",
+                  color: weightDelta90 < 0 ? "var(--success)" : "var(--danger)",
                 }}
               >
                 {weightDelta90 > 0 ? "+" : ""}
@@ -443,14 +445,14 @@ export default function BodyPage() {
             >
               <defs>
                 <linearGradient id="wtFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="oklch(72% 0.20 270 / 35%)" />
-                  <stop offset="100%" stopColor="oklch(72% 0.20 270 / 0%)" />
+                  <stop offset="0%" stopColor="rgba(140,100,255,0.35)" />
+                  <stop offset="100%" stopColor="rgba(140,100,255,0)" />
                 </linearGradient>
               </defs>
               <path d={trendPath.fill} fill="url(#wtFill)" />
               <path
                 d={trendPath.path}
-                stroke="oklch(72% 0.20 270)"
+                stroke="var(--violet)"
                 strokeWidth="1.6"
                 fill="none"
                 style={{ filter: "drop-shadow(0 0 6px var(--violet))" }}
@@ -475,7 +477,7 @@ export default function BodyPage() {
                 color: "var(--ink-mute)",
               }}
             >
-              ยังไม่มีข้อมูล — บันทึกน้ำหนักเพื่อดูกราฟ
+              {t("noWeightData")}
             </div>
           )}
           <div
@@ -501,12 +503,12 @@ export default function BodyPage() {
       <div style={{ padding: "14px 24px 0" }}>
         <div className="glass" style={{ padding: 18 }}>
           <div className="t-label" style={{ marginBottom: 12 }}>
-            MEASUREMENTS · cm
+            {t("measurements")}
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             {[
-              { key: "ARM · แขน", val: latest?.armCm, delta: deltas?.armCm },
-              { key: "THIGH · ขา", val: latest?.thighCm, delta: deltas?.thighCm },
+              { key: `ARM · ${t("arm")}`, val: latest?.armCm, delta: deltas?.armCm },
+              { key: `THIGH · ${t("thigh")}`, val: latest?.thighCm, delta: deltas?.thighCm },
             ].map((m) => (
               <div
                 key={m.key}
@@ -538,7 +540,7 @@ export default function BodyPage() {
                         fontFamily: "Chakra Petch, monospace",
                         fontSize: 11,
                         fontWeight: 600,
-                        color: m.delta > 0 ? "oklch(70% 0.16 150)" : "var(--violet-bright)",
+                        color: m.delta > 0 ? "var(--success)" : "var(--violet-bright)",
                       }}
                     >
                       {m.delta > 0 ? "+" : ""}
@@ -579,12 +581,12 @@ export default function BodyPage() {
             >
               <path d="M8 3v10M3 8h10" />
             </svg>
-            บันทึกการวัด · LOG MEASUREMENT
+            {t("logMeasurement")}
           </button>
         ) : (
           <div className="glass" style={{ padding: 18 }}>
             <div className="t-label" style={{ marginBottom: 14 }}>
-              บันทึกวันนี้
+              {t("logToday")}
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {field("weightKg", "WEIGHT · kg", "kg")}
@@ -601,7 +603,7 @@ export default function BodyPage() {
                 style={{ flex: 1 }}
                 onClick={() => setShowForm(false)}
               >
-                ยกเลิก
+                {t("cancel")}
               </button>
               <button
                 type="button"
@@ -610,7 +612,7 @@ export default function BodyPage() {
                 onClick={handleLog}
                 disabled={logMeasurement.isPending}
               >
-                {logMeasurement.isPending ? "กำลังบันทึก..." : "บันทึก"}
+                {logMeasurement.isPending ? t("saving") : t("save")}
               </button>
             </div>
           </div>

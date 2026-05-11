@@ -59,18 +59,30 @@ interface WeeklyEntry {
 function ProgressSkeleton() {
   return (
     <div style={{ padding: "24px 24px 0", display: "flex", flexDirection: "column", gap: 16 }}>
-      {(["skel-a", "skel-b", "skel-c"] as const).map((key) => (
-        <div
-          key={key}
-          style={{
-            borderRadius: 20,
-            background: "rgba(255,255,255,0.04)",
-            animation: "pulse 1.5s ease-in-out infinite",
-          }}
-          className={key === "skel-a" ? "" : key === "skel-b" ? "" : ""}
-          // heights vary
-        />
-      ))}
+      <div
+        style={{
+          height: 130,
+          borderRadius: 20,
+          background: "rgba(255,255,255,0.04)",
+          animation: "pulse 1.5s ease-in-out infinite",
+        }}
+      />
+      <div
+        style={{
+          height: 80,
+          borderRadius: 20,
+          background: "rgba(255,255,255,0.04)",
+          animation: "pulse 1.5s ease-in-out infinite",
+        }}
+      />
+      <div
+        style={{
+          height: 80,
+          borderRadius: 20,
+          background: "rgba(255,255,255,0.04)",
+          animation: "pulse 1.5s ease-in-out infinite",
+        }}
+      />
       <div
         style={{
           height: 80,
@@ -111,7 +123,7 @@ function HeatmapGrid({ cells }: { cells: Array<{ date: string; count: number }> 
   let lastMonth = -1;
   weeks.forEach((week, col) => {
     const firstDay = week[0];
-    if (firstDay) {
+    if (firstDay?.date) {
       const month = new Date(firstDay.date).getMonth();
       if (month !== lastMonth) {
         monthLabels.push({
@@ -125,7 +137,7 @@ function HeatmapGrid({ cells }: { cells: Array<{ date: string; count: number }> 
 
   return (
     <div style={{ overflowX: "auto" }}>
-      <div style={{ minWidth: `${weeks.length * 14 + 30}px` }}>
+      <div style={{ minWidth: `${weeks.length * 13 + 28}px` }}>
         {/* Month labels */}
         <div style={{ display: "flex", marginBottom: 4, marginLeft: 32 }}>
           {weeks.map((_, col) => {
@@ -147,9 +159,9 @@ function HeatmapGrid({ cells }: { cells: Array<{ date: string; count: number }> 
         <div style={{ display: "flex", gap: 0 }}>
           {/* Day-of-week labels */}
           <div style={{ display: "flex", flexDirection: "column", marginRight: 4, gap: 2 }}>
-            {["", "M", "", "W", "", "F", ""].map((d, i) => (
+            {["M", "", "W", "", "F", "", ""].map((d, i) => (
               // biome-ignore lint/suspicious/noArrayIndexKey: static day labels
-              <div key={i} style={{ width: 24, height: 12 }}>
+              <div key={i} style={{ width: 24, height: 11 }}>
                 <span
                   style={{ fontFamily: "K2D, sans-serif", fontSize: 9, color: "var(--ink-soft)" }}
                 >
@@ -166,32 +178,35 @@ function HeatmapGrid({ cells }: { cells: Array<{ date: string; count: number }> 
                 {Array.from({ length: 7 }).map((_, row) => {
                   const cell = week[row];
                   const count = cell?.count ?? 0;
+                  const isFuture = count === -1;
                   const cellKey = cell?.date ?? `${col}-${row}`;
                   return (
                     <div
                       key={cellKey}
-                      title={cell ? `${cell.date}: ${count}` : ""}
+                      title={!isFuture && cell ? `${cell.date}: ${count}` : ""}
                       className="heatmap-cell"
                       style={
-                        count === 0
-                          ? undefined
-                          : count === 1
-                            ? {
-                                background: "rgba(140,100,255,0.25)",
-                                border: "1px solid rgba(140,100,255,0.3)",
-                              }
-                            : count === 2
+                        isFuture
+                          ? { opacity: 0 }
+                          : count === 0
+                            ? undefined
+                            : count === 1
                               ? {
-                                  background: "rgba(140,100,255,0.5)",
-                                  border: "1px solid var(--violet-edge)",
+                                  background: "rgba(140,100,255,0.25)",
+                                  border: "1px solid rgba(140,100,255,0.3)",
                                 }
-                              : count >= 3
+                              : count === 2
                                 ? {
-                                    background: "var(--violet)",
+                                    background: "rgba(140,100,255,0.5)",
                                     border: "1px solid var(--violet-edge)",
-                                    boxShadow: "0 0 6px var(--violet-glow)",
                                   }
-                                : undefined
+                                : count >= 3
+                                  ? {
+                                      background: "var(--violet)",
+                                      border: "1px solid var(--violet-edge)",
+                                      boxShadow: "0 0 6px var(--violet-glow)",
+                                    }
+                                  : undefined
                       }
                     />
                   );
@@ -399,9 +414,11 @@ function PRCard({ group }: { group: PRGroup }) {
                     background: "none",
                     border: "1px solid var(--glass-line)",
                     borderRadius: 6,
-                    padding: "2px 7px",
+                    padding: "0 12px",
                     cursor: "pointer",
                     transition: "color 0.15s",
+                    minHeight: 44,
+                    minWidth: 44,
                   }}
                 >
                   TREND
@@ -542,12 +559,17 @@ function TrendsTab({
   summary,
   weekly,
   heatmap,
+  isLoading,
 }: {
   summary: Summary | undefined;
   weekly: WeeklyEntry[] | undefined;
   heatmap: HeatmapEntry[] | undefined;
+  isLoading: boolean;
 }) {
   const t = useTranslations("progress");
+  const tEx = useTranslations("exercises");
+
+  if (isLoading) return <ProgressSkeleton />;
 
   const avgPerWeek =
     summary && weekly && weekly.length > 0
@@ -566,12 +588,28 @@ function TrendsTab({
 
   const heatmapMap = new Map((heatmap ?? []).map((h) => [h.date, h.count]));
   const today = new Date();
+
+  // Align to ISO Monday-start weeks (Thai convention)
+  const todayDow = today.getDay(); // 0=Sun … 6=Sat
+  const daysFromMonday = todayDow === 0 ? 6 : todayDow - 1;
+  // Monday of the current week
+  const thisMonday = new Date(today);
+  thisMonday.setDate(today.getDate() - daysFromMonday);
+  // Monday 52 weeks ago (start of the 52-week window)
+  const startDate = new Date(thisMonday);
+  startDate.setDate(thisMonday.getDate() - 51 * 7);
+
   const heatmapCells: Array<{ date: string; count: number }> = [];
-  for (let i = 363; i >= 0; i--) {
-    const d = new Date(today);
-    d.setDate(d.getDate() - i);
-    const dateStr = d.toISOString().split("T")[0] ?? "";
+  const cur = new Date(startDate);
+  while (cur <= today) {
+    const dateStr = cur.toISOString().split("T")[0] ?? "";
     heatmapCells.push({ date: dateStr, count: heatmapMap.get(dateStr) ?? 0 });
+    cur.setDate(cur.getDate() + 1);
+  }
+  // Pad remaining days of the current week so columns are always 7 rows
+  const padCount = todayDow === 0 ? 0 : 7 - todayDow;
+  for (let i = 0; i < padCount; i++) {
+    heatmapCells.push({ date: "", count: -1 });
   }
 
   const statChips = [
@@ -583,7 +621,7 @@ function TrendsTab({
         : "—",
     },
     { label: t("streak"), value: `${summary?.currentStreak ?? 0} ${t("streakUnit")}` },
-    { label: "เฉลี่ย/สัปดาห์", value: `${avgPerWeek} ครั้ง` },
+    { label: t("avgPerWeek"), value: `${avgPerWeek} ${t("totalWorkouts")}` },
   ];
 
   return (
@@ -614,27 +652,27 @@ function TrendsTab({
         ) : (
           <ResponsiveContainer width="100%" height={160}>
             <BarChart data={weeklyChartData} margin={{ top: 4, right: 4, bottom: 4, left: -20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="oklch(25% 0.003 90)" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--glass-line)" vertical={false} />
               <XAxis
                 dataKey="week"
-                tick={{ fill: "oklch(40% 0.003 90)", fontSize: 10 }}
+                tick={{ fill: "var(--ink-soft)", fontSize: 10 }}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis
-                tick={{ fill: "oklch(40% 0.003 90)", fontSize: 10 }}
+                tick={{ fill: "var(--ink-soft)", fontSize: 10 }}
                 axisLine={false}
                 tickLine={false}
               />
               <Tooltip
                 contentStyle={{
-                  background: "oklch(14% 0.005 90)",
-                  border: "1px solid oklch(25% 0.003 90)",
+                  background: "var(--glass-bg)",
+                  border: "1px solid var(--glass-line)",
                   borderRadius: "8px",
                   fontSize: 12,
                 }}
-                itemStyle={{ color: "oklch(97% 0.003 90)", fontFamily: "var(--font-display)" }}
-                labelStyle={{ color: "oklch(60% 0.002 90)" }}
+                itemStyle={{ color: "var(--ink)", fontFamily: "K2D, sans-serif" }}
+                labelStyle={{ color: "var(--ink-soft)" }}
               />
               <Bar dataKey="volume" fill="var(--violet)" radius={[3, 3, 0, 0]} />
             </BarChart>
@@ -655,30 +693,26 @@ function TrendsTab({
           <>
             <ResponsiveContainer width="100%" height={160}>
               <BarChart data={muscleChartData} margin={{ top: 4, right: 4, bottom: 4, left: -20 }}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="oklch(25% 0.003 90)"
-                  vertical={false}
-                />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--glass-line)" vertical={false} />
                 <XAxis
                   dataKey="week"
-                  tick={{ fill: "oklch(40% 0.003 90)", fontSize: 10 }}
+                  tick={{ fill: "var(--ink-soft)", fontSize: 10 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ fill: "oklch(40% 0.003 90)", fontSize: 10 }}
+                  tick={{ fill: "var(--ink-soft)", fontSize: 10 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <Tooltip
                   contentStyle={{
-                    background: "oklch(14% 0.005 90)",
-                    border: "1px solid oklch(25% 0.003 90)",
+                    background: "var(--bg-2)",
+                    border: "1px solid var(--glass-line)",
                     borderRadius: "8px",
                     fontSize: 12,
                   }}
-                  labelStyle={{ color: "oklch(60% 0.002 90)" }}
+                  labelStyle={{ color: "var(--ink-soft)" }}
                 />
                 {CATEGORIES.map((cat, i) =>
                   i === CATEGORIES.length - 1 ? (
@@ -686,7 +720,7 @@ function TrendsTab({
                       key={cat}
                       dataKey={cat}
                       stackId="muscle"
-                      fill={`oklch(97% 0.003 90 / ${OPACITY_LEVELS[i] ?? 0.1})`}
+                      fill={`rgba(255,255,255,${OPACITY_LEVELS[i] ?? 0.1})`}
                       radius={[3, 3, 0, 0]}
                     />
                   ) : (
@@ -694,7 +728,7 @@ function TrendsTab({
                       key={cat}
                       dataKey={cat}
                       stackId="muscle"
-                      fill={`oklch(97% 0.003 90 / ${OPACITY_LEVELS[i] ?? 0.1})`}
+                      fill={`rgba(255,255,255,${OPACITY_LEVELS[i] ?? 0.1})`}
                     />
                   ),
                 )}
@@ -708,7 +742,7 @@ function TrendsTab({
                       width: 10,
                       height: 10,
                       borderRadius: 2,
-                      background: `oklch(97% 0.003 90 / ${OPACITY_LEVELS[i] ?? 0.1})`,
+                      background: `rgba(255,255,255,${OPACITY_LEVELS[i] ?? 0.1})`,
                     }}
                   />
                   <span
@@ -718,7 +752,11 @@ function TrendsTab({
                       color: "var(--ink-soft)",
                     }}
                   >
-                    {cat}
+                    {tEx(
+                      `muscles.${cat === "full_body" ? "fullBody" : cat}` as Parameters<
+                        typeof tEx
+                      >[0],
+                    )}
                   </span>
                 </div>
               ))}
@@ -792,7 +830,7 @@ export default function ProgressPage() {
       <div style={{ padding: "40px 24px 0" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div>
-            <span className="t-label">PROGRESS</span>
+            <span className="t-label">{t("pageLabel")}</span>
             <h1
               style={{
                 fontFamily: "K2D, sans-serif",
@@ -800,7 +838,7 @@ export default function ProgressPage() {
                 fontSize: 26,
                 color: "var(--ink)",
                 letterSpacing: "-0.01em",
-                lineHeight: 1.15,
+                lineHeight: 1.3,
                 margin: "6px 0 20px",
               }}
             >
@@ -812,8 +850,8 @@ export default function ProgressPage() {
             aria-label="ตั้งค่า"
             style={{
               marginTop: 36,
-              width: 38,
-              height: 38,
+              width: 44,
+              height: 44,
               borderRadius: "50%",
               background: "rgba(255,255,255,0.06)",
               border: "1px solid var(--glass-line)",
@@ -843,6 +881,7 @@ export default function ProgressPage() {
 
         {/* Glass segmented control */}
         <div
+          role="tablist"
           className="glass"
           style={{
             display: "flex",
@@ -855,10 +894,12 @@ export default function ProgressPage() {
             <button
               key={tabKey}
               type="button"
+              role="tab"
+              aria-selected={tab === tabKey}
               onClick={() => setTab(tabKey)}
               style={{
                 flex: 1,
-                height: 36,
+                height: 44,
                 borderRadius: 10,
                 fontFamily: "K2D, sans-serif",
                 fontWeight: 600,
@@ -884,7 +925,12 @@ export default function ProgressPage() {
       {tab === "records" ? (
         <RecordsTab summary={summaryData} prs={prsData} isLoading={summaryLoading || prsLoading} />
       ) : (
-        <TrendsTab summary={summaryData} weekly={weeklyData} heatmap={heatmapData} />
+        <TrendsTab
+          summary={summaryData}
+          weekly={weeklyData}
+          heatmap={heatmapData}
+          isLoading={summaryLoading}
+        />
       )}
     </div>
   );

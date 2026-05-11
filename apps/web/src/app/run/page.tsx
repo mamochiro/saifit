@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useLogRun, useRunSummary } from "./hooks";
 
@@ -7,10 +8,10 @@ type RunKind = "easy" | "tempo" | "interval" | "long" | "race" | "rest";
 
 const KIND_COLOR: Record<RunKind, string> = {
   easy: "rgba(255,255,255,0.10)",
-  tempo: "oklch(72% 0.20 270 / 60%)",
-  interval: "oklch(78% 0.20 285)",
-  long: "oklch(60% 0.20 240)",
-  race: "oklch(68% 0.22 340)",
+  tempo: "rgba(140,100,255,0.60)",
+  interval: "rgba(120,180,255,0.65)",
+  long: "rgba(80,140,255,0.55)",
+  race: "rgba(220,80,120,0.65)",
   rest: "rgba(255,255,255,0.04)",
 };
 
@@ -70,6 +71,7 @@ interface LogFormData {
 }
 
 export default function RunPage() {
+  const t = useTranslations("run");
   const { data: summary, isLoading } = useRunSummary();
   const logRun = useLogRun();
   const [showForm, setShowForm] = useState(false);
@@ -106,7 +108,7 @@ export default function RunPage() {
   return (
     <div className="saifit-bg" style={{ minHeight: "100vh", paddingBottom: 110 }}>
       <div style={{ padding: "40px 24px 0" }}>
-        <span className="t-label">สัปดาห์นี้ · RUNNING PLAN</span>
+        <span className="t-label">{t("pageLabel")}</span>
         <h1
           style={{
             fontFamily: "K2D, sans-serif",
@@ -114,11 +116,11 @@ export default function RunPage() {
             fontSize: 26,
             color: "var(--ink)",
             letterSpacing: "-0.01em",
-            lineHeight: 1.15,
+            lineHeight: 1.3,
             margin: "6px 0 0",
           }}
         >
-          แผนวิ่ง
+          {t("title")}
         </h1>
       </div>
 
@@ -132,7 +134,9 @@ export default function RunPage() {
             style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}
           >
             <div className="t-label">
-              {todayPlan?.session ? `วันนี้ · ${todayPlan.session.runType.toUpperCase()}` : "วันนี้"}
+              {todayPlan?.session
+                ? `${t("today")} · ${todayPlan.session.runType.toUpperCase()}`
+                : t("today")}
             </div>
             {todayPlan?.session && (
               <span className="tag-violet">{todayPlan.session.distanceKm.toFixed(1)} KM</span>
@@ -147,7 +151,7 @@ export default function RunPage() {
               <span
                 style={{ fontFamily: "K2D, sans-serif", fontSize: 13, color: "var(--ink-mute)" }}
               >
-                min/km · จริง
+                min/km
               </span>
             </div>
           ) : (
@@ -160,7 +164,7 @@ export default function RunPage() {
                 lineHeight: 1.6,
               }}
             >
-              {isLoading ? "กำลังโหลด..." : "ยังไม่ได้บันทึกการวิ่งวันนี้"}
+              {isLoading ? "..." : t("noSessionToday")}
             </div>
           )}
 
@@ -209,7 +213,7 @@ export default function RunPage() {
             >
               <path d="M8 3v10M3 8h10" />
             </svg>
-            บันทึกการวิ่ง
+            {t("logRun")}
           </button>
         </div>
       </div>
@@ -225,7 +229,7 @@ export default function RunPage() {
               marginBottom: 14,
             }}
           >
-            <span className="t-label">สัปดาห์นี้</span>
+            <span className="t-label">{t("today")}</span>
             <span
               style={{
                 fontFamily: "Chakra Petch, monospace",
@@ -311,7 +315,7 @@ export default function RunPage() {
                         textAlign: "right",
                       }}
                     >
-                      {w.session?.runType ?? "—"}
+                      {w.session?.runType ? t(w.session.runType as Parameters<typeof t>[0]) : "—"}
                     </span>
                     <span
                       className="t-num"
@@ -336,10 +340,10 @@ export default function RunPage() {
                 fontFamily: "K2D, sans-serif",
                 fontSize: 13,
                 color: "var(--ink-mute)",
-                lineHeight: "var(--leading-relaxed)",
+                lineHeight: 1.6,
               }}
             >
-              ยังไม่มีการวิ่งสัปดาห์นี้
+              {t("noRunsThisWeek")}
             </div>
           )}
         </div>
@@ -350,17 +354,21 @@ export default function RunPage() {
         style={{
           padding: "12px 24px 0",
           display: "grid",
-          gridTemplateColumns: "1fr 1fr 1fr",
+          gridTemplateColumns: "repeat(auto-fit, minmax(90px, 1fr))",
           gap: 8,
         }}
       >
-        <StatTile label="WEEKLY" value={isLoading ? "—" : `${totalKm.toFixed(1)}`} unit="km" />
+        <StatTile label={t("weekly")} value={isLoading ? "—" : `${totalKm.toFixed(1)}`} unit="km" />
         <StatTile
-          label="LONGEST"
+          label={t("longest")}
           value={isLoading ? "—" : `${(summary?.longestKm ?? 0).toFixed(1)}`}
           unit="km"
         />
-        <StatTile label="LATEST PACE" value={isLoading ? "—" : (latestPace ?? "—")} unit="min/km" />
+        <StatTile
+          label={t("latestPace")}
+          value={isLoading ? "—" : (latestPace ?? "—")}
+          unit="min/km"
+        />
       </div>
 
       {/* Log form */}
@@ -368,7 +376,7 @@ export default function RunPage() {
         <div style={{ padding: "14px 24px 0" }}>
           <div className="glass" style={{ padding: 18 }}>
             <div className="t-label" style={{ marginBottom: 14 }}>
-              บันทึกการวิ่งวันนี้
+              {t("logRunTitle")}
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               <div>
@@ -383,7 +391,7 @@ export default function RunPage() {
                     marginBottom: 4,
                   }}
                 >
-                  DISTANCE · km
+                  {t("distance")}
                 </label>
                 <input
                   id="run-distance"
@@ -407,7 +415,7 @@ export default function RunPage() {
                     marginBottom: 4,
                   }}
                 >
-                  DURATION
+                  {t("duration")}
                 </label>
                 <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                   <input
@@ -458,17 +466,17 @@ export default function RunPage() {
                     marginBottom: 6,
                   }}
                 >
-                  TYPE
+                  {t("runType")}
                 </div>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                  {(["easy", "tempo", "interval", "long", "race"] as const).map((t) => (
+                  {(["easy", "tempo", "interval", "long", "race"] as const).map((kind) => (
                     <button
-                      key={t}
+                      key={kind}
                       type="button"
-                      className={`pill${form.runType === t ? " is-active" : ""}`}
-                      onClick={() => setForm((f) => ({ ...f, runType: t }))}
+                      className={`pill${form.runType === kind ? " is-active" : ""}`}
+                      onClick={() => setForm((f) => ({ ...f, runType: kind }))}
                     >
-                      {t}
+                      {t(kind)}
                     </button>
                   ))}
                 </div>
@@ -481,7 +489,7 @@ export default function RunPage() {
                 style={{ flex: 1 }}
                 onClick={() => setShowForm(false)}
               >
-                ยกเลิก
+                {t("cancel")}
               </button>
               <button
                 type="button"
@@ -490,7 +498,7 @@ export default function RunPage() {
                 onClick={handleLog}
                 disabled={logRun.isPending}
               >
-                {logRun.isPending ? "กำลังบันทึก..." : "บันทึก"}
+                {logRun.isPending ? t("saving") : t("save")}
               </button>
             </div>
           </div>

@@ -18,6 +18,7 @@ export function PRCelebrationOverlay({
   const t = useTranslations("pr");
 
   useEffect(() => {
+    if ("vibrate" in navigator) navigator.vibrate([100, 50, 100]);
     const timer = setTimeout(onDismiss, 2500);
     return () => clearTimeout(timer);
   }, [onDismiss]);

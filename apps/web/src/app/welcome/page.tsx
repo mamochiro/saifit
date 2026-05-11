@@ -50,6 +50,7 @@ function ProgressDots({ step }: { step: Step }) {
 
 export default function WelcomePage() {
   const t = useTranslations("onboarding");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [step, setStep] = useState<Step>(1);
 
@@ -65,9 +66,9 @@ export default function WelcomePage() {
   ];
 
   const EXPERIENCE: { value: ExperienceLevel; label: string; sub: string }[] = [
-    { value: "beginner", label: t("beginner"), sub: "< 1 ปี" },
-    { value: "intermediate", label: t("intermediate"), sub: "1–3 ปี" },
-    { value: "advanced", label: t("advanced"), sub: "> 3 ปี" },
+    { value: "beginner", label: t("beginner"), sub: t("lessThan1Year") },
+    { value: "intermediate", label: t("intermediate"), sub: t("oneToThreeYears") },
+    { value: "advanced", label: t("advanced"), sub: t("moreThan3Years") },
   ];
 
   const GYM_TYPES: {
@@ -159,8 +160,8 @@ export default function WelcomePage() {
                   type="button"
                   onClick={() => setStep((s) => (s > 1 ? ((s - 1) as Step) : s))}
                   style={{
-                    width: 36,
-                    height: 36,
+                    width: 44,
+                    height: 44,
                     borderRadius: "50%",
                     background: "none",
                     border: "1px solid var(--glass-line)",
@@ -170,7 +171,7 @@ export default function WelcomePage() {
                     alignItems: "center",
                     justifyContent: "center",
                   }}
-                  aria-label="ย้อนกลับ"
+                  aria-label={tCommon("back")}
                 >
                   <svg
                     width="16"

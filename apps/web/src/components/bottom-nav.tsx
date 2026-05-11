@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, Dumbbell, Home, TrendingUp } from "lucide-react";
+import { BookOpen, ClipboardList, Dumbbell, Home, TrendingUp } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -10,6 +10,7 @@ const HIDDEN_PATHS = ["/sign-in", "/sign-up", "/welcome"];
 const NAV_ITEMS = [
   { href: "/", icon: Home, labelKey: "home" as const },
   { href: "/workout/history", icon: Dumbbell, labelKey: "log" as const },
+  { href: "/routines", icon: ClipboardList, labelKey: "routines" as const },
   { href: "/progress", icon: TrendingUp, labelKey: "progress" as const },
   { href: "/exercises", icon: BookOpen, labelKey: "exercises" as const },
 ] as const;

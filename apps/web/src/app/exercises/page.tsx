@@ -123,8 +123,8 @@ export default function ExercisesPage() {
             aria-label="ตั้งค่า"
             style={{
               marginTop: 36,
-              width: 38,
-              height: 38,
+              width: 44,
+              height: 44,
               borderRadius: "50%",
               background: "rgba(255,255,255,0.06)",
               border: "1px solid var(--glass-line)",

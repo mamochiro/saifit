@@ -36,6 +36,20 @@
       "when": 1778400119063,
       "tag": "0004_sweet_joystick",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1747500000000,
+      "tag": "0005_push_and_custom_exercises",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1778456985334,
+      "tag": "0006_supreme_azazel",
+      "breakpoints": true
     }
   ]
 }

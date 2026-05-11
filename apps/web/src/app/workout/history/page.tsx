@@ -76,12 +76,14 @@ function HistorySkeleton() {
 
 export default function WorkoutHistoryPage() {
   const t = useTranslations("history");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const queryClient = useQueryClient();
   const observerRef = useRef<HTMLDivElement>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [actionId, setActionId] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [repeatLoading, setRepeatLoading] = useState(false);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteQuery<ListResponse>({
@@ -122,7 +124,7 @@ export default function WorkoutHistoryPage() {
   }
 
   const handleTouchStart = (id: string) => {
-    longPressTimer.current = setTimeout(() => setDeletingId(id), 600);
+    longPressTimer.current = setTimeout(() => setActionId(id), 600);
   };
 
   const handleTouchEnd = () => {
@@ -132,9 +134,23 @@ export default function WorkoutHistoryPage() {
   async function handleDeleteConfirm(id: string) {
     setDeleteLoading(true);
     await fetch(`/api/workouts/${id}`, { method: "DELETE" });
-    setDeletingId(null);
+    setActionId(null);
     setDeleteLoading(false);
     queryClient.invalidateQueries({ queryKey: ["workouts"] });
+  }
+
+  async function handleRepeat(id: string) {
+    setRepeatLoading(true);
+    try {
+      const res = await fetch(`/api/workouts/${id}/repeat`, { method: "POST" });
+      if (res.ok) {
+        const { data } = await res.json();
+        setActionId(null);
+        router.push(`/workout/${data.id}`);
+      }
+    } finally {
+      setRepeatLoading(false);
+    }
   }
 
   const workoutList = (() => {
@@ -285,10 +301,10 @@ export default function WorkoutHistoryPage() {
 
               <button
                 type="button"
-                onClick={() => deletingId !== workout.id && router.push(`/workout/${workout.id}`)}
+                onClick={() => actionId !== workout.id && router.push(`/workout/${workout.id}`)}
                 onContextMenu={(e) => {
                   e.preventDefault();
-                  setDeletingId(workout.id);
+                  setActionId(workout.id);
                 }}
                 onTouchStart={() => handleTouchStart(workout.id)}
                 onTouchEnd={handleTouchEnd}
@@ -302,7 +318,7 @@ export default function WorkoutHistoryPage() {
                   padding: "14px 18px",
                   textAlign: "left",
                   cursor: "pointer",
-                  background: deletingId === workout.id ? "rgba(255,60,60,0.08)" : undefined,
+                  background: actionId === workout.id ? "rgba(140,100,255,0.08)" : undefined,
                 }}
               >
                 <div style={{ minWidth: 0, flex: 1 }}>
@@ -351,30 +367,39 @@ export default function WorkoutHistoryPage() {
                 </div>
               </button>
 
-              {/* Inline delete confirmation */}
-              {deletingId === workout.id && (
+              {/* Inline action menu */}
+              {actionId === workout.id && (
                 <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
                   <button
                     type="button"
-                    onClick={() => setDeletingId(null)}
+                    onClick={() => setActionId(null)}
                     className="btn-glass"
-                    style={{ flex: 1, height: 44 }}
+                    style={{ height: 44, padding: "0 14px", fontSize: 13 }}
                   >
-                    {t("discard")}
+                    {t("cancelAction")}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleRepeat(workout.id)}
+                    disabled={repeatLoading}
+                    className="btn-primary"
+                    style={{ flex: 1, height: 44, fontSize: 13, opacity: repeatLoading ? 0.5 : 1 }}
+                  >
+                    {repeatLoading ? "..." : t("repeatWorkout")}
                   </button>
                   <button
                     type="button"
                     onClick={() => handleDeleteConfirm(workout.id)}
                     disabled={deleteLoading}
                     style={{
-                      flex: 1,
                       height: 44,
+                      padding: "0 14px",
                       borderRadius: 14,
                       background: "var(--danger)",
                       color: "white",
                       fontFamily: "K2D, sans-serif",
                       fontWeight: 700,
-                      fontSize: 14,
+                      fontSize: 13,
                       border: "none",
                       cursor: "pointer",
                       opacity: deleteLoading ? 0.5 : 1,
@@ -400,7 +425,7 @@ export default function WorkoutHistoryPage() {
             color: "var(--ink-mute)",
           }}
         >
-          กำลังโหลด...
+          {tCommon("loading")}
         </div>
       )}
     </div>
