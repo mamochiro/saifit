@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateVolume, estimate1RM, normalizeDecimal } from "../utils";
+import { calculateVolume, computeStreakUpdate, estimate1RM, normalizeDecimal } from "../utils";
 
 describe("estimate1RM", () => {
   it("returns weight unchanged for 1 rep (identity)", () => {
@@ -59,5 +59,53 @@ describe("calculateVolume", () => {
 
   it("returns 0 for empty array", () => {
     expect(calculateVolume([])).toBe(0);
+  });
+});
+
+describe("computeStreakUpdate (streak grace-day)", () => {
+  const base = { currentStreak: 5, longestStreak: 10, lastWorkoutDate: "2025-05-08" };
+
+  it("no change when today already logged", () => {
+    const r = computeStreakUpdate(base, "2025-05-08");
+    expect(r).toEqual({ newCurrent: 5, newLongest: 10 });
+  });
+
+  it("increments streak on consecutive day", () => {
+    const r = computeStreakUpdate(base, "2025-05-09");
+    expect(r).toEqual({ newCurrent: 6, newLongest: 10 });
+  });
+
+  it("grace day — 1-day gap keeps streak alive", () => {
+    // Missed 2025-05-09; logging on 2025-05-10 still extends
+    const r = computeStreakUpdate(base, "2025-05-10");
+    expect(r.newCurrent).toBe(6);
+    expect(r.newLongest).toBe(10);
+  });
+
+  it("resets to 1 after 2-day gap (no grace available)", () => {
+    const r = computeStreakUpdate(base, "2025-05-11");
+    expect(r).toEqual({ newCurrent: 1, newLongest: 10 });
+  });
+
+  it("starts streak at 1 when no previous workout", () => {
+    const r = computeStreakUpdate(
+      { currentStreak: 0, longestStreak: 0, lastWorkoutDate: null },
+      "2025-05-10",
+    );
+    expect(r).toEqual({ newCurrent: 1, newLongest: 1 });
+  });
+
+  it("updates longestStreak when current exceeds it", () => {
+    const r = computeStreakUpdate(
+      { currentStreak: 10, longestStreak: 10, lastWorkoutDate: "2025-05-09" },
+      "2025-05-10",
+    );
+    expect(r).toEqual({ newCurrent: 11, newLongest: 11 });
+  });
+
+  it("longestStreak preserved (not overwritten) on reset", () => {
+    const r = computeStreakUpdate(base, "2025-05-15"); // 7-day gap
+    expect(r.newCurrent).toBe(1);
+    expect(r.newLongest).toBe(10); // unchanged
   });
 });
