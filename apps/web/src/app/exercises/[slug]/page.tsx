@@ -1,6 +1,11 @@
 "use client";
 
 import { ExerciseAnimation } from "@/components/exercise-animation";
+import {
+  ExerciseAnimBySlug,
+  MUSCLE_GROUP_TO_MAP,
+  MuscleMap,
+} from "@/components/exercises";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useParams, useRouter } from "next/navigation";
@@ -218,20 +223,48 @@ export default function ExerciseDetailPage() {
         </div>
       </div>
 
-      {/* Exercise animation */}
-      <div
-        className="glass"
-        style={{
-          margin: "20px 24px",
-          height: 180,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          overflow: "hidden",
-          borderRadius: 20,
-        }}
-      >
-        <ExerciseAnimation size="lg" />
+      {/* Exercise animation + muscle map */}
+      <div style={{ margin: "20px 24px", display: "flex", gap: 12 }}>
+        <div
+          className="glass"
+          style={{
+            flex: 1,
+            height: 180,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            overflow: "hidden",
+            borderRadius: 20,
+          }}
+        >
+          <ExerciseAnimBySlug
+            slug={exercise.slug}
+            size="lg"
+            fallback={<ExerciseAnimation size="lg" />}
+          />
+        </div>
+        {(() => {
+          const primary = exercise.muscleGroups.flatMap(
+            (mg) => MUSCLE_GROUP_TO_MAP[mg] ?? [],
+          );
+          if (primary.length === 0) return null;
+          return (
+            <div
+              className="glass"
+              style={{
+                width: 100,
+                height: 180,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: 20,
+                flexShrink: 0,
+              }}
+            >
+              <MuscleMap size={72} primary={primary} view="front" label="" />
+            </div>
+          );
+        })()}
       </div>
 
       {/* Glass segmented Thai/English */}

@@ -1,6 +1,7 @@
 "use client";
 
 import { ExerciseAnimation } from "@/components/exercise-animation";
+import { ExerciseAnimBySlug } from "@/components/exercises";
 import {
   enqueue,
   gcSynced,
@@ -488,7 +489,15 @@ export function WorkoutLoggerView({
             style={{ padding: "16px 18px" }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 2 }}>
-              <ExerciseAnimation size="sm" />
+              {exercise?.slug ? (
+                <ExerciseAnimBySlug
+                  slug={exercise.slug}
+                  size="sm"
+                  fallback={<ExerciseAnimation size="sm" />}
+                />
+              ) : (
+                <ExerciseAnimation size="sm" />
+              )}
               <div style={{ minWidth: 0 }}>
                 <p
                   style={{
